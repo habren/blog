@@ -1,0 +1,1147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title><![CDATA[Jason's Blog]]></title>
+  
+  <link href="/atom.xml" rel="self"/>
+  <link href="http://www.jasongj.com/"/>
+  <updated>2015-03-29T07:02:32.186Z</updated>
+  <id>http://www.jasongj.com/</id>
+  
+  <author>
+    <name><![CDATA[Jason Guo]]></name>
+    <email><![CDATA[gj1989lh@163.com]]></email>
+  </author>
+  
+  <generator uri="http://zespia.tw/hexo/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[机器学习（一） 从一个R语言案例学线性回归]]></title>
+    <link href="http://www.jasongj.com/2015/03/27/ml1_linear_regression/"/>
+    <id>http://www.jasongj.com/2015/03/27/ml1_linear_regression/</id>
+    <published>2015-03-26T19:41:18.000Z</published>
+    <updated>2015-03-29T02:28:40.374Z</updated>
+    <content type="html"><![CDATA[<p><strong><em>写在前面的话</em></strong> 　　按照正常的顺序，本文应该先讲一些线性回归的基本概念，比如什么叫线性回归，线性回规的常用解法等。但既然本文名为《从一个R语言案例学会线性回归》，那就更重视如何使用R语言去解决线性回归问题，因此本文会先讲案例。</p>
+<h1 id="线性回归简介">线性回归简介</h1>
+<p>　　如下图所示，如果把自变量（也叫independent variable）和因变量（也叫dependent variable）画在二维坐标上，则每条记录对应一个点。线性回规最常见的应用场景则是用一条直线去拟和已知的点，并对给定的x值预测其y值。而我们要做的就是找出一条合适的曲线，也就是找出合适的斜率及纵截矩。<br><img src="http://www.jasongj.com/img/ml1/one_variable_lr.png" alt="一维线性回规"></p>
+<h2 id="SSE_&amp;_RMSE">SSE  &amp; RMSE</h2>
+<p>　　上图中的SSE指sum of squared error，也即预测值与实际值之差的平方和，可由此判断该模型的误差。但使用SSE表征模型的误差有些弊端，比如它依赖于点的个数，且不好定其单位。所以我们有另外一个值去称量模型的误差。RMSE（Root-Mean-Square Error）。$$RMSE=\sqrt{\frac{SSE}{N}}$$<br>　　由N将其标准化，并且其单位与变量单位相同。
+　　</p>
+<h2 id="$R^2$">$R^2$</h2>
+<p>　　在选择用于预测的直线时，我们可以使用已知记录的y值的平均值作为直线，如上图红线所示，这条线我们称之为baseline model。SST(total sum of squares)指是的baseline的SSE。用SSE表征模型好坏也有不便之处，比如给定SSE=10，我们并不知道这个模型是好还是好，因此我们引入另一个变量，$R^2$，定义如下：$$R^2 = 1 - \frac{SSE}{SST}$$<br>　　$R^2$用来表明我们所选的模型在baseline model的基础之上提升了多少（对于任意给定数据集，我们都可以用baseline作为模型，而事实上，我们总希望我们最后选出的模型在baseline基础之上有所提升），并且这个值的范围是[0,1]。$R^2=0$意味着它并未在baseline model的基础之上有所提升，而$R^2=1$（此时$SSE=0$）意味着一个一个非常完美的模型。
+　　</p>
+<h2 id="Adjusted_$R^2$">Adjusted $R^2$</h2>
+<p>　　在多元回归模型中，选用的feature越多，我们所能得到的$R^2$越大。所以$R^2$不能用于帮助我们在feature特别多时，选择合适的feature用于建模。因此又有了Adjusted $R^2$，它会补偿由feature增多/减少而引起的$R^2$的增加/减少，从而可通过它选择出真正适合用于建模的feature。</p>
+<h1 id="案例">案例</h1>
+<p>　　许多研究表明，全球平均气温在过去几十年中有所升高，以此引起的海平面上升和极端天气频现将会影响无数人。本文所讲案例就试图研究全球平均气温与一些其它因素的关系。<br>　　读者可<a href="https://courses.edx.org/c4x/MITx/15.071x_2/asset/climate_change.csv" target="_blank" rel="external">由此下载</a>本文所使用的数据<a href="https://courses.edx.org/c4x/MITx/15.071x_2/asset/climate_change.csv" target="_blank" rel="external">climate_change.csv</a>。<br>　　<a href="https://courses.edx.org/c4x/MITx/15.071x_2/asset/climate_change.csv" target="_blank" rel="external">https://courses.edx.org/c4x/MITx/15.071x_2/asset/climate_change.csv</a><br>　　此数据集包含了从1983年5月到2008年12月的数据。<br>　　本例我们以1983年5月到2006年12月的数据作为训练数据集，以之后的数据作为测试数据集。</p>
+<h2 id="数据">数据</h2>
+<p>　　首先加载数据</p>
+<pre><code>temp &lt;- <span class="keyword">read</span>.csv(<span class="string">"climate_change.csv"</span>)
+</code></pre><p>　　数据解释</p>
+<ul>
+<li>Year 年份 M</li>
+<li>Month 月份 T</li>
+<li>emp 当前周期内的全球平均气温与一个参考值之差 </li>
+<li>CO2, N2O，CH4,CFC.11，CFC.12：这几个气体的大气浓度 Aerosols</li>
+</ul>
+<h2 id="模型选择">模型选择</h2>
+<p>　　线性回归模型保留两部分。</p>
+<ul>
+<li>选择目标feature。我们数据中，有多个feature，但并非所有的feature都对预测有帮助，或者并非所有的feature都需要一起工作来做预测，因此我们需要筛选出最小的最能预测出接近事实的feature组合。</li>
+<li>确定feature系数（coefficient）。feature选出来后，我们要确定每个feature对预测结果所占的权重，这个权重即为coefficient</li>
+</ul>
+<h3 id="前向选择">前向选择</h3>
+<ol>
+<li>以每个feature为模型，分别算出其Adjusted $R^2$，最后取使得Adjusted $R^2$最大的feature作为第一轮的feature，并记下这个最大Adjusted $R^2$</li>
+<li>在其它未被使用的feature中选一个出来，与上轮作组合，并分别算出使其Adjusted $R^2$。若所有组合的Adjusted $R^2$都比上一轮小，则结束，以上一轮feature组合作为最组的model。否则选出使得Adjusted $R^2$最大的feature与上一轮的feature结合，作为本轮feature，并记下这个最大Adjusted $R^2$。</li>
+<li>循环步骤2直到结束</li>
+</ol>
+<h3 id="后向选择">后向选择</h3>
+<ol>
+<li>首先把所有feature作为第一个模型，并算出其Adjusted $R^2$。</li>
+<li>在上一轮的feature组合中，分别去掉每个feature，并算出其Adjusted $R^2$，如果去掉任一一个feature都不能使得Adjusted $R^2$比上一轮大，则结束，取上一轮的feature组合为最终的model。否则取使得Adjusted $R^2$最大的组合作为本轮的结果，并记下对应的Adjusted $R^2$。</li>
+<li>循环步骤2直到结束</li>
+</ol>
+<h2 id="结合实例选择模型">结合实例选择模型</h2>
+<p><strong><em>初始选择所有feature</em></strong><br>　　选择所有feature作为第一个model1，并使用summary函数算出其Adjusted $R^2$为0.7371。</p>
+<pre><code><span class="title">model1</span> &lt;- lm(Temp <span class="regexp">~ MEI</span> + CO2 + CH4 + N2O + CFC.<span class="number">11</span> + CFC.<span class="number">12</span> + TSI + Aerosols, temp)
+summary(model1)
+</code></pre><p><img src="http://www.jasongj.com/img/ml1/model1.png" alt=""></p>
+<p><strong><em>逐一去掉feature</em></strong><br>　　在model1中去掉任一个feature，并记下相应的Adjusted $R^2$如下</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Adjusted $R^2$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CO2 + CH4 + N2O + CFC.11 + CFC.12 + TSI + Aerosols</td>
+<td>0.6373</td>
+</tr>
+<tr>
+<td>MEI + CH4 + N2O + CFC.11 + CFC.12 + TSI + Aerosols</td>
+<td>0.7331</td>
+</tr>
+<tr>
+<td>MEI + CO2 + N2O + CFC.11 + CFC.12 + TSI + Aerosols</td>
+<td>0.738</td>
+</tr>
+<tr>
+<td>MEI + CO2 + CH4 + CFC.11 + CFC.12 + TSI + Aerosols</td>
+<td>0.7339</td>
+</tr>
+<tr>
+<td>MEI + CO2 + CH4 + N2O + CFC.12 + TSI + Aerosols</td>
+<td>0.7163</td>
+</tr>
+<tr>
+<td>MEI + CO2 + CH4 + N2O + CFC.11 + TSI + Aerosols</td>
+<td>0.7172</td>
+</tr>
+<tr>
+<td>MEI + CO2 + CH4 + N2O + CFC.11 + CFC.12 + Aerosols</td>
+<td>0.697</td>
+</tr>
+<tr>
+<td>MEI + CO2 + CH4 + N2O + CFC.11 + CFC.12 + TSI</td>
+<td>0.6883</td>
+</tr>
+</tbody>
+</table>
+<p>　　本轮得到<code>Temp ~ MEI + CO2 + N2O + CFC.11 + CFC.12 + TSI + Aerosols</code><br>　　<br>　　从model2中任意去掉1个feature，并记下相应的Adjusted $R^2$如下<br>| Feature | Adjusted $R^2$ |<br>|—————————————-|<br>| CO2 + N2O + CFC.11 + CFC.12 + TSI + Aerosols | 0.6377 |<br>| MEI + N2O + CFC.11 + CFC.12 + TSI + Aerosols | 0.7339 |<br>| MEI + CO2 + CFC.11 + CFC.12 + TSI + Aerosols | 0.7346 |<br>| MEI + CO2 + N2O + CFC.12 + TSI + Aerosols | 0.7171 |<br>| MEI + CO2 + N2O + CFC.11 + TSI + Aerosols | 0.7166 |<br>| MEI + CO2 + N2O + CFC.11 + CFC.12 + Aerosols | 0.698 |<br>| MEI + CO2 + N2O + CFC.11 + CFC.12 + TSI | 0.6891 |</p>
+<p>   任一组合的Adjusted $R^2$都比上一轮小，因此选择上一轮的feature组合作为最终的模型，也即<code>Temp ~ MEI + CO2 + N2O + CFC.11 + CFC.12 + TSI + Aerosols</code><br>   由<code>summary(model2)</code>可算出每个feature的coefficient如下 。<br><img src="http://www.jasongj.com/img/ml1/model2.png" alt=""></p>
+<h1 id="线性回归介绍">线性回归介绍</h1>
+<p>　　<br>　　在线性回归中，数据使用线性预测函数来建模，并且未知的模型参数也是通过数据来估计。这些模型被叫做线性模型。最常用的线性回归建模是给定X值的y的条件均值是X的仿射函数。<br>　　线性回归是回归分析中第一种经过严格研究并在实际应用中广泛使用的类型。这是因为线性依赖于其未知参数的模型比非线性依赖于其位置参数的模型更容易拟合，而且产生的估计的统计特性也更容易确定。<br>　　上面这段定义来自于<a href="http://zh.wikipedia.org/wiki/%E7%B7%9A%E6%80%A7%E5%9B%9E%E6%AD%B8" target="_blank" rel="external">维基百科</a>。<br>　　<br>　　线性回归假设特征和结果满足线性关系。我们用$X_1,X_2..X_n$ 去描述feature里面的分量，比如$x_1$=房间的面积，$x_2$=房间的朝向，等等，我们可以做出一个估计函数：  $$h(x)=h_θ(x)=θ_0+θ_1x_1+θ_2x_2$$</p>
+<p>　　θ在这儿称为参数(coefficient)，在这的意思是调整feature中每个分量的影响力，就是到底是房屋的面积更重要还是房屋的地段更重要。如果我们令$x_0 = 1$，就可以用向量的方式来表示了：　　$$h_θ(x)=θ^TX$$<br>　　<br>　　我们的程序也需要一个机制去评估我们θ是否比较好，所以说需要对我们做出的h函数进行评估，一般这个函数称为损失函数（loss function）或者错误函数(error function)，也有叫代价函数（cost function）的。在本文中，我们称这个函数为J函数。<br>　　在这里，我们可以认为J函数如下：　　$$J(0)=\frac{1}{2m}\sum_{i=1}^m(h_0x^{(i)}-y^{(i)})^2$$<br>　　<br>　　这个错误估计函数是去对$x(i)$的估计值与真实值$y(i)$差的平方和作为错误估计函数，前面乘上的$1/2m$是为了在求导的时候，这个系数就不见了。至于为何选择平方和作为错误估计函数，就得从概率分布的角度来解释了。<br>　　如何调整$θ$以使得$J(θ)$取得最小值有很多方法，本文会重点介绍梯度下降法和正规方程法。
+　　</p>
+<h1 id="梯度下降">梯度下降</h1>
+<p>　　在选定线性回归模型后，只需要确定参数$θ$，就可以将模型用来预测。然而$θ$需要使得$J(θ)$最小。因此问题归结为求极小值问题。<br>　　梯度下降法流程如下：</p>
+<p>　　1. 首先对$θ$赋值，这个值可以是随机的，也可以让$θ$为一个全零向量。<br>　　2. 改变$θ$的值，使得$J(θ)$按梯度下降的方向进行调整。</p>
+<p>　　梯度方向由$J(θ)$对$θ$的偏导数确定，由于求的是极小值，因此梯度方向是偏导数的反方向。更新公式为为： $$0_j = 0_j - α\frac{1}{m}\sum^m_{i=1}(h_θ(x^{(i)})-y^{(i)})x_j^{i}$$<br>　　<br>　　这种方法需要对全部的训练数据求得误差后再对$θ$进行更新。（$α$为学习速度）
+　　</p>
+<h1 id="正规方程（Normal_Equation）">正规方程（Normal Equation）</h1>
+<p>　　$Xθ=y$<br>=&gt;<br>　　$X^TXθ=X^Ty$<br>=&gt;<br>　　$θ = (X^TX)^{-1}X^Ty$<br>　　利用以上公式可直接算出$θ$<br>　　<br>　　看到这里，读者可能注意到了，正规方程法，不需要像梯度下降那样迭代多次，更关键的是从编程的角度更直接，那为什么不直接用正规，还要保留梯度下降呢？想必学过线性代数的朋友一眼能看出来，正规方程需要求$(X^TX)$的逆，这就要求$(X^TX)$是可逆的。同时，如果feature数比较多，比如共有100个feature，那么$(X^TX)$的维度会非常高，求其逆会非常耗时。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[本文简要介绍了线性回归的原理，适用场景，并结合实例讲解如何使用R语言解决线性回归问题]]>
+    
+    </summary>
+    
+      <category term="线性回归" scheme="http://www.jasongj.com/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/"/>
+    
+      <category term="机器学习" scheme="http://www.jasongj.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="Machine Learning" scheme="http://www.jasongj.com/categories/Machine-Learning/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Sql优化（二） 快速计算Distinct Count]]></title>
+    <link href="http://www.jasongj.com/2015/03/15/count_distinct/"/>
+    <id>http://www.jasongj.com/2015/03/15/count_distinct/</id>
+    <published>2015-03-15T08:00:00.000Z</published>
+    <updated>2015-03-16T04:26:07.607Z</updated>
+    <content type="html"><![CDATA[<h1 id="UV_vs-_PV">UV vs. PV</h1>
+<p>　　在互联网中，经常需要计算UV和PV。所谓PV即Page View，网页被打开多少次（YouTube等视频网站非常重视视频的点击率，即被播放多少次，也即PV）。而UV即Unique Visitor（微信朋友圈或者微信公众号中的文章则统计有多少人看过该文章，也即UV。虽然微信上显示是指明该值是PV，但经笔者测试，实为UV）。这两个概念非常重要，比如淘宝卖家在做活动时，他往往需要统计宝贝被看了多少次，有多少个不同的人看过该活动介绍。至于如何在互联网上唯一标识一个自然人，也是一个难点，目前还没有一个非常准确的方法，常用的方法是用户名加cookie，这里不作深究。</p>
+<h1 id="count_distinct_vs-_count_group_by">count distinct vs. count group by</h1>
+<p>　　很多情景下，尤其对于文本类型的字段，直接使用count distinct的查询效率是非常低的，而先做group by更count往往能提升查询效率。但实验表明，对于不同的字段，count distinct与count group by的性能并不一样，而且其效率也与目标数据集的数据重复度相关。</p>
+<p>　　本节通过几组实验说明了不同场景下不同query的不同效率，同时分析性能差异的原因。 （本文所有实验皆基于PostgreSQL 9.3.5平台）<br>分别使用count distinct 和 count group by对 bigint, macaddr, text三种类型的字段做查询。<br>    首先创建如下结构的表</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Modifiers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mac_bigint</td>
+<td>bigint</td>
+<td></td>
+</tr>
+<tr>
+<td>mac_macaddr</td>
+<td>macaddr</td>
+<td></td>
+</tr>
+<tr>
+<td>mac_text</td>
+<td>text</td>
+</tr>
+</tbody>
+</table>
+<p>并插入1000万条记录，并保证mac_bigint为mac_macaddr去掉冒号后的16进制转换而成的10进制bigint，而mac_text为mac_macaddr的文本形式，从而保证在这三个字段上查询的结果，也及复杂度相同。</p>
+<p>　　count distinct SQL如下</p>
+<pre><code>select 
+    count(<span class="keyword">distinct</span> mac_macaddr) 
+<span class="keyword">from</span> 
+    testmac 
+</code></pre><p>　　count group by SQL如下</p>
+<pre><code><span class="operator"><span class="keyword">select</span>
+    <span class="keyword">count</span>(*)
+<span class="keyword">from</span>
+    (<span class="keyword">select</span>
+        mac_macaddr
+    <span class="keyword">from</span>
+        testmac
+    <span class="keyword">group</span> <span class="keyword">by</span>
+        <span class="number">1</span>) foo</span>
+</code></pre><p>　　对于不同记录数较大的情景（1000万条记录中，有300多万条不同记录），查询时间（单位毫秒）如下表所示。</p>
+<table>
+<thead>
+<tr>
+<th>query/字段类型</th>
+<th>macaddr</th>
+<th>bigint</th>
+<th>text</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>count distinct</td>
+<td>24668.023</td>
+<td>13890.051</td>
+<td>149048.911</td>
+</tr>
+<tr>
+<td>count group by</td>
+<td>32152.808</td>
+<td>25929.555</td>
+<td>159212.700</td>
+</tr>
+</tbody>
+</table>
+<p>　　对于不同记录数较小的情景（1000万条记录中，只有1万条不同记录），查询时间（单位毫秒）如下表所示。</p>
+<table>
+<thead>
+<tr>
+<th>query/字段类型</th>
+<th>macaddr</th>
+<th>bigint</th>
+<th>text</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>count distinct</td>
+<td>20006.681</td>
+<td>9984.763</td>
+<td>225208.133</td>
+</tr>
+<tr>
+<td>count group by</td>
+<td>2529.420</td>
+<td>2554.720</td>
+<td>3701.869</td>
+</tr>
+</tbody>
+</table>
+<p>　　从上面两组实验可看出，在不同记录数较小时，count group by性能普遍高于count distinct，尤其对于text类型表现的更明显。而对于不同记录数较大的场景，count group by性能反而低于直接count distinct。为什么会造成这种差异呢，我们以macaddr类型为例来对比不同结果集下count group by的query plan。<br>　　当结果集较小时，planner会使用HashAggregation。</p>
+<pre><code>explain analyze select count(*) from (select mac_macaddr from testmac_small group by <span class="number">1</span>) foo;
+                                        QUERY PLAN
+ Aggregate  (<span class="variable">cost=</span><span class="number">668465.04</span>..<span class="number">668465.05</span> <span class="variable">rows=</span><span class="number">1</span> <span class="variable">width=</span><span class="number">0</span>) (actual <span class="variable">time=</span><span class="number">9166.486</span>..<span class="number">9166.486</span> <span class="variable">rows=</span><span class="number">1</span> <span class="variable">loops=</span><span class="number">1</span>)
+   -&gt;  HashAggregate  (<span class="variable">cost=</span><span class="number">668296.74</span>..<span class="number">668371.54</span> <span class="variable">rows=</span><span class="number">7480</span> <span class="variable">width=</span><span class="number">6</span>) (actual <span class="variable">time=</span><span class="number">9161.796</span>..<span class="number">9164.393</span> <span class="variable">rows=</span><span class="number">10001</span> <span class="variable">loops=</span><span class="number">1</span>)
+         -&gt;  Seq Scan on testmac_small  (<span class="variable">cost=</span><span class="number">0.00</span>..<span class="number">572898.79</span> <span class="variable">rows=</span><span class="number">38159179</span> <span class="variable">width=</span><span class="number">6</span>) (actual <span class="variable">time=</span><span class="number">323.338</span>..<span class="number">5091.112</span> <span class="variable">rows=</span><span class="number">10000000</span> l
+<span class="variable">oops=</span><span class="number">1</span>)
+</code></pre><p>　　而当结果集较大时，无法通过在内存中维护Hash表的方式使用HashAggregation，planner会使用GroupAggregation，并会用到排序，而且因为目标数据集太大，无法在内存中使用Quick Sort，而要在外存中使用Merge Sort，而这就极大的增加了I/O开销。</p>
+<pre><code>explain analyze select count(*) from (select mac_macaddr from testmac group by <span class="number">1</span>) foo;
+                                        QUERY PLAN
+ Aggregate  (<span class="variable">cost=</span><span class="number">1881542.62</span>..<span class="number">1881542.63</span> <span class="variable">rows=</span><span class="number">1</span> <span class="variable">width=</span><span class="number">0</span>) (actual <span class="variable">time=</span><span class="number">34288.232</span>..<span class="number">34288.232</span> <span class="variable">rows=</span><span class="number">1</span> <span class="variable">loops=</span><span class="number">1</span>)
+   -&gt;  Group  (<span class="variable">cost=</span><span class="number">1794262.09</span>..<span class="number">1844329.41</span> <span class="variable">rows=</span><span class="number">2977057</span> <span class="variable">width=</span><span class="number">6</span>) (actual <span class="variable">time=</span><span class="number">25291.372</span>..<span class="number">33481.228</span> <span class="variable">rows=</span><span class="number">3671797</span> <span class="variable">loops=</span><span class="number">1</span>)
+         -&gt;  Sort  (<span class="variable">cost=</span><span class="number">1794262.09</span>..<span class="number">1819295.75</span> <span class="variable">rows=</span><span class="number">10013464</span> <span class="variable">width=</span><span class="number">6</span>) (actual <span class="variable">time=</span><span class="number">25291.366</span>..<span class="number">29907.351</span> <span class="variable">rows=</span><span class="number">10000000</span> <span class="variable">loops=</span><span class="number">1</span>)
+               Sort Key: testmac.mac_macaddr
+               Sort Method: external merge  Disk: <span class="number">156440</span>kB
+               -&gt;  Seq Scan on testmac  (<span class="variable">cost=</span><span class="number">0.00</span>..<span class="number">219206.64</span> <span class="variable">rows=</span><span class="number">10013464</span> <span class="variable">width=</span><span class="number">6</span>) (actual <span class="variable">time=</span><span class="number">0.082</span>..<span class="number">4312.053</span> <span class="variable">rows=</span><span class="number">10000000</span> loo
+<span class="variable">ps=</span><span class="number">1</span>)
+</code></pre><h1 id="dinstinct_count高效近似算法">dinstinct count高效近似算法</h1>
+<p>　　由于distinct count的需求非常普遍（如互联网中计算UV），而该计算的代价又相比较高，很难适应实时性要求较高的场景，如流计算，因此有很多相关研究试图解决该问题。比较著名的算法有<a href="http://en.wikipedia.org/wiki/Adaptive_sampling" target="_blank" rel="external">daptive sampling Algorithm</a>，<a href="http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=4812493&amp;tag=1" target="_blank" rel="external">Distinct Counting with a Self-Learning Bitmap</a>，<a href="http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf" target="_blank" rel="external">HyperLogLog</a>，<a href="http://algo.inria.fr/flajolet/Publications/DuFl03-LNCS.pdf" target="_blank" rel="external">LogLog</a>，<a href="http://www.mathcs.emory.edu/~cheung/papers/StreamDB/Probab/1985-Flajolet-Probabilistic-counting.pdf" target="_blank" rel="external">Probabilistic Counting Algorithms</a>。这些算法都不能精确计算distinct count，都是在保证误差较小的情况下高效计算出结果。本文分别就这几种算法做了两组实验。</p>
+<ul>
+<li>数据集100万条，每条记录均不相同，几种算法耗时及内存使用如下。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>algorithm</th>
+<th>result</th>
+<th>error</th>
+<th>time(ms)</th>
+<th>memory (B)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>count(distinct)</td>
+<td>1000000</td>
+<td>0%</td>
+<td>14026</td>
+<td>？</td>
+</tr>
+<tr>
+<td>Adaptive Sampling</td>
+<td>1008128</td>
+<td>0.8%</td>
+<td>8653</td>
+<td>57627</td>
+</tr>
+<tr>
+<td>Self-learning Bitmap</td>
+<td>991651</td>
+<td>0.9%</td>
+<td>1151</td>
+<td>65571</td>
+</tr>
+<tr>
+<td>Bloom filter</td>
+<td>788052</td>
+<td>22%</td>
+<td>2400</td>
+<td>1198164</td>
+</tr>
+<tr>
+<td>Probalilistic Counting</td>
+<td>1139925</td>
+<td>14%</td>
+<td>3613</td>
+<td>95</td>
+</tr>
+<tr>
+<td>PCSA</td>
+<td>841735</td>
+<td>16%</td>
+<td>842</td>
+<td>495</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>数据集100万条，只有100条不同记录，几种近似算法耗时及内存使用如下。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>algorithm</th>
+<th>result</th>
+<th>error</th>
+<th>time(ms)</th>
+<th>memory (B)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>count(distinct)</td>
+<td>100</td>
+<td>0%</td>
+<td>75306</td>
+<td>？</td>
+</tr>
+<tr>
+<td>Adaptive Sampling</td>
+<td>100</td>
+<td>0%</td>
+<td>1491</td>
+<td>57627</td>
+</tr>
+<tr>
+<td>Self-learning Bitmap</td>
+<td>101</td>
+<td>1%</td>
+<td>1031</td>
+<td>65571</td>
+</tr>
+<tr>
+<td>Bloom filter</td>
+<td>100</td>
+<td>0%</td>
+<td>1675</td>
+<td>1198164</td>
+</tr>
+<tr>
+<td>Probalilistic Counting</td>
+<td>95</td>
+<td>5%</td>
+<td>3613</td>
+<td>95</td>
+</tr>
+<tr>
+<td>PCSA</td>
+<td>98</td>
+<td>2%</td>
+<td>852</td>
+<td>495</td>
+</tr>
+</tbody>
+</table>
+<p>　　<br>　　从上面两组实验可看出，大部分的近似算法工作得都很好，其速度都比简单的count distinct要快很多，而且它们对内存的使用并不多而结果去非常好，尤其是Adaptive Sampling和Self-learning Bitmap，误差一般不超过1%，性能却比简单的count distinct高十几倍乃至几十倍。
+　　</p>
+<h1 id="distinct_count结果合并">distinct count结果合并</h1>
+<p>　　如上几种近似算法可以极大提高distinct count的效率，但对于data warehouse来说，数据量非常大，可能存储了几年的数据，为了提高查询速度，对于sum及avg这些aggregation一般会创建一些aggregation table。比如如果要算过去三年的总营业额，那可以创建一张daily/monthly aggregation table，基于daily/monthly表去计算三年的营业额。但对于distinct count，即使创建了daily/monthly aggregation table，也没办法通过其计算三年的数值。这里有种新的数据类型hll，这是一种<a href="http://research.neustar.biz/2012/10/25/sketch-of-the-day-hyperloglog-cornerstone-of-a-big-data-infrastructure/" target="_blank" rel="external">HyperLogLog</a>数据结构。一个1280字节的hll能计算几百亿的不同数值并且保证只有很小的误差。<br>　　首先创建一张表(fact)，结构如下</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Modifiers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>day</td>
+<td>date</td>
+<td></td>
+</tr>
+<tr>
+<td>user_id</td>
+<td>integer</td>
+<td></td>
+</tr>
+<tr>
+<td>sales</td>
+<td>numeric</td>
+</tr>
+</tbody>
+</table>
+<p>　插入三年的数据，并保证总共有10万个不同的user_id，总数据量为1亿条（一天10万条左右）。</p>
+<pre><code><span class="operator"><span class="keyword">insert</span> <span class="keyword">into</span> fact
+<span class="keyword">select</span>
+    <span class="keyword">current_date</span> - (random()*<span class="number">1095</span>)::<span class="built_in">integer</span> * <span class="string">'1 day'</span>::<span class="built_in">interval</span>,
+    (random()*<span class="number">100000</span>)::<span class="built_in">integer</span> + <span class="number">1</span>,
+    random() * <span class="number">10000</span> + <span class="number">500</span>
+<span class="keyword">from</span>
+    generate_series(<span class="number">1</span>, <span class="number">100000000</span>, <span class="number">1</span>);</span>
+</code></pre><p>　　直接从fact表中查询不同用户的总数，耗时115143.217 ms。<br>    利用hll，创建daily_unique_user_hll表，将每天的不同用户信息存于hll类型的字段中。</p>
+<pre><code><span class="operator"><span class="keyword">create</span> <span class="keyword">table</span> daily_unique_user_hll 
+<span class="keyword">as</span> <span class="keyword">select</span>
+    <span class="keyword">day</span>, 
+    hll_add_agg(hll_hash_integer(user_id))
+<span class="keyword">from</span> 
+    fact
+<span class="keyword">group</span> <span class="keyword">by</span> <span class="number">1</span>;</span>
+</code></pre><p>　　通过上面的daily aggregation table可计算任意日期范围内的unique user count。如计算整个三年的不同用户数，耗时17.485 ms，查询结果为101044，误差为(101044-100000)/100000=1.044%。</p>
+<pre><code>explain analyze select hll_cardinality(hll_union_agg(hll_add_agg)) from daily_unique_user_hll;
+                                   QUERY PLAN
+ Aggregate  (<span class="variable">cost=</span><span class="number">196.70</span>..<span class="number">196.72</span> <span class="variable">rows=</span><span class="number">1</span> <span class="variable">width=</span><span class="number">32</span>) (actual <span class="variable">time=</span><span class="number">16.772</span>..<span class="number">16.772</span> <span class="variable">rows=</span><span class="number">1</span> <span class="variable">loops=</span><span class="number">1</span>)
+   -&gt;  Seq Scan on daily_unique_user_hll  (<span class="variable">cost=</span><span class="number">0.00</span>..<span class="number">193.96</span> <span class="variable">rows=</span><span class="number">1096</span> <span class="variable">width=</span><span class="number">32</span>) (actual <span class="variable">time=</span><span class="number">0.298</span>..<span class="number">3.251</span> <span class="variable">rows=</span>
+<span class="number">1096</span> <span class="variable">loops=</span><span class="number">1</span>)
+ Planning time: <span class="number">0.081</span> ms
+ Execution time: <span class="number">16.851</span> ms
+ Time: <span class="number">17.485</span> ms
+</code></pre><p>　　而如果直接使用count distinct基于fact表计算该值，则耗时长达 127807.105 ms。<br>　　<br>　　从上面的实验中可以看到，hll类型实现了distinct count的合并，并可以通过hll存储各个部分数据集上的distinct count值，并可通过合并这些hll值来快速计算整个数据集上的distinct count值，耗时只有直接使用count distinct在原始数据上计算的1/7308，并且误差非常小，1%左右。
+　　</p>
+<h1 id="总结">总结</h1>
+<p>　　如果必须要计算精确的distinct count，可以针对不同的情况使用count distinct或者count group by来实现较好的效率，同时对于数据的存储类型，能使用macaddr/intger/bigint的，尽量不要使用text。<br>　　<br>　　另外不必要精确计算，只需要保证误差在可接受的范围之内，或者计算效率更重要时，可以采用本文所介绍的<a href="http://en.wikipedia.org/wiki/Adaptive_sampling" target="_blank" rel="external">daptive sampling Algorithm</a>，<a href="http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=4812493&amp;tag=1" target="_blank" rel="external">Distinct Counting with a Self-Learning Bitmap</a>，<a href="http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf" target="_blank" rel="external">HyperLogLog</a>，<a href="http://algo.inria.fr/flajolet/Publications/DuFl03-LNCS.pdf" target="_blank" rel="external">LogLog</a>，<a href="http://www.mathcs.emory.edu/~cheung/papers/StreamDB/Probab/1985-Flajolet-Probabilistic-counting.pdf" target="_blank" rel="external">Probabilistic Counting Algorithms</a>等近似算法。另外，对于data warehouse这种存储数据量随着时间不断超增加且最终数据总量非常巨大的应用场景，可以使用hll这种支持合并dintinct count结果的数据类型，并周期性的（比如daily/weekly/monthly）计算部分数据的distinct值，然后通过合并部分结果的方式得到总结果的方式来快速响应查询请求。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[本文介绍了distinct count的SQL优化方法，以及常用的高效近似算法及其在PostgreSQL上的实现。]]>
+    
+    </summary>
+    
+      <category term="SQL" scheme="http://www.jasongj.com/tags/SQL/"/>
+    
+      <category term="Database" scheme="http://www.jasongj.com/categories/Database/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Kafka设计解析（一）  Kafka背景及架构介绍]]></title>
+    <link href="http://www.jasongj.com/2015/03/10/KafkaColumn1/"/>
+    <id>http://www.jasongj.com/2015/03/10/KafkaColumn1/</id>
+    <published>2015-03-10T06:00:00.000Z</published>
+    <updated>2015-03-26T19:42:23.612Z</updated>
+    <content type="html"><![CDATA[<p>　　本文已授权InfoQ独家发布，如需转载请<a href="http://www.jasongj.com/2015/03/10/KafkaColumn1/" target="_blank" rel="external"><strong>注明出处</strong></a>并与InfoQ中文站联系。<a href="http://www.infoq.com/cn/articles/kafka-analysis-part-1" target="_blank" rel="external">首发地址</a>为 <a href="http://www.infoq.com/cn/articles/kafka-analysis-part-1" target="_blank" rel="external">http://www.infoq.com/cn/articles/kafka-analysis-part-1 </a></p>
+<h1 id="摘要">摘要</h1>
+<p>　　Kafka是由LinkedIn开发并开源的分布式消息系统，因其分布式及高吞吐率而被广泛使用，现已与Cloudera Hadoop，Apache Storm，Apache Spark集成。本文介绍了Kafka的创建背景，设计目标，使用消息系统的优势以及目前流行的消息系统对比。并介绍了Kafka的架构，Producer消息路由，Consumer Group以及由其实现的不同消息分发方式，Topic &amp; Partition，最后介绍了Kafka Consumer为何使用pull模式以及Kafka提供的三种delivery guarantee。</p>
+<h1 id="背景介绍">背景介绍</h1>
+<h2 id="Kafka创建背景">Kafka创建背景</h2>
+<p>　　Kafka是一个消息系统，原本开发自LinkedIn，用作LinkedIn的活动流（Activity Stream）和运营数据处理管道（Pipeline）的基础。现在它已被<a href="https://cwiki.apache.org/confluence/display/KAFKA/Powered+By" target="_blank" rel="external">多家不同类型的公司</a> 作为多种类型的数据管道和消息系统使用。<br>　　活动流数据是几乎所有站点在对其网站使用情况做报表时都要用到的数据中最常规的部分。活动数据包括页面访问量（Page View）、被查看内容方面的信息以及搜索情况等内容。这种数据通常的处理方式是先把各种活动以日志的形式写入某种文件，然后周期性地对这些文件进行统计分析。运营数据指的是服务器的性能数据（CPU、IO使用率、请求时间、服务日志等等数据)。运营数据的统计方法种类繁多。<br>　　近年来，活动和运营数据处理已经成为了网站软件产品特性中一个至关重要的组成部分，这就需要一套稍微更加复杂的基础设施对其提供支持。
+　　</p>
+<h2 id="Kafka简介">Kafka简介</h2>
+<p>　　Kafka是一种分布式的，基于发布/订阅的消息系统。主要设计目标如下：</p>
+<ul>
+<li>以时间复杂度为O(1)的方式提供消息持久化能力，即使对TB级以上数据也能保证常数时间复杂度的访问性能</li>
+<li>高吞吐率。即使在非常廉价的商用机器上也能做到单机支持每秒100K条以上消息的传输</li>
+<li>支持Kafka Server间的消息分区，及分布式消费，同时保证每个Partition内的消息顺序传输</li>
+<li>同时支持离线数据处理和实时数据处理</li>
+<li>Scale out：支持在线水平扩展</li>
+</ul>
+<h2 id="为何使用消息系统">为何使用消息系统</h2>
+<ul>
+<li><p><strong>解耦</strong><br>　　在项目启动之初来预测将来项目会碰到什么需求，是极其困难的。消息系统在处理过程中间插入了一个隐含的、基于数据的接口层，两边的处理过程都要实现这一接口。这允许你独立的扩展或修改两边的处理过程，只要确保它们遵守同样的接口约束。</p>
+</li>
+<li><p><strong>冗余</strong><br>　　有些情况下，处理数据的过程会失败。除非数据被持久化，否则将造成丢失。消息队列把数据进行持久化直到它们已经被完全处理，通过这一方式规避了数据丢失风险。许多消息队列所采用的”插入-获取-删除”范式中，在把一个消息从队列中删除之前，需要你的处理系统明确的指出该消息已经被处理完毕，从而确保你的数据被安全的保存直到你使用完毕。</p>
+</li>
+<li><p><strong>扩展性</strong><br>　　因为消息队列解耦了你的处理过程，所以增大消息入队和处理的频率是很容易的，只要另外增加处理过程即可。不需要改变代码、不需要调节参数。扩展就像调大电力按钮一样简单。</p>
+</li>
+<li><p><strong>灵活性 &amp; 峰值处理能力</strong><br>　　在访问量剧增的情况下，应用仍然需要继续发挥作用，但是这样的突发流量并不常见；如果为以能处理这类峰值访问为标准来投入资源随时待命无疑是巨大的浪费。使用消息队列能够使关键组件顶住突发的访问压力，而不会因为突发的超负荷的请求而完全崩溃。</p>
+</li>
+<li><p><strong>可恢复性</strong><br>　　系统的一部分组件失效时，不会影响到整个系统。消息队列降低了进程间的耦合度，所以即使一个处理消息的进程挂掉，加入队列中的消息仍然可以在系统恢复后被处理。</p>
+</li>
+<li><p><strong>顺序保证</strong><br>　　在大多使用场景下，数据处理的顺序都很重要。大部分消息队列本来就是排序的，并且能保证数据会按照特定的顺序来处理。Kafka保证一个Partition内的消息的有序性。</p>
+</li>
+<li><p><strong>缓冲</strong><br>　　在任何重要的系统中，都会有需要不同的处理时间的元素。例如，加载一张图片比应用过滤器花费更少的时间。消息队列通过一个缓冲层来帮助任务最高效率的执行———写入队列的处理会尽可能的快速。该缓冲有助于控制和优化数据流经过系统的速度。</p>
+</li>
+<li><p><strong>异步通信</strong><br>　　很多时候，用户不想也不需要立即处理消息。消息队列提供了异步处理机制，允许用户把一个消息放入队列，但并不立即处理它。想向队列中放入多少消息就放多少，然后在需要的时候再去处理它们。</p>
+</li>
+</ul>
+<h2 id="常用Message_Queue对比">常用Message Queue对比</h2>
+<ul>
+<li><p><strong>RabbitMQ</strong><br>　　RabbitMQ是使用Erlang编写的一个开源的消息队列，本身支持很多的协议：AMQP，XMPP, SMTP, STOMP，也正因如此，它非常重量级，更适合于企业级的开发。同时实现了Broker构架，这意味着消息在发送给客户端时先在中心队列排队。对路由，负载均衡或者数据持久化都有很好的支持。</p>
+</li>
+<li><p><strong>Redis</strong><br>　　Redis是一个基于Key-Value对的NoSQL数据库，开发维护很活跃。虽然它是一个Key-Value数据库存储系统，但它本身支持MQ功能，所以完全可以当做一个轻量级的队列服务来使用。对于RabbitMQ和Redis的入队和出队操作，各执行100万次，每10万次记录一次执行时间。测试数据分为128Bytes、512Bytes、1K和10K四个不同大小的数据。实验表明：入队时，当数据比较小时Redis的性能要高于RabbitMQ，而如果数据大小超过了10K，Redis则慢的无法忍受；出队时，无论数据大小，Redis都表现出非常好的性能，而RabbitMQ的出队性能则远低于Redis。</p>
+</li>
+<li><p><strong>ZeroMQ</strong><br>　　ZeroMQ号称最快的消息队列系统，尤其针对大吞吐量的需求场景。ZMQ能够实现RabbitMQ不擅长的高级/复杂的队列，但是开发人员需要自己组合多种技术框架，技术上的复杂度是对这MQ能够应用成功的挑战。ZeroMQ具有一个独特的非中间件的模式，你不需要安装和运行一个消息服务器或中间件，因为你的应用程序将扮演这个服务器角色。你只需要简单的引用ZeroMQ程序库，可以使用NuGet安装，然后你就可以愉快的在应用程序之间发送消息了。但是ZeroMQ仅提供非持久性的队列，也就是说如果宕机，数据将会丢失。其中，Twitter的Storm 0.9.0以前的版本中默认使用ZeroMQ作为数据流的传输（Storm从0.9版本开始同时支持ZeroMQ和Netty作为传输模块）。</p>
+</li>
+<li><p><strong>ActiveMQ</strong><br>　　ActiveMQ是Apache下的一个子项目。 类似于ZeroMQ，它能够以代理人和点对点的技术实现队列。同时类似于RabbitMQ，它少量代码就可以高效地实现高级应用场景。</p>
+</li>
+<li><p><strong>Kafka/Jafka</strong><br>　　Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布/订阅消息队列系统，而Jafka是在Kafka之上孵化而来的，即Kafka的一个升级版。具有以下特性：快速持久化，可以在O(1)的系统开销下进行消息持久化；高吞吐，在一台普通的服务器上既可以达到10W/s的吞吐速率；完全的分布式系统，Broker、Producer、Consumer都原生自动支持分布式，自动实现负载均衡；支持Hadoop数据并行加载，对于像Hadoop的一样的日志数据和离线分析系统，但又要求实时处理的限制，这是一个可行的解决方案。Kafka通过Hadoop的并行加载机制统一了在线和离线的消息处理。Apache Kafka相对于ActiveMQ是一个非常轻量级的消息系统，除了性能非常好之外，还是一个工作良好的分布式系统。</p>
+</li>
+</ul>
+<h1 id="Kafka架构">Kafka架构</h1>
+<h2 id="Terminology">Terminology</h2>
+<ul>
+<li><strong>Broker</strong><br>　　Kafka集群包含一个或多个服务器，这种服务器被称为broker</li>
+<li><strong>Topic</strong><br>　　每条发布到Kafka集群的消息都有一个类别，这个类别被称为Topic。（物理上不同Topic的消息分开存储，逻辑上一个Topic的消息虽然保存于一个或多个broker上但用户只需指定消息的Topic即可生产或消费数据而不必关心数据存于何处）</li>
+<li><strong>Partition</strong><br>　　Parition是物理上的概念，每个Topic包含一个或多个Partition.</li>
+<li><strong>Producer</strong><br>　　负责发布消息到Kafka broker</li>
+<li><strong>Consumer</strong><br>　　消息消费者，向Kafka broker读取消息的客户端。</li>
+<li><strong>Consumer Group</strong><br>　　每个Consumer属于一个特定的Consumer Group（可为每个Consumer指定group name，若不指定group name则属于默认的group）。</li>
+</ul>
+<h2 id="Kafka拓扑结构">Kafka拓扑结构</h2>
+<p><img src="http://www.jasongj.com/img/KafkaColumn1/KafkaArchitecture.png" alt=""><br>　　如上图所示，一个典型的Kafka集群中包含若干Producer（可以是web前端产生的Page View，或者是服务器日志，系统CPU、Memory等），若干broker（Kafka支持水平扩展，一般broker数量越多，集群吞吐率越高），若干Consumer Group，以及一个<a href="http://zookeeper.apache.org/" target="_blank" rel="external">Zookeeper</a>集群。Kafka通过Zookeeper管理集群配置，选举leader，以及在Consumer Group发生变化时进行rebalance。Producer使用push模式将消息发布到broker，Consumer使用pull模式从broker订阅并消费消息。
+　　</p>
+<h2 id="Topic_&amp;_Partition">Topic &amp; Partition</h2>
+<p>　　Topic在逻辑上可以被认为是一个queue，每条消费都必须指定它的Topic，可以简单理解为必须指明把这条消息放进哪个queue里。为了使得Kafka的吞吐率可以线性提高，物理上把Topic分成一个或多个Partition，每个Partition在物理上对应一个文件夹，该文件夹下存储这个Partition的所有消息和索引文件。若创建topic1和topic2两个topic，且分别有13个和19个分区，则整个集群上会相应会生成共32个文件夹（本文所用集群共8个节点，此处topic1和topic2 replication-factor均为1），如下图所示。<br>　　<img src="http://www.jasongj.com/img/KafkaColumn1/topic-partition.png" alt=""><br>　　<br>　　每个日志文件都是一个<code>log entrie</code>序列，每个<code>log entrie</code>包含一个4字节整型数值（值为N+5），1个字节的”magic value”，4个字节的CRC校验码，其后跟N个字节的消息体。每条消息都有一个当前Partition下唯一的64字节的offset，它指明了这条消息的起始位置。磁盘上存储的消息格式如下：<br>　　message length    ：   4 bytes (value: 1+4+n)<br>　　“magic” value     ：   1 byte<br>　　crc               ：   4 bytes<br>　　payload           ：   n bytes<br>　　这个<code>log entries</code>并非由一个文件构成，而是分成多个segment，每个segment以该segment第一条消息的offset命名并以“.kafka”为后缀。另外会有一个索引文件，它标明了每个segment下包含的<code>log entry</code>的offset范围，如下图所示。<br>　　<img src="http://www.jasongj.com/img/KafkaColumn1/partition_segment.png" alt=""><br>　　<br>　　因为每条消息都被append到该Partition中，属于顺序写磁盘，因此效率非常高（经验证，顺序写磁盘效率比随机写内存还要高，这是Kafka高吞吐率的一个很重要的保证）。<br>　　<img src="http://www.jasongj.com/img/KafkaColumn1/partition.png" alt=""><br>　　<br>　　对于传统的message queue而言，一般会删除已经被消费的消息，而Kafka集群会保留所有的消息，无论其被消费与否。当然，因为磁盘限制，不可能永久保留所有数据（实际上也没必要），因此Kafka提供两种策略删除旧数据。一是基于时间，二是基于Partition文件大小。例如可以通过配置<code>$KAFKA_HOME/config/server.properties</code>，让Kafka删除一周前的数据，也可在Partition文件超过1GB时删除旧数据，配置如下所示。</p>
+<pre><code>　　
+# The minimum age of <span class="keyword">a</span> <span class="built_in">log</span> <span class="keyword">file</span> <span class="keyword">to</span> <span class="keyword">be</span> eligible <span class="keyword">for</span> deletion
+<span class="built_in">log</span>.retention.hours=<span class="number">168</span>
+# The maximum size of <span class="keyword">a</span> <span class="built_in">log</span> segment <span class="keyword">file</span>. When this size <span class="keyword">is</span> reached <span class="keyword">a</span> <span class="keyword">new</span> <span class="built_in">log</span> segment will <span class="keyword">be</span> created.
+<span class="built_in">log</span>.segment.bytes=<span class="number">1073741824</span>
+# The interval at which <span class="built_in">log</span> segments are checked <span class="keyword">to</span> see <span class="keyword">if</span> they can <span class="keyword">be</span> deleted according <span class="keyword">to</span> the retention policies
+<span class="built_in">log</span>.retention.check.interval.ms=<span class="number">300000</span>
+# If <span class="built_in">log</span>.cleaner.enable=true <span class="keyword">is</span> <span class="keyword">set</span> the cleaner will <span class="keyword">be</span> enabled <span class="built_in">and</span> individual logs can then <span class="keyword">be</span> marked <span class="keyword">for</span> <span class="built_in">log</span> compaction.
+<span class="built_in">log</span>.cleaner.enable=false
+</code></pre><p>　　<br>　　这里要注意，因为Kafka读取特定消息的时间复杂度为O(1)，即与文件大小无关，所以这里删除过期文件与提高Kafka性能无关。选择怎样的删除策略只与磁盘以及具体的需求有关。另外，Kafka会为每一个Consumer Group保留一些metadata信息——当前消费的消息的position，也即offset。这个offset由Consumer控制。正常情况下Consumer会在消费完一条消息后递增该offset。当然，Consumer也可将offset设成一个较小的值，重新消费一些消息。因为offet由Consumer控制，所以Kafka broker是无状态的，它不需要标记哪些消息被哪些消费过，也不需要通过broker去保证同一个Consumer Group只有一个Consumer能消费某一条消息，因此也就不需要锁机制，这也为Kafka的高吞吐率提供了有力保障。
+　　</p>
+<h2 id="Producer消息路由">Producer消息路由</h2>
+<p>　　Producer发送消息到broker时，会根据Paritition机制选择将其存储到哪一个Partition。如果Partition机制设置合理，所有消息可以均匀分布到不同的Partition里，这样就实现了负载均衡。如果一个Topic对应一个文件，那这个文件所在的机器I/O将会成为这个Topic的性能瓶颈，而有了Partition后，不同的消息可以并行写入不同broker的不同Partition里，极大的提高了吞吐率。可以在<code>$KAFKA_HOME/config/server.properties</code>中通过配置项<code>num.partitions</code>来指定新建Topic的默认Partition数量，也可在创建Topic时通过参数指定，同时也可以在Topic创建之后通过Kafka提供的工具修改。<br>　　<br>　　在发送一条消息时，可以指定这条消息的key，Producer根据这个key和Partition机制来判断应该将这条消息发送到哪个Parition。Paritition机制可以通过指定Producer的<code>paritition. class</code>这一参数来指定，该class必须实现<code>kafka.producer.Partitioner</code>接口。本例中如果key可以被解析为整数则将对应的整数与Partition总数取余，该消息会被发送到该数对应的Partition。（每个Parition都会有个序号,序号从0开始）</p>
+<pre><code><span class="keyword">import</span> kafka.producer.Partitioner;
+<span class="keyword">import</span> kafka.utils.VerifiableProperties;
+
+<span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JasonPartitioner</span>&lt;<span class="title">T</span>&gt; <span class="keyword">implements</span> <span class="title">Partitioner</span> </span>{
+
+    <span class="keyword">public</span> <span class="title">JasonPartitioner</span>(VerifiableProperties verifiableProperties) {}
+
+    <span class="annotation">@Override</span>
+    <span class="keyword">public</span> <span class="keyword">int</span> <span class="title">partition</span>(Object key, <span class="keyword">int</span> numPartitions) {
+        <span class="keyword">try</span> {
+            <span class="keyword">int</span> partitionNum = Integer.parseInt((String) key);
+            <span class="keyword">return</span> Math.abs(Integer.parseInt((String) key) % numPartitions);
+        } <span class="keyword">catch</span> (Exception e) {
+            <span class="keyword">return</span> Math.abs(key.hashCode() % numPartitions);
+        }
+    }
+}
+</code></pre><p>　<br>　　如果将上例中的类作为<code>partition.class</code>，并通过如下代码发送20条消息（key分别为0，1，2，3）至topic3（包含4个Partition）。
+　　</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendMessage</span>() <span class="keyword">throws</span> InterruptedException{
+　　<span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= <span class="number">5</span>; i++){
+　　      List messageList = <span class="keyword">new</span> ArrayList&lt;KeyedMessage&lt;String, String&gt;&gt;();
+　　      <span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; <span class="number">4</span>; j++）{
+　　          messageList.add(<span class="keyword">new</span> KeyedMessage&lt;String, String&gt;(<span class="string">"topic2"</span>, j+<span class="string">""</span>, <span class="string">"The "</span> + i + <span class="string">" message for key "</span> + j));
+　　      }
+　　      producer.send(messageList);
+    }
+　　producer.close();
+}
+</code></pre><p>　　则key相同的消息会被发送并存储到同一个partition里，而且key的序号正好和Partition序号相同。（Partition序号从0开始，本例中的key也从0开始）。下图所示是通过Java程序调用Consumer后打印出的消息列表。<br>　　<img src="http://www.jasongj.com/img/KafkaColumn1/partition_key.png" alt="">
+　　</p>
+<h2 id="Consumer_Group">Consumer Group</h2>
+<p>　　（本节所有描述都是基于Consumer hight level API而非low level API）。<br>　　使用Consumer high level API时，同一Topic的一条消息只能被同一个Consumer Group内的一个Consumer消费，但多个Consumer Group可同时消费这一消息。<br>　　<img src="http://www.jasongj.com/img/KafkaColumn1/consumer_group.png" alt=""><br>　　这是Kafka用来实现一个Topic消息的广播（发给所有的Consumer）和单播（发给某一个Consumer）的手段。一个Topic可以对应多个Consumer Group。如果需要实现广播，只要每个Consumer有一个独立的Group就可以了。要实现单播只要所有的Consumer在同一个Group里。用Consumer Group还可以将Consumer进行自由的分组而不需要多次发送消息到不同的Topic。<br>　　实际上，Kafka的设计理念之一就是同时提供离线处理和实时处理。根据这一特性，可以使用Storm这种实时流处理系统对消息进行实时在线处理，同时使用Hadoop这种批处理系统进行离线处理，还可以同时将数据实时备份到另一个数据中心，只需要保证这三个操作所使用的Consumer属于不同的Consumer Group即可。下图是Kafka在Linkedin的一种简化部署示意图。<br>　　<img src="http://www.jasongj.com/img/KafkaColumn1/kafka_in_linkedin.png" alt=""><br>　　<br>　　下面这个例子更清晰地展示了Kafka Consumer Group的特性。首先创建一个Topic (名为topic1，包含3个Partition)，然后创建一个属于group1的Consumer实例，并创建三个属于group2的Consumer实例，最后通过Producer向topic1发送key分别为1，2，3的消息。结果发现属于group1的Consumer收到了所有的这三条消息，同时group2中的3个Consumer分别收到了key为1，2，3的消息。如下图所示。<br>　　<img src="http://www.jasongj.com/img/KafkaColumn1/consumer_group_test.png" alt="">
+　　</p>
+<h2 id="Push_vs-_Pull_">Push vs. Pull　　</h2>
+<p>　　作为一个消息系统，Kafka遵循了传统的方式，选择由Producer向broker push消息并由Consumer从broker pull消息。一些logging-centric system，比如Facebook的<a href="https://github.com/facebookarchive/scribe" target="_blank" rel="external">Scribe</a>和Cloudera的<a href="http://flume.apache.org/" target="_blank" rel="external">Flume</a>，采用push模式。事实上，push模式和pull模式各有优劣。<br>　　push模式很难适应消费速率不同的消费者，因为消息发送速率是由broker决定的。push模式的目标是尽可能以最快速度传递消息，但是这样很容易造成Consumer来不及处理消息，典型的表现就是拒绝服务以及网络拥塞。而pull模式则可以根据Consumer的消费能力以适当的速率消费消息。<br>　　对于Kafka而言，pull模式更合适。pull模式可简化broker的设计，Consumer可自主控制消费消息的速率，同时Consumer可以自己控制消费方式——即可批量消费也可逐条消费，同时还能选择不同的提交方式从而实现不同的传输语义。
+　　</p>
+<h2 id="Kafka_delivery_guarantee">Kafka delivery guarantee</h2>
+<p>　　有这么几种可能的delivery guarantee：</p>
+<ul>
+<li><code>At most once</code> 消息可能会丢，但绝不会重复传输</li>
+<li><code>At least one</code> 消息绝不会丢，但可能会重复传输</li>
+<li><code>Exactly once</code> 每条消息肯定会被传输一次且仅传输一次，很多时候这是用户所想要的。<br>　　<br>　　当Producer向broker发送消息时，一旦这条消息被commit，因数replication的存在，它就不会丢。但是如果Producer发送数据给broker后，遇到网络问题而造成通信中断，那Producer就无法判断该条消息是否已经commit。虽然Kafka无法确定网络故障期间发生了什么，但是Producer可以生成一种类似于主键的东西，发生故障时幂等性的重试多次，这样就做到了<code>Exactly once</code>。截止到目前(Kafka 0.8.2版本，2015-03-04)，这一Feature还并未实现，有希望在Kafka未来的版本中实现。（所以目前默认情况下一条消息从Producer到broker是确保了<code>At least once</code>，可通过设置Producer异步发送实现<code>At most once</code>）。<br>　　接下来讨论的是消息从broker到Consumer的delivery guarantee语义。（仅针对Kafka consumer high level API）。Consumer在从broker读取消息后，可以选择commit，该操作会在Zookeeper中保存该Consumer在该Partition中读取的消息的offset。该Consumer下一次再读该Partition时会从下一条开始读取。如未commit，下一次读取的开始位置会跟上一次commit之后的开始位置相同。当然可以将Consumer设置为autocommit，即Consumer一旦读到数据立即自动commit。如果只讨论这一读取消息的过程，那Kafka是确保了<code>Exactly once</code>。但实际使用中应用程序并非在Consumer读取完数据就结束了，而是要进行进一步处理，而数据处理与commit的顺序在很大程度上决定了消息从broker和consumer的delivery guarantee semantic。</li>
+<li>读完消息先commit再处理消息。这种模式下，如果Consumer在commit后还没来得及处理消息就crash了，下次重新开始工作后就无法读到刚刚已提交而未处理的消息，这就对应于<code>At most once</code></li>
+<li>读完消息先处理再commit。这种模式下，如果在处理完消息之后commit之前Consumer crash了，下次重新开始工作时还会处理刚刚未commit的消息，实际上该消息已经被处理过了。这就对应于<code>At least once</code>。在很多使用场景下，消息都有一个主键，所以消息的处理往往具有幂等性，即多次处理这一条消息跟只处理一次是等效的，那就可以认为是<code>Exactly once</code>。（笔者认为这种说法比较牵强，毕竟它不是Kafka本身提供的机制，主键本身也并不能完全保证操作的幂等性。而且实际上我们说delivery guarantee 语义是讨论被处理多少次，而非处理结果怎样，因为处理方式多种多样，我们不应该把处理过程的特性——如是否幂等性，当成Kafka本身的Feature）</li>
+<li>如果一定要做到<code>Exactly once</code>，就需要协调offset和实际操作的输出。精典的做法是引入两阶段提交。如果能让offset和操作输入存在同一个地方，会更简洁和通用。这种方式可能更好，因为许多输出系统可能不支持两阶段提交。比如，Consumer拿到数据后可能把数据放到HDFS，如果把最新的offset和数据本身一起写到HDFS，那就可以保证数据的输出和offset的更新要么都完成，要么都不完成，间接实现<code>Exactly once</code>。（目前就high level API而言，offset是存于Zookeeper中的，无法存于HDFS，而low level API的offset是由自己去维护的，可以将之存于HDFS中）<br>　　总之，Kafka默认保证<code>At least once</code>，并且允许通过设置Producer异步提交来实现<code>At most once</code>。而<code>Exactly once</code>要求与外部存储系统协作，幸运的是Kafka提供的offset可以非常直接非常容易得使用这种方式。</li>
+</ul>
+<h1 id="下篇预告">下篇预告</h1>
+<p>　　下一篇将深入讲解Kafka是如何做Replication和Leader Election的。在Kafka0.8以前的版本中，如果某个broker宕机，或者磁盘出现问题，则该broker上所有partition的数据都会丢失。而Kafka0.8以后加入了Replication机制，可以将每个Partition的数据备份多份，即使某些broker宕机也能保证系统的可用性和数据的完整性。
+　　</p>
+<p>　　
+　　
+　　</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[本文介绍了Kafka的创建背景，设计目标，使用消息系统的优势以及目前流行的消息系统对比。并介绍了Kafka的架构，Producer消息路由，Consumer Group以及由其实现的不同消息分发方式，Topic & Partition，最后介绍了Kafka Consumer为何使用pull模式以及Kafka提供的三种delivery guarantee。]]>
+    
+    </summary>
+    
+      <category term="Kafka" scheme="http://www.jasongj.com/tags/Kafka/"/>
+    
+      <category term="Message Queue" scheme="http://www.jasongj.com/categories/Message-Queue/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Sql优化（一） Merge Join vs. Hash Join vs. Nested Loop]]></title>
+    <link href="http://www.jasongj.com/2015/03/07/Join1/"/>
+    <id>http://www.jasongj.com/2015/03/07/Join1/</id>
+    <published>2015-03-07T13:00:00.000Z</published>
+    <updated>2015-03-27T16:10:44.700Z</updated>
+    <content type="html"><![CDATA[<h1 id="Nested_Loop，Hash_Join，Merge_Join介绍">Nested Loop，Hash Join，Merge Join介绍</h1>
+<ul>
+<li><p>Nested Loop:<br>对于被连接的数据子集较小的情况，Nested Loop是个较好的选择。Nested Loop就是扫描一个表（外表），每读到一条记录，就根据Join字段上的索引去另一张表（内表）里面查找，若Join字段上没有索引查询优化器一般就不会选择 Nested Loop。在Nested Loop中，内表（一般是带索引的大表）被外表（也叫“驱动表”，一般为小表——不紧相对其它表为小表，而且记录数的绝对值也较小，不要求有索引）驱动，外表返回的每一行都要在内表中检索找到与它匹配的行，因此整个查询返回的结果集不能太大（大于1 万不适合）。</p>
+</li>
+<li><p>Hash Join:<br>Hash Join是做大数据集连接时的常用方式，优化器使用两个表中较小（相对较小）的表利用Join Key在内存中建立散列表，然后扫描较大的表并探测散列表，找出与Hash表匹配的行。<br>这种方式适用于较小的表完全可以放于内存中的情况，这样总成本就是访问两个表的成本之和。但是在表很大的情况下并不能完全放入内存，这时优化器会将它分割成若干不同的分区，不能放入内存的部分就把该分区写入磁盘的临时段，此时要求有较大的临时段从而尽量提高I/O 的性能。它能够很好的工作于没有索引的大表和并行查询的环境中，并提供最好的性能。大多数人都说它是Join的重型升降机。Hash Join只能应用于等值连接(如WHERE A.COL3 = B.COL4)，这是由Hash的特点决定的。</p>
+</li>
+<li><p>Merge Join:<br>通常情况下Hash Join的效果都比排序合并连接要好，然而如果两表已经被排过序，在执行排序合并连接时不需要再排序了，这时Merge Join的性能会优于Hash Join。Merge join的操作通常分三步：<br>　　1. 对连接的每个表做table access full;<br>　　2. 对table access full的结果进行排序。<br>　　3. 进行merge join对排序结果进行合并。<br>在全表扫描比索引范围扫描再进行表访问更可取的情况下，Merge Join会比Nested Loop性能更佳。当表特别小或特别巨大的时候，实行全表访问可能会比索引范围扫描更有效。Merge Join的性能开销几乎都在前两步。Merge Join可适于于非等值Join（&gt;，&lt;，&gt;=，&lt;=，但是不包含!=，也即&lt;&gt;）</p>
+</li>
+</ul>
+<h1 id="Nested_Loop，Hash_JOin，Merge_Join对比">Nested Loop，Hash JOin，Merge Join对比</h1>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>Nested Loop</th>
+<th>Hash Join</th>
+<th>Merge Join</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>使用条件</td>
+<td>任何条件</td>
+<td>等值连接（=）</td>
+<td>等值或非等值连接(&gt;，&lt;，=，&gt;=，&lt;=)，‘&lt;&gt;’除外</td>
+</tr>
+<tr>
+<td>相关资源</td>
+<td>CPU、磁盘I/O</td>
+<td>内存、临时空间</td>
+<td>内存、临时空间</td>
+</tr>
+<tr>
+<td>特点</td>
+<td>当有高选择性索引或进行限制性搜索时效率比较高，能够快速返回第一次的搜索结果。</td>
+<td>当缺乏索引或者索引条件模糊时，Hash Join比Nested Loop有效。通常比Merge Join快。在数据仓库环境下，如果表的纪录数多，效率高。</td>
+<td>当缺乏索引或者索引条件模糊时，Merge Join比Nested Loop有效。非等值连接时，Merge Join比Hash Join更有效</td>
+</tr>
+<tr>
+<td>缺点</td>
+<td>当索引丢失或者查询条件限制不够时，效率很低；当表的纪录数多时，效率低。</td>
+<td>为建立哈希表，需要大量内存。第一次的结果返回较慢。</td>
+<td>所有的表都需要排序。它为最优化的吞吐量而设计，并且在结果没有全部找到前不返回数据。</td>
+</tr>
+</tbody>
+</table>
+<h1 id="实验">实验</h1>
+<p>本文所做实验均基于PostgreSQL 9.3.5平台</p>
+<h2 id="小于万条记录小表与大表Join">小于万条记录小表与大表Join</h2>
+<p>一张记录数1万以下的小表nbar.mse_test_test，一张大表165万条记录的大表nbar.nbar_test，大表上建有索引</p>
+<h3 id="Query_1:等值Join"><strong>Query 1:</strong>等值Join</h3>
+<pre><code><span class="operator"><span class="keyword">select</span> 
+    <span class="keyword">count</span>(*)
+<span class="keyword">from</span> 
+    mse_test_test, 
+    nbar_test 
+<span class="keyword">where</span> 
+    mse_test_test.client_key = nbar_test.client_key;</span>
+</code></pre><h4 id="Query_1_Test_1：_查询优化器自动选择Nested_Loop，耗时784-845_ms"><strong>Query 1 Test 1：</strong> 查询优化器自动选择Nested Loop，耗时784.845 ms</h4>
+<p><img src="http://www.jasongj.com/img/Join/Nest_Nest_Explain.png" alt=""></p>
+<p>　　如下图所示，执行器将小表mse_test_test作为外表（驱动表），对于其中的每条记录，通过大表（nbar_test）上的索引匹配相应记录。</p>
+<p> <img src="http://www.jasongj.com/img/Join/Nest_Nest.png" alt=""></p>
+<h4 id="Query_1_Test_2：强制使用Hash_Join，耗时1731-836ms"><strong>Query 1 Test 2：</strong>强制使用Hash Join，耗时1731.836ms</h4>
+<p><img src="http://www.jasongj.com/img/Join/Nest_Hash_Explain.png" alt=""></p>
+<p>　　如下图所示，执行器选择一张表将其映射成散列表，再遍历另外一张表并从散列表中匹配相应记录。<br><img src="http://www.jasongj.com/img/Join/Nest_Hash.png" alt=""></p>
+<h4 id="Query_1_Test_3：强制使用Merge_Join，耗时4956-768_ms"><strong>Query 1 Test 3：</strong>强制使用Merge Join，耗时4956.768 ms</h4>
+<p><img src="http://www.jasongj.com/img/Join/Nest_Merge_Explain.png" alt=""> </p>
+<p>　　如下图所示，执行器先分别对mse_test_test和nbar_test按client_key排序。其中mse_test_test使用快速排序，而nbar_test使用external merge排序，之后对二者进行Merge Join。<br><img src="http://www.jasongj.com/img/Join/Nest_Merge.png" alt=""></p>
+<h4 id="Query_1_总结_1_："><strong>Query 1 总结 1 ：</strong></h4>
+<p>通过对比<code>Query 1 Test 1</code>，<code>Query 1 Test 2</code>，<code>Query 1 Test 3</code>可以看出Nested Loop适用于结果集很小（一般要求小于一万条），并且内表在Join字段上建有索引（这点非常非常非常重要）。</p>
+<ul>
+<li><strong>在大表上创建聚簇索引</strong></li>
+</ul>
+<h4 id="Query_1_Test_4：强制使用Merge_Join，耗时1660-228_ms"><strong>Query 1 Test 4：</strong>强制使用Merge Join，耗时1660.228 ms</h4>
+<p><img src="http://www.jasongj.com/img/Join/Nest_Merge_Cluster_Explain.png" alt=""></p>
+<p>　　如下图所示，执行器通过聚簇索引对大表（nbar_test）排序，直接通过快排对无索引的小表（mse_test_test）排序，之后对二才进行Merge Join。<br><img src="http://www.jasongj.com/img/Join/Nest_Merge_Cluster.png" alt=""></p>
+<h4 id="Query_1_总结_2："><strong>Query 1 总结 2：</strong></h4>
+<p>通过对比<code>Query 1 Test 3</code>和<code>Query 1 Test 4</code>可以看出，Merge Join的主要开销是排序开销，如果能通过建立聚簇索引（如果Query必须显示排序），可以极大提高Merge Join的性能。从这两个实验可以看出，创建聚簇索引后，查询时间从4956.768 ms缩减到了1815.238 ms。</p>
+<ul>
+<li><strong>在两表上同时创建聚簇索引</strong></li>
+</ul>
+<h4 id="Query_1_Test_5：强制使用Merge_Join，耗时2575-498_ms。"><strong>Query 1 Test 5：</strong>强制使用Merge Join，耗时2575.498 ms。</h4>
+<p><img src="http://www.jasongj.com/img/Join/Nest_Merge_Cluster_Cluster_Explain.png" alt=""></p>
+<p>　　如下图所示，执行器通过聚簇索引对大表（nbar_test）和小表（mse_test_test）排序，之后对二才进行Merge Join。<br><img src="http://www.jasongj.com/img/Join/Nest_Merge_Cluster_Cluster.png" alt=""></p>
+<h4 id="Query_1_总结_3："><strong>Query 1 总结 3：</strong></h4>
+<p>对比<code>Query 1 Test 4</code>和<code>Query 1 Test 5</code>，可以看出二者唯一的不同在于对小表（mse_test_test）的访问方式不同，前者使用快排，后者因为聚簇索引的存在而使用Index Only Scan，在表数据量比较小的情况下前者比后者效率更高。由此可看出如果通过索引排序再查找相应的记录比直接在原记录上排序效率还低，则直接在原记录上排序后Merge Join效率更高。</p>
+<ul>
+<li><p><strong>删除nbar_test上的索引</strong></p>
+<h4 id="Query_1_Test_6：强制使用Hash_Join，耗时1815-238_ms"><strong>Query 1 Test 6：</strong>强制使用Hash Join，耗时1815.238 ms</h4>
+<p>时间与<code>Query 1 Test 2</code>几乎相等。<br><img src="http://www.jasongj.com/img/Join/Nest_Hash_Explain_No_Index.png" alt=""> </p>
+<p> 如下图所示，与<code>Query 1 Test 2</code>相同，执行器选择一张表将其映射成散列表，再遍历另外一张表并从散列表中匹配相应记录。<br><img src="http://www.jasongj.com/img/Join/Nest_Hash_No_Index.png" alt=""></p>
+</li>
+</ul>
+<h4 id="Query_1_总结_4_："><strong>Query 1 总结 4 ：</strong></h4>
+<p>通过对比<code>Query 1 Test 2</code>，<code>Query 1 Test 6</code>可以看出Hash Join不要求表在Join字段上建立索引。</p>
+<h2 id="两大表Join">两大表Join</h2>
+<p>mse_test约100万条记录，nbar_test约165万条记录</p>
+<h3 id="Query_2:不等值Join"><strong>Query 2:</strong>不等值Join</h3>
+<pre><code><span class="operator"><span class="keyword">select</span> 
+    <span class="keyword">count</span>(*)
+<span class="keyword">from</span> 
+    mse_test, 
+    nbar_test 
+<span class="keyword">where</span> 
+    mse_test.client_key = nbar_test.client_key
+<span class="keyword">and</span>
+    mse_test.client_key <span class="keyword">between</span> <span class="number">100000</span> <span class="keyword">and</span> <span class="number">300000</span>;</span>
+</code></pre><h4 id="Query_2_Test_1：强制使用Hash_Join，失败"><strong>Query 2 Test 1：</strong>强制使用Hash Join，失败</h4>
+<p>本次实验通过设置<code>enable_hashjoin=true</code>，<code>enable_nestloop=false</code>，<code>enable_mergejoin=false</code>来试图强制使用Hash Join，但是失败了。<br><img src="http://www.jasongj.com/img/Join/Query2_Test1_Explain.png" alt=""></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[本文介绍了Merge Join，Hash Join，Nested Loop这三种数据库Join方式的工作原理，并通过实验进一步说明了其适用范围。]]>
+    
+    </summary>
+    
+      <category term="PostgreSQL" scheme="http://www.jasongj.com/tags/PostgreSQL/"/>
+    
+      <category term="Database" scheme="http://www.jasongj.com/categories/Database/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Java高性能异步处理框架 Disruptor]]></title>
+    <link href="http://www.jasongj.com/2015/01/25/Disruptor%E9%AB%98%E6%80%A7%E8%83%BD%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86%E6%A1%86%E6%9E%B6/"/>
+    <id>http://www.jasongj.com/2015/01/25/Disruptor高性能异步处理框架/</id>
+    <published>2015-01-25T13:44:15.000Z</published>
+    <updated>2015-02-15T01:39:39.581Z</updated>
+    <content type="html"><![CDATA[<h1 id="Disruptor简介">Disruptor简介</h1>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h1 id="Disruptor简介">Disruptor简介</h1>
+]]>
+    </summary>
+    
+      <category term="Disruptor" scheme="http://www.jasongj.com/tags/Disruptor/"/>
+    
+      <category term="Message Queue" scheme="http://www.jasongj.com/categories/Message-Queue/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Kafka深度解析]]></title>
+    <link href="http://www.jasongj.com/2015/01/02/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/"/>
+    <id>http://www.jasongj.com/2015/01/02/Kafka深度解析/</id>
+    <published>2015-01-02T07:30:25.000Z</published>
+    <updated>2015-03-27T15:35:06.883Z</updated>
+    <content type="html"><![CDATA[<h1 id="背景介绍">背景介绍</h1>
+<h2 id="Kafka简介">Kafka简介</h2>
+<p>　　Kafka是一种分布式的，基于发布/订阅的消息系统。主要设计目标如下：</p>
+<ul>
+<li>以时间复杂度为O(1)的方式提供消息持久化能力，即使对TB级以上数据也能保证常数时间的访问性能</li>
+<li>高吞吐率。即使在非常廉价的商用机器上也能做到单机支持每秒100K条消息的传输</li>
+<li>支持Kafka Server间的消息分区，及分布式消费，同时保证每个partition内的消息顺序传输</li>
+<li>同时支持离线数据处理和实时数据处理</li>
+</ul>
+<h2 id="为什么要用消息系统">为什么要用消息系统</h2>
+<ul>
+<li><p><b>解耦</b><br>在项目启动之初来预测将来项目会碰到什么需求，是极其困难的。消息队列在处理过程中间插入了一个隐含的、基于数据的接口层，两边的处理过程都要实现这一接口。这允许你独立的扩展或修改两边的处理过程，只要确保它们遵守同样的接口约束</p>
+</li>
+<li><p><strong>冗余</strong><br>有些情况下，处理数据的过程会失败。除非数据被持久化，否则将造成丢失。消息队列把数据进行持久化直到它们已经被完全处理，通过这一方式规避了数据丢失风险。在被许多消息队列所采用的”插入-获取-删除”范式中，在把一个消息从队列中删除之前，需要你的处理过程明确的指出该消息已经被处理完毕，确保你的数据被安全的保存直到你使用完毕。</p>
+</li>
+<li><p><strong>扩展性</strong><br>因为消息队列解耦了你的处理过程，所以增大消息入队和处理的频率是很容易的；只要另外增加处理过程即可。不需要改变代码、不需要调节参数。扩展就像调大电力按钮一样简单。</p>
+</li>
+<li><p><strong>灵活性 &amp; 峰值处理能力</strong><br>在访问量剧增的情况下，应用仍然需要继续发挥作用，但是这样的突发流量并不常见；如果为以能处理这类峰值访问为标准来投入资源随时待命无疑是巨大的浪费。使用消息队列能够使关键组件顶住突发的访问压力，而不会因为突发的超负荷的请求而完全崩溃。</p>
+</li>
+<li><p><strong>可恢复性</strong><br>当体系的一部分组件失效，不会影响到整个系统。消息队列降低了进程间的耦合度，所以即使一个处理消息的进程挂掉，加入队列中的消息仍然可以在系统恢复后被处理。而这种允许重试或者延后处理请求的能力通常是造就一个略感不便的用户和一个沮丧透顶的用户之间的区别。</p>
+</li>
+<li><p><strong>送达保证</strong><br>消息队列提供的冗余机制保证了消息能被实际的处理，只要一个进程读取了该队列即可。在此基础上，IronMQ提供了一个”只送达一次”保证。无论有多少进程在从队列中领取数据，每一个消息只能被处理一次。这之所以成为可能，是因为获取一个消息只是”预定”了这个消息，暂时把它移出了队列。除非客户端明确的表示已经处理完了这个消息，否则这个消息会被放回队列中去，在一段可配置的时间之后可再次被处理。</p>
+</li>
+</ul>
+<ul>
+<li><p><strong>顺序保证</strong><br>在大多使用场景下，数据处理的顺序都很重要。消息队列本来就是排序的，并且能保证数据会按照特定的顺序来处理。IronMO保证消息通过FIFO（先进先出）的顺序来处理，因此消息在队列中的位置就是从队列中检索他们的位置。</p>
+</li>
+<li><p><strong>缓冲</strong><br>在任何重要的系统中，都会有需要不同的处理时间的元素。例如,加载一张图片比应用过滤器花费更少的时间。消息队列通过一个缓冲层来帮助任务最高效率的执行—写入队列的处理会尽可能的快速，而不受从队列读的预备处理的约束。该缓冲有助于控制和优化数据流经过系统的速度。</p>
+</li>
+<li><p><strong>理解数据流</strong><br>在一个分布式系统里，要得到一个关于用户操作会用多长时间及其原因的总体印象，是个巨大的挑战。消息队列通过消息被处理的频率，来方便的辅助确定那些表现不佳的处理过程或领域，这些地方的数据流都不够优化。</p>
+</li>
+<li><p><strong>异步通信</strong><br>很多时候，你不想也不需要立即处理消息。消息队列提供了异步处理机制，允许你把一个消息放入队列，但并不立即处理它。你想向队列中放入多少消息就放多少，然后在你乐意的时候再去处理它们。</p>
+</li>
+</ul>
+<h2 id="常用Message_Queue对比">常用Message Queue对比</h2>
+<ul>
+<li><p><strong>RabbitMQ</strong><br>RabbitMQ是使用Erlang编写的一个开源的消息队列，本身支持很多的协议：AMQP，XMPP, SMTP, STOMP，也正因如此，它非常重量级，更适合于企业级的开发。同时实现了Broker构架，这意味着消息在发送给客户端时先在中心队列排队。对路由，负载均衡或者数据持久化都有很好的支持。</p>
+</li>
+<li><p><strong>Redis</strong><br>Redis是一个基于Key-Value对的NoSQL数据库，开发维护很活跃。虽然它是一个Key-Value数据库存储系统，但它本身支持MQ功能，所以完全可以当做一个轻量级的队列服务来使用。对于RabbitMQ和Redis的入队和出队操作，各执行100万次，每10万次记录一次执行时间。测试数据分为128Bytes、512Bytes、1K和10K四个不同大小的数据。实验表明：入队时，当数据比较小时Redis的性能要高于RabbitMQ，而如果数据大小超过了10K，Redis则慢的无法忍受；出队时，无论数据大小，Redis都表现出非常好的性能，而RabbitMQ的出队性能则远低于Redis。</p>
+</li>
+<li><p><strong>ZeroMQ</strong><br>ZeroMQ号称最快的消息队列系统，尤其针对大吞吐量的需求场景。ZMQ能够实现RabbitMQ不擅长的高级/复杂的队列，但是开发人员需要自己组合多种技术框架，技术上的复杂度是对这MQ能够应用成功的挑战。ZeroMQ具有一个独特的非中间件的模式，你不需要安装和运行一个消息服务器或中间件，因为你的应用程序将扮演了这个服务角色。你只需要简单的引用ZeroMQ程序库，可以使用NuGet安装，然后你就可以愉快的在应用程序之间发送消息了。但是ZeroMQ仅提供非持久性的队列，也就是说如果宕机，数据将会丢失。其中，Twitter的Storm 0.9.0以前的版本中默认使用ZeroMQ作为数据流的传输（Storm从0.9版本开始同时支持ZeroMQ和Netty作为传输模块）。</p>
+</li>
+<li><p><strong>ActiveMQ</strong><br>ActiveMQ是Apache下的一个子项目。 类似于ZeroMQ，它能够以代理人和点对点的技术实现队列。同时类似于RabbitMQ，它少量代码就可以高效地实现高级应用场景。</p>
+</li>
+<li><p><strong>Kafka/Jafka</strong><br>Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布/订阅消息队列系统，而Jafka是在Kafka之上孵化而来的，即Kafka的一个升级版。具有以下特性：快速持久化，可以在O(1)的系统开销下进行消息持久化；高吞吐，在一台普通的服务器上既可以达到10W/s的吞吐速率；完全的分布式系统，Broker、Producer、Consumer都原生自动支持分布式，自动实现负载均衡；支持Hadoop数据并行加载，对于像Hadoop的一样的日志数据和离线分析系统，但又要求实时处理的限制，这是一个可行的解决方案。Kafka通过Hadoop的并行加载机制来统一了在线和离线的消息处理。Apache Kafka相对于ActiveMQ是一个非常轻量级的消息系统，除了性能非常好之外，还是一个工作良好的分布式系统。</p>
+</li>
+</ul>
+<h1 id="Kafka解析">Kafka解析</h1>
+<h2 id="Terminology">Terminology</h2>
+<ul>
+<li><strong>Broker</strong><br>Kafka集群包含一个或多个服务器，这种服务器被称为broker</li>
+<li><strong>Topic</strong><br>每条发布到Kafka集群的消息都有一个类别，这个类别被称为topic。（物理上不同topic的消息分开存储，逻辑上一个topic的消息虽然保存于一个或多个broker上但用户只需指定消息的topic即可生产或消费数据而不必关心数据存于何处）</li>
+<li><strong>Partition</strong><br>parition是物理上的概念，每个topic包含一个或多个partition，创建topic时可指定parition数量。每个partition对应于一个文件夹，该文件夹下存储该partition的数据和索引文件</li>
+<li><strong>Producer</strong><br>负责发布消息到Kafka broker</li>
+<li><strong>Consumer</strong><br>消费消息。每个consumer属于一个特定的consumer group（可为每个consumer指定group name，若不指定group name则属于默认的group）。使用consumer high level API时，同一topic的一条消息只能被同一个consumer group内的一个consumer消费，但多个consumer group可同时消费这一消息。</li>
+</ul>
+<h2 id="Kafka架构">Kafka架构</h2>
+<p><img src="/img/Kafka深度解析/KafkaArchitecture.png" alt=""><br>　　如上图所示，一个典型的kafka集群中包含若干producer（可以是web前端产生的page view，或者是服务器日志，系统CPU、memory等），若干broker（Kafka支持水平扩展，一般broker数量越多，集群吞吐率越高），若干consumer group，以及一个<a href="http://zookeeper.apache.org/" target="_blank" rel="external">Zookeeper</a>集群。Kafka通过Zookeeper管理集群配置，选举leader，以及在consumer group发生变化时进行rebalance。producer使用push模式将消息发布到broker，consumer使用pull模式从broker订阅并消费消息。
+　　</p>
+<h3 id="Push_vs-_Pull">Push vs. Pull</h3>
+<p>　　作为一个messaging system，Kafka遵循了传统的方式，选择由producer向broker push消息并由consumer从broker pull消息。一些logging-centric system，比如Facebook的<a href="https://github.com/facebookarchive/scribe" target="_blank" rel="external">Scribe</a>和Cloudera的<a href="http://flume.apache.org/" target="_blank" rel="external">Flume</a>,采用非常不同的push模式。事实上，push模式和pull模式各有优劣。<br>　　push模式很难适应消费速率不同的消费者，因为消息发送速率是由broker决定的。push模式的目标是尽可能以最快速度传递消息，但是这样很容易造成consumer来不及处理消息，典型的表现就是拒绝服务以及网络拥塞。而pull模式则可以根据consumer的消费能力以适当的速率消费消息。</p>
+<h3 id="Topic_&amp;_Partition">Topic &amp; Partition</h3>
+<p>　　Topic在逻辑上可以被认为是一个queue。每条消费都必须指定它的topic，可以简单理解为必须指明把这条消息放进哪个queue里。为了使得Kafka的吞吐率可以水平扩展，物理上把topic分成一个或多个partition，每个partition在物理上对应一个文件夹，该文件夹下存储这个partition的所有消息和索引文件。<br>　　<img src="/img/Kafka深度解析/topic-partition.png" alt=""><br>　　每个日志文件都是“log entries”序列，每一个<code>log entry</code>包含一个4字节整型数（值为N），其后跟N个字节的消息体。每条消息都有一个当前partition下唯一的64字节的offset，它指明了这条消息的起始位置。磁盘上存储的消息格式如下：<br>　　message length    ：   4 bytes (value: 1+4+n)<br>　　“magic” value         ：   1 byte<br>　　crc               ：   4 bytes<br>　　payload           ：   n bytes<br>　　这个“log entries”并非由一个文件构成，而是分成多个segment，每个segment名为该segment第一条消息的offset和“.kafka”组成。另外会有一个索引文件，它标明了每个segment下包含的<code>log entry</code>的offset范围，如下图所示。<br>　　<img src="/img/Kafka深度解析/partition_segment.png" alt=""><br>　　因为每条消息都被append到该partition中，是顺序写磁盘，因此效率非常高（经验证，顺序写磁盘效率比随机写内存还要高，这是Kafka高吞吐率的一个很重要的保证）。<br>　　<img src="/img/Kafka深度解析/partition.png" alt=""><br>　　每一条消息被发送到broker时，会根据paritition规则选择被存储到哪一个partition。如果partition规则设置的合理，所有消息可以均匀分布到不同的partition里，这样就实现了水平扩展。（如果一个topic对应一个文件，那这个文件所在的机器I/O将会成为这个topic的性能瓶颈，而partition解决了这个问题）。在创建topic时可以在<code>$KAFKA_HOME/config/server.properties</code>中指定这个partition的数量(如下所示)，当然也可以在topic创建之后去修改parition数量。</p>
+<pre><code><span class="comment"># The default number of log partitions per topic. More partitions allow greater</span>
+<span class="comment"># parallelism for consumption, but this will also result in more files across</span>
+<span class="comment"># the brokers.</span>
+num.<span class="variable">partitions=</span><span class="number">3</span>
+</code></pre><p>　　在发送一条消息时，可以指定这条消息的key，producer根据这个key和partition机制来判断将这条消息发送到哪个parition。paritition机制可以通过指定producer的paritition. class这一参数来指定，该class必须实现<code>kafka.producer.Partitioner</code>接口。本例中如果key可以被解析为整数则将对应的整数与partition总数取余，该消息会被发送到该数对应的partition。（每个parition都会有个序号）</p>
+<pre><code><span class="keyword">import</span> kafka.producer.Partitioner;
+<span class="keyword">import</span> kafka.utils.VerifiableProperties;
+
+<span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JasonPartitioner</span>&lt;<span class="title">T</span>&gt; <span class="keyword">implements</span> <span class="title">Partitioner</span> </span>{
+
+    <span class="keyword">public</span> <span class="title">JasonPartitioner</span>(VerifiableProperties verifiableProperties) {}
+
+    <span class="annotation">@Override</span>
+    <span class="keyword">public</span> <span class="keyword">int</span> <span class="title">partition</span>(Object key, <span class="keyword">int</span> numPartitions) {
+        <span class="keyword">try</span> {
+            <span class="keyword">int</span> partitionNum = Integer.parseInt((String) key);
+            <span class="keyword">return</span> Math.abs(Integer.parseInt((String) key) % numPartitions);
+        } <span class="keyword">catch</span> (Exception e) {
+            <span class="keyword">return</span> Math.abs(key.hashCode() % numPartitions);
+        }
+    }
+}
+</code></pre><p>　<br>　　如果将上例中的class作为partition.class，并通过如下代码发送20条消息（key分别为0，1，2，3）至topic2（包含4个partition）。
+　　</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendMessage</span>() <span class="keyword">throws</span> InterruptedException{
+　　<span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= <span class="number">5</span>; i++){
+　　      List messageList = <span class="keyword">new</span> ArrayList&lt;KeyedMessage&lt;String, String&gt;&gt;();
+　　      <span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; <span class="number">4</span>; j++）{
+　　          messageList.add(<span class="keyword">new</span> KeyedMessage&lt;String, String&gt;(<span class="string">"topic2"</span>, j+<span class="string">""</span>, <span class="string">"The "</span> + i + <span class="string">" message for key "</span> + j));
+　　      }
+　　      producer.send(messageList);
+    }
+　　producer.close();
+}
+</code></pre><p>　　则key相同的消息会被发送并存储到同一个partition里，而且key的序号正好和partition序号相同。（partition序号从0开始，本例中的key也正好从0开始）。如下图所示。<br>　　<img src="/img/Kafka深度解析/partition_key.png" alt=""><br>　　对于传统的message queue而言，一般会删除已经被消费的消息，而Kafka集群会保留所有的消息，无论其被消费与否。当然，因为磁盘限制，不可能永久保留所有数据（实际上也没必要），因此Kafka提供两种策略去删除旧数据。一是基于时间，二是基于partition文件大小。例如可以通过配置<code>$KAFKA_HOME/config/server.properties</code>，让Kafka删除一周前的数据，也可通过配置让Kafka在partition文件超过1GB时删除旧数据，如下所示。</p>
+<pre><code>　　<span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">##### Log Retention Policy ###</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">##</span>
+
+<span class="comment"># The following configurations control the disposal of log segments. The policy can</span>
+<span class="comment"># be set to delete segments after a period of time, or after a given size has accumulated.</span>
+<span class="comment"># A segment will be deleted whenever *either* of these criteria are met. Deletion always happens</span>
+<span class="comment"># from the end of the log.</span>
+
+<span class="comment"># The minimum age of a log file to be eligible for deletion</span>
+log.retention.hours=<span class="number">168</span>
+
+<span class="comment"># A size-based retention policy for logs. Segments are pruned from the log as long as the remaining</span>
+<span class="comment"># segments don't drop below log.retention.bytes.</span>
+<span class="comment">#log.retention.bytes=1073741824</span>
+
+<span class="comment"># The maximum size of a log segment file. When this size is reached a new log segment will be created.</span>
+log.segment.bytes=<span class="number">1073741824</span>
+
+<span class="comment"># The interval at which log segments are checked to see if they can be deleted according</span>
+<span class="comment"># to the retention policies</span>
+log.retention.check.interval.ms=<span class="number">300000</span>
+
+<span class="comment"># By default the log cleaner is disabled and the log retention policy will default to </span>
+<span class="comment">#just delete segments after their retention expires.</span>
+<span class="comment"># If log.cleaner.enable=true is set the cleaner will be enabled and individual logs </span>
+<span class="comment">#can then be marked for log compaction.</span>
+log.cleaner.enable=<span class="literal">false</span>
+</code></pre><p>　　这里要注意，因为Kafka读取特定消息的时间复杂度为O(1)，即与文件大小无关，所以这里删除文件与Kafka性能无关，选择怎样的删除策略只与磁盘以及具体的需求有关。另外，Kafka会为每一个consumer group保留一些metadata信息—当前消费的消息的position，也即offset。这个offset由consumer控制。正常情况下consumer会在消费完一条消息后线性增加这个offset。当然，consumer也可将offset设成一个较小的值，重新消费一些消息。因为offet由consumer控制，所以Kafka broker是无状态的，它不需要标记哪些消息被哪些consumer过，不需要通过broker去保证同一个consumer group只有一个consumer能消费某一条消息，因此也就不需要锁机制，这也为Kafka的高吞吐率提供了有力保障。
+　　
+　　</p>
+<h3 id="Replication_&amp;_Leader_election">Replication &amp; Leader election</h3>
+<p>　　Kafka从0.8开始提供partition级别的replication，replication的数量可在<code>$KAFKA_HOME/config/server.properties</code>中配置。</p>
+<pre><code><span class="default"><span class="keyword">default</span>.replication.factor = 1</span>
+</code></pre><p>　　该 Replication与leader election配合提供了自动的failover机制。replication对Kafka的吞吐率是有一定影响的，但极大的增强了可用性。默认情况下，Kafka的replication数量为1。　　每个partition都有一个唯一的leader，所有的读写操作都在leader上完成，leader批量从leader上pull数据。一般情况下partition的数量大于等于broker的数量，并且所有partition的leader均匀分布在broker上。follower上的日志和其leader上的完全一样。<br>　　和大部分分布式系统一样，Kakfa处理失败需要明确定义一个broker是否alive。对于Kafka而言，Kafka存活包含两个条件，一是它必须维护与Zookeeper的session(这个通过Zookeeper的heartbeat机制来实现)。二是follower必须能够及时将leader的writing复制过来，不能“落后太多”。<br>　　leader会track“in sync”的node list。如果一个follower宕机，或者落后太多，leader将把它从”in sync” list中移除。这里所描述的“落后太多”指follower复制的消息落后于leader后的条数超过预定值，该值可在<code>$KAFKA_HOME/config/server.properties</code>中配置</p>
+<pre><code><span class="comment">#If a replica falls more than this many messages behind the leader, the leader will remove the follower from ISR and treat it as dead</span>
+replica.lag.<span class="built_in">max</span>.messages=<span class="number">4000</span>
+
+<span class="comment">#If a follower hasn't sent any fetch requests for this window of time, the leader will remove the follower from ISR (in-sync replicas) and treat it as dead</span>
+replica.lag.<span class="built_in">time</span>.<span class="built_in">max</span>.ms=<span class="number">10000</span>  
+</code></pre><p>　　需要说明的是，Kafka只解决”fail/recover”，不处理“Byzantine”（“拜占庭”）问题。<br>　　一条消息只有被“in sync” list里的所有follower都从leader复制过去才会被认为已提交。这样就避免了部分数据被写进了leader，还没来得及被任何follower复制就宕机了，而造成数据丢失（consumer无法消费这些数据）。而对于producer而言，它可以选择是否等待消息commit，这可以通过<code>request.required.acks</code>来设置。这种机制确保了只要“in sync” list有一个或以上的flollower，一条被commit的消息就不会丢失。<br>　　这里的复制机制即不是同步复制，也不是单纯的异步复制。事实上，同步复制要求“活着的”follower都复制完，这条消息才会被认为commit，这种复制方式极大的影响了吞吐率（高吞吐率是Kafka非常重要的一个特性）。而异步复制方式下，follower异步的从leader复制数据，数据只要被leader写入log就被认为已经commit，这种情况下如果follwer都落后于leader，而leader突然宕机，则会丢失数据。而Kafka的这种使用“in sync” list的方式则很好的均衡了确保数据不丢失以及吞吐率。follower可以批量的从leader复制数据，这样极大的提高复制性能（批量写磁盘），极大减少了follower与leader的差距（前文有说到，只要follower落后leader不太远，则被认为在“in sync” list里）。<br>　　<br>　　上文说明了Kafka是如何做replication的，另外一个很重要的问题是当leader宕机了，怎样在follower中选举出新的leader。因为follower可能落后许多或者crash了，所以必须确保选择“最新”的follower作为新的leader。一个基本的原则就是，如果leader不在了，新的leader必须拥有原来的leader commit的所有消息。这就需要作一个折衷，如果leader在标明一条消息被commit前等待更多的follower确认，那在它die之后就有更多的follower可以作为新的leader，但这也会造成吞吐率的下降。<br>　　一种非常常用的选举leader的方式是“majority vote”（“少数服从多数”），但Kafka并未采用这种方式。这种模式下，如果我们有2f+1个replica（包含leader和follower），那在commit之前必须保证有f+1个replica复制完消息，为了保证正确选出新的leader，fail的replica不能超过f个。因为在剩下的任意f+1个replica里，至少有一个replica包含有最新的所有消息。这种方式有个很大的优势，系统的latency只取决于最快的几台server，也就是说，如果replication factor是3，那latency就取决于最快的那个follower而非最慢那个。majority vote也有一些劣势，为了保证leader election的正常进行，它所能容忍的fail的follower个数比较少。如果要容忍1个follower挂掉，必须要有3个以上的replica，如果要容忍2个follower挂掉，必须要有5个以上的replica。也就是说，在生产环境下为了保证较高的容错程度，必须要有大量的replica，而大量的replica又会在大数据量下导致性能的急剧下降。这就是这种算法更多用在<a href="http://zookeeper.apache.org/" target="_blank" rel="external">Zookeeper</a>这种共享集群配置的系统中而很少在需要存储大量数据的系统中使用的原因。例如HDFS的HA feature是基于<a href="http://blog.cloudera.com/blog/2012/10/quorum-based-journaling-in-cdh4-1" target="_blank" rel="external">majority-vote-based journal</a>，但是它的数据存储并没有使用这种expensive的方式。<br>　　实际上，leader election算法非常多，比如Zookeper的<a href="http://web.stanford.edu/class/cs347/reading/zab.pdf" target="_blank" rel="external">Zab</a>, <a href="https://ramcloud.stanford.edu/wiki/download/attachments/11370504/raft.pdf" target="_blank" rel="external">Raft</a>和<a href="http://pmg.csail.mit.edu/papers/vr-revisited.pdf" target="_blank" rel="external">Viewstamped Replication</a>。而Kafka所使用的leader election算法更像微软的<a href="http://research.microsoft.com/apps/pubs/default.aspx?id=66814" target="_blank" rel="external">PacificA</a>算法。<br>　　Kafka在Zookeeper中动态维护了一个ISR（in-sync replicas） set，这个set里的所有replica都跟上了leader，只有ISR里的成员才有被选为leader的可能。在这种模式下，对于f+1个replica，一个Kafka topic能在保证不丢失已经ommit的消息的前提下容忍f个replica的失败。在大多数使用场景中，这种模式是非常有利的。事实上，为了容忍f个replica的失败，majority vote和ISR在commit前需要等待的replica数量是一样的，但是ISR需要的总的replica的个数几乎是majority vote的一半。<br>　　虽然majority vote与ISR相比有不需等待最慢的server这一优势，但是Kafka作者认为Kafka可以通过producer选择是否被commit阻塞来改善这一问题，并且节省下来的replica和磁盘使得ISR模式仍然值得。<br>　　<br>　　上文提到，在ISR中至少有一个follower时，Kafka可以确保已经commit的数据不丢失，但如果某一个partition的所有replica都挂了，就无法保证数据不丢失了。这种情况下有两种可行的方案：</p>
+<ul>
+<li>等待ISR中的任一个replica“活”过来，并且选它作为leader</li>
+<li>选择第一个“活”过来的replica（不一定是ISR中的）作为leader</li>
+</ul>
+<p>　　这就需要在可用性和一致性当中作出一个简单的平衡。如果一定要等待ISR中的replica“活”过来，那不可用的时间就可能会相对较长。而且如果ISR中的所有replica都无法“活”过来了，或者数据都丢失了，这个partition将永远不可用。选择第一个“活”过来的replica作为leader，而这个replica不是ISR中的replica，那即使它并不保证已经包含了所有已commit的消息，它也会成为leader而作为consumer的数据源（前文有说明，所有读写都由leader完成）。Kafka0.8.*使用了第二种方式。根据Kafka的文档，在以后的版本中，Kafka支持用户通过配置选择这两种方式中的一种，从而根据不同的使用场景选择高可用性还是强一致性。<br>　　<br>　　上文说明了一个parition的replication过程，然尔Kafka集群需要管理成百上千个partition，Kafka通过round-robin的方式来平衡partition从而避免大量partition集中在了少数几个节点上。同时Kafka也需要平衡leader的分布，尽可能的让所有partition的leader均匀分布在不同broker上。另一方面，优化leadership election的过程也是很重要的，毕竟这段时间相应的partition处于不可用状态。一种简单的实现是暂停宕机的broker上的所有partition，并为之选举leader。实际上，Kafka选举一个broker作为controller，这个controller通过watch Zookeeper检测所有的broker failure，并负责为所有受影响的parition选举leader，再将相应的leader调整命令发送至受影响的broker，过程如下图所示。<br>　　<img src="/img/Kafka深度解析/controller.png" alt=""><br>　　<br>　　这样做的好处是，可以批量的通知leadership的变化，从而使得选举过程成本更低，尤其对大量的partition而言。如果controller失败了，幸存的所有broker都会尝试在Zookeeper中创建/controller-&gt;{this broker id}，如果创建成功（只可能有一个创建成功），则该broker会成为controller，若创建不成功，则该broker会等待新controller的命令。<br>　　<img src="/img/Kafka深度解析/controller_failover.png" alt=""></p>
+<h3 id="Consumer_group">Consumer group</h3>
+<p>　　（本节所有描述都是基于consumer hight level API而非low level API）。<br>　　每一个consumer实例都属于一个consumer group，每一条消息只会被同一个consumer group里的一个consumer实例消费。（不同consumer group可以同时消费同一条消息）<br>　　<img src="/img/Kafka深度解析/consumer_group.png" alt=""><br>　　<br>　　很多传统的message queue都会在消息被消费完后将消息删除，一方面避免重复消费，另一方面可以保证queue的长度比较少，提高效率。而如上文所将，Kafka并不删除已消费的消息，为了实现传统message queue消息只被消费一次的语义，Kafka保证保证同一个consumer group里只有一个consumer会消费一条消息。与传统message queue不同的是，Kafka还允许不同consumer group同时消费同一条消息，这一特性可以为消息的多元化处理提供了支持。实际上，Kafka的设计理念之一就是同时提供离线处理和实时处理。根据这一特性，可以使用Storm这种实时流处理系统对消息进行实时在线处理，同时使用Hadoop这种批处理系统进行离线处理，还可以同时将数据实时备份到另一个数据中心，只需要保证这三个操作所使用的consumer在不同的consumer group即可。下图展示了Kafka在Linkedin的一种简化部署。<br>　　<img src="/img/Kafka深度解析/kafka_in_linkedin.png" alt=""><br>　　为了更清晰展示Kafka consumer group的特性，笔者作了一项测试。创建一个topic (名为topic1)，创建一个属于group1的consumer实例，并创建三个属于group2的consumer实例，然后通过producer向topic1发送key分别为1，2，3r的消息。结果发现属于group1的consumer收到了所有的这三条消息，同时group2中的3个consumer分别收到了key为1，2，3的消息。如下图所示。<br>　　<img src="/img/Kafka深度解析/consumer_group_test.png" alt=""></p>
+<h3 id="Consumer_Rebalance">Consumer Rebalance</h3>
+<p>　　（本节所讲述内容均基于Kafka consumer high level API）<br>　　Kafka保证同一consumer group中只有一个consumer会消费某条消息，实际上，Kafka保证的是稳定状态下每一个consumer实例只会消费某一个或多个特定partition的数据，而某个partition的数据只会被某一个特定的consumer实例所消费。这样设计的劣势是无法让同一个consumer group里的consumer均匀消费数据，优势是每个consumer不用都跟大量的broker通信，减少通信开销，同时也降低了分配难度，实现也更简单。另外，因为同一个partition里的数据是有序的，这种设计可以保证每个partition里的数据也是有序被消费。<br>　　如果某consumer group中consumer数量少于partition数量，则至少有一个consumer会消费多个partition的数据，如果consumer的数量与partition数量相同，则正好一个consumer消费一个partition的数据，而如果consumer的数量多于partition的数量时，会有部分consumer无法消费该topic下任何一条消息。<br>　　如下例所示，如果topic1有0，1，2共三个partition，当group1只有一个consumer(名为consumer1)时，该 consumer可消费这3个partition的所有数据。<br>　　<img src="/img/Kafka深度解析/group1_consumer1.png" alt=""><br>　　增加一个consumer(consumer2)后，其中一个consumer（consumer1）可消费2个partition的数据，另外一个consumer(consumer2)可消费另外一个partition的数据。<br>　　<img src="/img/Kafka深度解析/group1_consumer_1_2.png" alt=""><br>　　再增加一个consumer(consumer3)后，每个consumer可消费一个partition的数据。consumer1消费partition0，consumer2消费partition1，consumer3消费partition2<br>　　<img src="/img/Kafka深度解析/group1_consumer_1_2_3.png" alt=""><br>　　再增加一个consumer（consumer4）后，其中3个consumer可分别消费一个partition的数据，另外一个consumer（consumer4）不能消费topic1任何数据。<br>　　<img src="/img/Kafka深度解析/group1_consumer_1_2_3_4.png" alt=""><br>　　此时关闭consumer1，剩下的consumer可分别消费一个partition的数据。<br>　　<img src="/img/Kafka深度解析/group1_consumer_2_3_4.png" alt=""><br>　　接着关闭consumer2，剩下的consumer3可消费2个partition，consumer4可消费1个partition。<br>　　<img src="/img/Kafka深度解析/group1_consumer_3_4.png" alt=""><br>　　再关闭consumer3，剩下的consumer4可同时消费topic1的3个partition。<br>　　<img src="/img/Kafka深度解析/group1_consumer_4.png" alt=""></p>
+<p>　　consumer rebalance算法如下：
+　　</p>
+<ul>
+<li>Sort PT (all partitions in topic T) </li>
+<li>Sort CG(all consumers in consumer group G)</li>
+<li>Let i be the index position of Ci in CG and let N=size(PT)/size(CG)</li>
+<li>Remove current entries owned by Ci from the partition owner registry </li>
+<li>Assign partitions from i<em>N to (i+1)</em>N-1 to consumer Ci </li>
+<li>Add newly assigned partitions to the partition owner registry</li>
+</ul>
+<p>　　目前consumer rebalance的控制策略是由每一个consumer通过Zookeeper完成的。具体的控制方式如下：</p>
+<ul>
+<li>Register itself in the consumer id registry under its group.</li>
+<li>Register a watch on changes under the consumer id registry.</li>
+<li>Register a watch on changes under the broker id registry.</li>
+<li>If the consumer creates a message stream using a topic filter, it also registers a watch on changes under the broker topic registry.</li>
+<li>Force itself to rebalance within in its consumer group.<br>　　<br>　　在这种策略下，每一个consumer或者broker的增加或者减少都会触发consumer rebalance。因为每个consumer只负责调整自己所消费的partition，为了保证整个consumer group的一致性，所以当一个consumer触发了rebalance时，该consumer group内的其它所有consumer也应该同时触发rebalance。</li>
+</ul>
+<p>　　目前（2015-01-19）最新版（0.8.2）Kafka采用的是上述方式。但该方式有不利的方面：</p>
+<ul>
+<li><b>Herd effect</b><br>　　任何broker或者consumer的增减都会触发所有的consumer的rebalance</li>
+<li><b>Split Brain</b><br>　　每个consumer分别单独通过Zookeeper判断哪些partition down了，那么不同consumer从Zookeeper“看”到的view就可能不一样，这就会造成错误的reblance尝试。而且有可能所有的consumer都认为rebalance已经完成了，但实际上可能并非如此。</li>
+</ul>
+<p>　　根据Kafka官方文档，Kafka作者正在考虑在还未发布的<a href="https://cwiki.apache.org/confluence/display/KAFKA/Kafka+0.9+Consumer+Rewrite+Design" target="_blank" rel="external">0.9.x版本中使用中心协调器(coordinator)</a>。大体思想是选举出一个broker作为coordinator，由它watch Zookeeper，从而判断是否有partition或者consumer的增减，然后生成rebalance命令，并检查是否这些rebalance在所有相关的consumer中被执行成功，如果不成功则重试，若成功则认为此次rebalance成功（这个过程跟replication controller非常类似，所以我很奇怪为什么当初设计replication controller时没有使用类似方式来解决consumer rebalance的问题）。流程如下：<br>　　<img src="/img/Kafka深度解析/coordinator.png" alt="">
+　　
+　　</p>
+<h3 id="消息Deliver_guarantee">消息Deliver guarantee</h3>
+<p>　　通过上文介绍，想必读者已经明天了producer和consumer是如何工作的，以及Kafka是如何做replication的，接下来要讨论的是Kafka如何确保消息在producer和consumer之间传输。有这么几种可能的delivery guarantee：</p>
+<ul>
+<li><code>At most once</code> 消息可能会丢，但绝不会重复传输</li>
+<li><code>At least one</code> 消息绝不会丢，但可能会重复传输</li>
+<li><code>Exactly once</code> 每条消息肯定会被传输一次且仅传输一次，很多时候这是用户所想要的。<br>　　<br>　　Kafka的delivery guarantee semantic非常直接。当producer向broker发送消息时，一旦这条消息被commit，因数replication的存在，它就不会丢。但是如果producer发送数据给broker后，遇到的网络问题而造成通信中断，那producer就无法判断该条消息是否已经commit。这一点有点像向一个自动生成primary key的数据库表中插入数据。虽然Kafka无法确定网络故障期间发生了什么，但是producer可以生成一种类似于primary key的东西，发生故障时幂等性的retry多次，这样就做到了<code>Exactly one</code>。截止到目前(Kafka 0.8.2版本，2015-01-25)，这一feature还并未实现，有希望在Kafka未来的版本中实现。（所以目前默认情况下一条消息从producer和broker是确保了<code>At least once</code>，但可通过设置producer异步发送实现<code>At most once</code>）。<br>　　接下来讨论的是消息从broker到consumer的delivery guarantee semantic。（仅针对Kafka consumer high level API）。consumer在从broker读取消息后，可以选择commit，该操作会在Zookeeper中存下该consumer在该partition下读取的消息的offset。该consumer下一次再读该partition时会从下一条开始读取。如未commit，下一次读取的开始位置会跟上一次commit之后的开始位置相同。当然可以将consumer设置为autocommit，即consumer一旦读到数据立即自动commit。如果只讨论这一读取消息的过程，那Kafka是确保了<code>Exactly once</code>。但实际上实际使用中consumer并非读取完数据就结束了，而是要进行进一步处理，而数据处理与commit的顺序在很大程度上决定了消息从broker和consumer的delivery guarantee semantic。</li>
+<li>读完消息先commit再处理消息。这种模式下，如果consumer在commit后还没来得及处理消息就crash了，下次重新开始工作后就无法读到刚刚已提交而未处理的消息，这就对应于<code>At most once</code></li>
+<li>读完消息先处理再commit。这种模式下，如果处理完了消息在commit之前consumer crash了，下次重新开始工作时还会处理刚刚未commit的消息，实际上该消息已经被处理过了。这就对应于<code>At least once</code>。在很多情况使用场景下，消息都有一个primary key，所以消息的处理往往具有幂等性，即多次处理这一条消息跟只处理一次是等效的，那就可以认为是<code>Exactly once</code>。（人个感觉这种说法有些牵强，毕竟它不是Kafka本身提供的机制，而且primary key本身不保证操作的幂等性。而且实际上我们说delivery guarantee semantic是讨论被处理多少次，而非处理结果怎样，因为处理方式多种多样，我们的系统不应该把处理过程的特性—如是否幂等性，当成Kafka本身的feature）</li>
+<li>如果一定要做到<code>Exactly once</code>，就需要协调offset和实际操作的输出。精典的做法是引入两阶段提交。如果能让offset和操作输入存在同一个地方，会更简洁和通用。这种方式可能更好，因为许多输出系统可能不支持两阶段提交。比如，consumer拿到数据后可能把数据放到HDFS，如果把最新的offset和数据本身一起写到HDFS，那就可以保证数据的输出和offset的更新要么都完成，要么都不完成，间接实现<code>Exactly once</code>。（目前就high level API而言，offset是存于Zookeeper中的，无法存于HDFS，而low level API的offset是由自己去维护的，可以将之存于HDFS中）<br>　　总之，Kafka默认保证<code>At least once</code>，并且允许通过设置producer异步提交来实现<code>At most once</code>。而<code>Exactly once</code>要求与目标存储系统协作，幸运的是Kafka提供的offset可以使用这种方式非常直接非常容易。</li>
+</ul>
+<h1 id="Benchmark">Benchmark</h1>
+<p>　　纸上得来终觉浅，绝知些事要躬行。笔者希望能亲自测一下Kafka的性能，而非从网上找一些测试数据。所以笔者曾在0.8发布前两个月做过详细的Kafka0.8性能测试，不过很可惜测试报告不慎丢失。所幸在网上找到了Kafka的创始人之一的<a href="http://engineering.linkedin.com/kafka/benchmarking-apache-kafka-2-million-writes-second-three-cheap-machines" target="_blank" rel="external">Jay Kreps的bechmark</a>。以下描述皆基于该benchmark。（该benchmark基于Kafka0.8.1）</p>
+<h2 id="测试环境">测试环境</h2>
+<p>　　该benchmark用到了六台机器，机器配置如下</p>
+<ul>
+<li>Intel Xeon 2.5 GHz processor with six cores</li>
+<li>Six 7200 RPM SATA drives</li>
+<li>32GB of RAM</li>
+<li>1Gb Ethernet<br>　　<br>　　这6台机器其中3台用来搭建Kafka broker集群，另外3台用来安装Zookeeper及生成测试数据。6个drive都直接以非RAID方式挂载。实际上kafka对机器的需求与Hadoop的类似。</li>
+</ul>
+<h2 id="producer吞吐率">producer吞吐率</h2>
+<p>　　该项测试只测producer的吞吐率，也就是数据只被持久化，没有consumer读数据。</p>
+<h3 id="1个producer线程，无replication">1个producer线程，无replication</h3>
+<p>　　在这一测试中，创建了一个包含6个partition且没有replication的topic。然后通过一个线程尽可能快的生成50 million条比较短（payload100字节长）的消息。测试结果是<strong><em>821,557 records/second</em></strong>（<strong><em>78.3MB/second</em></strong>）。<br>　　之所以使用短消息，是因为对于消息系统来说这种使用场景更难。因为如果使用MB/second来表征吞吐率，那发送长消息无疑能使得测试结果更好。<br>　　整个测试中，都是用每秒钟delivery的消息的数量乘以payload的长度来计算MB/second的，没有把消息的元信息算在内，所以实际的网络使用量会比这个大。对于本测试来说，每次还需传输额外的22个字节，包括一个可选的key，消息长度描述，CRC等。另外，还包含一些请求相关的overhead，比如topic，partition，acknowledgement等。这就导致我们比较难判断是否已经达到网卡极限，但是把这些overhead都算在吞吐率里面应该更合理一些。因此，我们已经基本达到了网卡的极限。<br>　　初步观察此结果会认为它比人们所预期的要高很多，尤其当考虑到Kafka要把数据持久化到磁盘当中。实际上，如果使用随机访问数据系统，比如RDBMS，或者key-velue store，可预期的最高访问频率大概是5000到50000个请求每秒，这和一个好的RPC层所能接受的远程请求量差不多。而该测试中远超于此的原因有两个。</p>
+<ul>
+<li>Kafka确保写磁盘的过程是线性磁盘I/O，测试中使用的6块廉价磁盘线性I/O的最大吞吐量是822MB/second，这已经远大于1Gb网卡所能带来的吞吐量了。许多消息系统把数据持久化到磁盘当成是一个开销很大的事情，这是因为他们对磁盘的操作都不是线性I/O。</li>
+<li>在每一个阶段，Kafka都尽量使用批量处理。如果想了解批处理在I/O操作中的重要性，可以参考David Patterson的”<a href="http://www.ll.mit.edu/HPEC/agendas/proc04/invited/patterson_keynote.pdf" target="_blank" rel="external">Latency Lags Bandwidth</a>“</li>
+</ul>
+<h3 id="1个producer线程，3个异步replication">1个producer线程，3个异步replication</h3>
+<p>　　该项测试与上一测试基本一样，唯一的区别是每个partition有3个replica（所以网络传输的和写入磁盘的总的数据量增加了3倍）。每一个broker即要写作为leader的partition，也要读（从leader读数据）写（将数据写到磁盘）作为follower的partition。测试结果为<strong><em>786,980 records/second</em></strong>（<strong><em>75.1MB/second</em></strong>）。<br>　　该项测试中replication是异步的，也就是说broker收到数据并写入本地磁盘后就acknowledge producer，而不必等所有replica都完成replication。也就是说，如果leader crash了，可能会丢掉一些最新的还未备份的数据。但这也会让message acknowledgement延迟更少，实时性更好。<br>　　这项测试说明，replication可以很快。整个集群的写能力可能会由于3倍的replication而只有原来的三分之一，但是对于每一个producer来说吞吐率依然足够好。
+　　</p>
+<h3 id="1个producer线程，3个同步replication">1个producer线程，3个同步replication</h3>
+<p>　　该项测试与上一测试的唯一区别是replication是同步的，每条消息只有在被<code>in sync</code>集合里的所有replica都复制过去后才会被置为committed（此时broker会向producer发送acknowledgement）。在这种模式下，Kafka可以保证即使leader crash了，也不会有数据丢失。测试结果为<strong><em>421,823 records/second</em></strong>（<strong><em>40.2MB/second</em></strong>）。<br>　　Kafka同步复制与异步复制并没有本质的不同。leader会始终track follower replica从而监控它们是否还alive，只有所有<code>in sync</code>集合里的replica都acknowledge的消息才可能被consumer所消费。而对follower的等待影响了吞吐率。可以通过增大batch size来改善这种情况，但为了避免特定的优化而影响测试结果的可比性，本次测试并没有做这种调整。
+　　</p>
+<h3 id="3个producer,3个异步replication">3个producer,3个异步replication</h3>
+<p>　　该测试相当于把上文中的1个producer,复制到了3台不同的机器上（在1台机器上跑多个实例对吞吐率的增加不会有太大帮忙，因为网卡已经基本饱和了），这3个producer同时发送数据。整个集群的吞吐率为<strong><em>2,024,032 records/second</em></strong>（<strong><em>193,0MB/second</em></strong>）。</p>
+<h2 id="Producer_Throughput_Vs-_Stored_Data">Producer Throughput Vs. Stored Data</h2>
+<p>　　消息系统的一个潜在的危险是当数据能都存于内存时性能很好，但当数据量太大无法完全存于内存中时（然后很多消息系统都会删除已经被消费的数据，但当消费速度比生产速度慢时，仍会造成数据的堆积），数据会被转移到磁盘，从而使得吞吐率下降，这又反过来造成系统无法及时接收数据。这样就非常糟糕，而实际上很多情景下使用queue的目的就是解决数据消费速度和生产速度不一致的问题。<br>　　但Kafka不存在这一问题，因为Kafka始终以O（1）的时间复杂度将数据持久化到磁盘，所以其吞吐率不受磁盘上所存储的数据量的影响。为了验证这一特性，做了一个长时间的大数据量的测试，下图是吞吐率与数据量大小的关系图。<br>　　<img src="/img/Kafka深度解析/throughput_size.png" alt=""><br>　　上图中有一些variance的存在，并可以明显看到，吞吐率并不受磁盘上所存数据量大小的影响。实际上从上图可以看到，当磁盘数据量达到1TB时，吞吐率和磁盘数据只有几百MB时没有明显区别。<br>　　这个variance是由Linux I/O管理造成的，它会把数据缓存起来再批量flush。上图的测试结果是在生产环境中对Kafka集群做了些tuning后得到的，这些tuning方法可参考<a href="http://kafka.apache.org/documentation.html#hwandos" target="_blank" rel="external">这里</a>。
+　　</p>
+<h2 id="consumer吞吐率">consumer吞吐率</h2>
+<p>　　需要注意的是，replication factor并不会影响consumer的吞吐率测试，因为consumer只会从每个partition的leader读数据，而与replicaiton factor无关。同样，consumer吞吐率也与同步复制还是异步复制无关。
+　　</p>
+<h3 id="1个consumer">1个consumer</h3>
+<p>　　该测试从有6个partition，3个replication的topic消费50 million的消息。测试结果为<strong><em>940,521 records/second</em></strong>（<strong><em>89.7MB/second</em></strong>）。<br>　　可以看到，Kafkar的consumer是非常高效的。它直接从broker的文件系统里读取文件块。Kafka使用<a href="http://www.ibm.com/developerworks/library/j-zerocopy/" target="_blank" rel="external">sendfile API</a>来直接通过操作系统直接传输，而不用把数据拷贝到用户空间。该项测试实际上从log的起始处开始读数据，所以它做了真实的I/O。在生产环境下，consumer可以直接读取producer刚刚写下的数据（它可能还在缓存中）。实际上，如果在生产环境下跑<a href="http://en.wikipedia.org/wiki/Iostat" target="_blank" rel="external">I/O stat</a>，你可以看到基本上没有物理“读”。也就是说生产环境下consumer的吞吐率会比该项测试中的要高。</p>
+<h3 id="3个consumer">3个consumer</h3>
+<p>　　将上面的consumer复制到3台不同的机器上，并且并行运行它们（从同一个topic上消费数据）。测试结果为<strong><em>2,615,968 records/second</em></strong>（<strong><em>249.5MB/second</em></strong>）。<br>　　正如所预期的那样，consumer的吞吐率几乎线性增涨。
+　　</p>
+<h2 id="Producer_and_Consumer">Producer and Consumer</h2>
+<p>　　上面的测试只是把producer和consumer分开测试，而该项测试同时运行producer和consumer，这更接近使用场景。实际上目前的replication系统中follower就相当于consumer在工作。<br>　　该项测试，在具有6个partition和3个replica的topic上同时使用1个producer和1个consumer，并且使用异步复制。测试结果为<strong><em>795,064 records/second</em></strong>（<strong><em>75.8MB/second</em></strong>）。<br>　　可以看到，该项测试结果与单独测试1个producer时的结果几乎一致。所以说consumer非常轻量级。
+　　</p>
+<h2 id="消息长度对吞吐率的影响">消息长度对吞吐率的影响</h2>
+<p>　　上面的所有测试都基于短消息（payload 100字节），而正如上文所说，短消息对Kafka来说是更难处理的使用方式，可以预期，随着消息长度的增大，records/second会减小，但MB/second会有所提高。下图是records/second与消息长度的关系图。<br>　　<img src="/img/Kafka深度解析/record_size_throughput.png" alt=""><br>　　正如我们所预期的那样，随着消息长度的增加，每秒钟所能发送的消息的数量逐渐减小。但是如果看每秒钟发送的消息的总大小，它会随着消息长度的增加而增加，如下图所示。<br>　　<img src="/img/Kafka深度解析/records_MB.png" alt=""><br>　　从上图可以看出，当消息长度为10字节时，因为要频繁入队，花了太多时间获取锁，CPU成了瓶颈，并不能充分利用带宽。但从100字节开始，我们可以看到带宽的使用逐渐趋于饱和（虽然MB/second还是会随着消息长度的增加而增加，但增加的幅度也越来越小）。
+　　</p>
+<h2 id="端到端的Latency">端到端的Latency</h2>
+<p>　　上文中讨论了吞吐率，那消息传输的latency如何呢？也就是说消息从producer到consumer需要多少时间呢？该项测试创建1个producer和1个consumer并反复计时。结果是，<strong><em>2 ms (median), 3ms (99th percentile, 14ms (99.9th percentile)</em></strong>。<br>　　（这里并没有说明topic有多少个partition，也没有说明有多少个replica，replication是同步还是异步。实际上这会极大影响producer发送的消息被commit的latency，而只有committed的消息才能被consumer所消费，所以它会最终影响端到端的latency）
+　　</p>
+<h2 id="重现该benchmark">重现该benchmark</h2>
+<p>　　如果读者想要在自己的机器上重现本次benchmark测试，可以参考<a href="https://gist.github.com/jkreps/c7ddb4041ef62a900e6c" target="_blank" rel="external">本次测试的配置和所使用的命令</a>。<br>　　实际上Kafka Distribution提供了producer性能测试工具，可通过<code>bin/kafka-producer-perf-test.sh</code>脚本来启动。所使用的命令如下
+　　</p>
+<pre><code>Producer
+Setup
+bin/kafka-topics.sh --zookeeper esv4-hcl197.<span class="keyword">grid</span>.linkedin.com:<span class="number">2181</span> --create --topic test-rep-one --partitions <span class="number">6</span> --replication-factor <span class="number">1</span>
+bin/kafka-topics.sh --zookeeper esv4-hcl197.<span class="keyword">grid</span>.linkedin.com:<span class="number">2181</span> --create --topic test --partitions <span class="number">6</span> --replication-factor <span class="number">3</span>
+
+Single thread, no replication
+
+bin/kafka-run-class.sh org.apache.kafka.clients.tools.ProducerPerformance test7 <span class="number">50000000</span> <span class="number">100</span> -<span class="number">1</span> acks=<span class="number">1</span> bootstrap.servers=esv4-hcl198.<span class="keyword">grid</span>.linkedin.com:<span class="number">9092</span> buffer.<span class="keyword">memory</span>=<span class="number">67108864</span> batch.<span class="keyword">size</span>=<span class="number">8196</span>
+
+Single-thread, async <span class="number">3</span>x replication
+
+bin/kafktopics.sh --zookeeper esv4-hcl197.<span class="keyword">grid</span>.linkedin.com:<span class="number">2181</span> --create --topic test --partitions <span class="number">6</span> --replication-factor <span class="number">3</span>
+bin/kafka-run-class.sh org.apache.kafka.clients.tools.ProducerPerformance test6 <span class="number">50000000</span> <span class="number">100</span> -<span class="number">1</span> acks=<span class="number">1</span> bootstrap.servers=esv4-hcl198.<span class="keyword">grid</span>.linkedin.com:<span class="number">9092</span> buffer.<span class="keyword">memory</span>=<span class="number">67108864</span> batch.<span class="keyword">size</span>=<span class="number">8196</span>
+
+Single-thread, sync <span class="number">3</span>x replication
+
+bin/kafka-run-class.sh org.apache.kafka.clients.tools.ProducerPerformance test <span class="number">50000000</span> <span class="number">100</span> -<span class="number">1</span> acks=-<span class="number">1</span> bootstrap.servers=esv4-hcl198.<span class="keyword">grid</span>.linkedin.com:<span class="number">9092</span> buffer.<span class="keyword">memory</span>=<span class="number">67108864</span> batch.<span class="keyword">size</span>=<span class="number">64000</span>
+
+Three Producers, <span class="number">3</span>x async replication
+bin/kafka-run-class.sh org.apache.kafka.clients.tools.ProducerPerformance test <span class="number">50000000</span> <span class="number">100</span> -<span class="number">1</span> acks=<span class="number">1</span> bootstrap.servers=esv4-hcl198.<span class="keyword">grid</span>.linkedin.com:<span class="number">9092</span> buffer.<span class="keyword">memory</span>=<span class="number">67108864</span> batch.<span class="keyword">size</span>=<span class="number">8196</span>
+
+Throughput Versus Stored Data
+
+bin/kafka-run-class.sh org.apache.kafka.clients.tools.ProducerPerformance test <span class="number">50000000000</span> <span class="number">100</span> -<span class="number">1</span> acks=<span class="number">1</span> bootstrap.servers=esv4-hcl198.<span class="keyword">grid</span>.linkedin.com:<span class="number">9092</span> buffer.<span class="keyword">memory</span>=<span class="number">67108864</span> batch.<span class="keyword">size</span>=<span class="number">8196</span>
+
+Effect of message <span class="keyword">size</span>
+
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">10</span> <span class="number">100</span> <span class="number">1000</span> <span class="number">10000</span> <span class="number">100000</span>;
+<span class="keyword">do</span>
+echo <span class="string">""</span>
+echo <span class="variable">$i</span>
+bin/kafka-run-class.sh org.apache.kafka.clients.tools.ProducerPerformance test <span class="variable">$(</span>(<span class="number">1000</span><span class="variable">*1024</span><span class="variable">*1024</span>/<span class="variable">$i</span>)) <span class="variable">$i</span> -<span class="number">1</span> acks=<span class="number">1</span> bootstrap.servers=esv4-hcl198.<span class="keyword">grid</span>.linkedin.com:<span class="number">9092</span> buffer.<span class="keyword">memory</span>=<span class="number">67108864</span> batch.<span class="keyword">size</span>=<span class="number">128000</span>
+done;
+
+Consumer
+Consumer throughput
+
+bin/kafka-consumer-perf-test.sh --zookeeper esv4-hcl197.<span class="keyword">grid</span>.linkedin.com:<span class="number">2181</span> --messages <span class="number">50000000</span> --topic test --threads <span class="number">1</span>
+
+<span class="number">3</span> Consumers
+
+On three servers, run:
+bin/kafka-consumer-perf-test.sh --zookeeper esv4-hcl197.<span class="keyword">grid</span>.linkedin.com:<span class="number">2181</span> --messages <span class="number">50000000</span> --topic test --threads <span class="number">1</span>
+
+End-to-end Latency
+
+bin/kafka-run-class.sh kafka.tools.TestEndToEndLatency esv4-hcl198.<span class="keyword">grid</span>.linkedin.com:<span class="number">9092</span> esv4-hcl197.<span class="keyword">grid</span>.linkedin.com:<span class="number">2181</span> test <span class="number">5000</span>
+
+Producer and consumer
+
+bin/kafka-run-class.sh org.apache.kafka.clients.tools.ProducerPerformance test <span class="number">50000000</span> <span class="number">100</span> -<span class="number">1</span> acks=<span class="number">1</span> bootstrap.servers=esv4-hcl198.<span class="keyword">grid</span>.linkedin.com:<span class="number">9092</span> buffer.<span class="keyword">memory</span>=<span class="number">67108864</span> batch.<span class="keyword">size</span>=<span class="number">8196</span>
+
+bin/kafka-consumer-perf-test.sh --zookeeper esv4-hcl197.<span class="keyword">grid</span>.linkedin.com:<span class="number">2181</span> --messages <span class="number">50000000</span> --topic test --threads <span class="number">1</span>
+</code></pre><p>　　broker配置如下</p>
+<pre><code><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">##### Server Basics ###</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">##</span>
+
+<span class="comment"># The id of the broker. This must be set to a unique integer for each broker.</span>
+broker.id=<span class="number">0</span>
+
+<span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">##### Socket Server Settings ###</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">##</span>
+
+<span class="comment"># The port the socket server listens on</span>
+port=<span class="number">9092</span>
+
+<span class="comment"># Hostname the broker will bind to and advertise to producers and consumers.</span>
+<span class="comment"># If not set, the server will bind to all interfaces and advertise the value returned from</span>
+<span class="comment"># from java.net.InetAddress.getCanonicalHostName().</span>
+<span class="comment">#host.name=localhost</span>
+
+<span class="comment"># The number of threads handling network requests</span>
+num.network.threads=<span class="number">4</span>
+
+<span class="comment"># The number of threads doing disk I/O</span>
+num.io.threads=<span class="number">8</span>
+
+<span class="comment"># The send buffer (SO_SNDBUF) used by the socket server</span>
+socket.send.buffer.bytes=<span class="number">1048576</span>
+
+<span class="comment"># The receive buffer (SO_RCVBUF) used by the socket server</span>
+socket.receive.buffer.bytes=<span class="number">1048576</span>
+
+<span class="comment"># The maximum size of a request that the socket server will accept (protection against OOM)</span>
+socket.request.max.bytes=<span class="number">104857600</span>
+
+
+<span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">##### Log Basics ###</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">##</span>
+
+<span class="comment"># The directory under which to store log files</span>
+log.dirs=/grid/a/dfs-data/kafka-logs,/grid/b/dfs-data/kafka-logs,/grid/c/dfs-data/kafka-logs,/grid/d/dfs-data/kafka-logs,/grid/e/dfs-data/kafka-logs,/grid/f/dfs-data/kafka-logs
+
+<span class="comment"># The number of logical partitions per topic per server. More partitions allow greater parallelism</span>
+<span class="comment"># for consumption, but also mean more files.</span>
+num.partitions=<span class="number">8</span>
+
+<span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">##### Log Flush Policy ###</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">##</span>
+
+<span class="comment"># The following configurations control the flush of data to disk. This is the most</span>
+<span class="comment"># important performance knob in kafka.</span>
+<span class="comment"># There are a few important trade-offs here:</span>
+<span class="comment">#    1. Durability: Unflushed data is at greater risk of loss in the event of a crash.</span>
+<span class="comment">#    2. Latency: Data is not made available to consumers until it is flushed (which adds latency).</span>
+<span class="comment">#    3. Throughput: The flush is generally the most expensive operation. </span>
+<span class="comment"># The settings below allow one to configure the flush policy to flush data after a period of time or</span>
+<span class="comment"># every N messages (or both). This can be done globally and overridden on a per-topic basis.</span>
+
+<span class="comment"># Per-topic overrides for log.flush.interval.ms</span>
+<span class="comment">#log.flush.intervals.ms.per.topic=topic1:1000, topic2:3000</span>
+
+<span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">##### Log Retention Policy ###</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">##</span>
+
+<span class="comment"># The following configurations control the disposal of log segments. The policy can</span>
+<span class="comment"># be set to delete segments after a period of time, or after a given size has accumulated.</span>
+<span class="comment"># A segment will be deleted whenever *either* of these criteria are met. Deletion always happens</span>
+<span class="comment"># from the end of the log.</span>
+
+<span class="comment"># The minimum age of a log file to be eligible for deletion</span>
+log.retention.hours=<span class="number">168</span>
+
+<span class="comment"># A size-based retention policy for logs. Segments are pruned from the log as long as the remaining</span>
+<span class="comment"># segments don't drop below log.retention.bytes.</span>
+<span class="comment">#log.retention.bytes=1073741824</span>
+
+<span class="comment"># The maximum size of a log segment file. When this size is reached a new log segment will be created.</span>
+log.segment.bytes=<span class="number">536870912</span>
+
+<span class="comment"># The interval at which log segments are checked to see if they can be deleted according </span>
+<span class="comment"># to the retention policies</span>
+log.cleanup.interval.mins=<span class="number">1</span>
+
+<span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">##### Zookeeper ###</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">######</span><span class="comment">##</span>
+
+<span class="comment"># Zookeeper connection string (see zookeeper docs for details).</span>
+<span class="comment"># This is a comma separated host:port pairs, each corresponding to a zk</span>
+<span class="comment"># server. e.g. "127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002".</span>
+<span class="comment"># You can also append an optional chroot string to the urls to specify the</span>
+<span class="comment"># root directory for all kafka znodes.</span>
+zookeeper.connect=esv4-hcl197.grid.linkedin.<span class="attribute">com</span>:<span class="number">2181</span>
+
+<span class="comment"># Timeout in ms for connecting to zookeeper</span>
+zookeeper.connection.timeout.ms=<span class="number">1000000</span>
+
+<span class="comment"># metrics reporter properties</span>
+kafka.metrics.polling.interval.secs=<span class="number">5</span>
+kafka.metrics.reporters=kafka.metrics.KafkaCSVMetricsReporter
+kafka.csv.metrics.dir=/tmp/kafka_metrics
+<span class="comment"># Disable csv reporting by default.</span>
+kafka.csv.metrics.reporter.enabled=<span class="literal">false</span>
+
+replica.lag.max.messages=<span class="number">10000000</span>
+</code></pre><p>　　读者也可参考另外一份<a href="http://liveramp.com/blog/kafka-0-8-producer-performance-2/" target="_blank" rel="external">Kafka性能测试报告</a>
+　　</p>
+<h1 id="参考">参考</h1>
+<ul>
+<li><a href="http://www.oschina.net/translate/top-10-uses-for-message-queue" target="_blank" rel="external">使用消息队列的 10 个理由</a></li>
+<li><a href="http://kafka.apache.org/" target="_blank" rel="external">Apache Kafka</a></li>
+<li><a href="http://www.ibm.com/developerworks/library/j-zerocopy/" target="_blank" rel="external">Efficient data transfer through zero copy</a></li>
+<li><a href="http://engineering.linkedin.com/kafka/benchmarking-apache-kafka-2-million-writes-second-three-cheap-machines" target="_blank" rel="external">Benchmarking Apache Kafka: 2 Million Writes Per Second (On Three Cheap Machines)</a></li>
+<li><a href="http://liveramp.com/blog/kafka-0-8-producer-performance-2/" target="_blank" rel="external">Kafka 0.8 Producer Performance</a></li>
+</ul>
+]]></content>
+    <summary type="html">
+    <![CDATA[介绍Kafka背景，使用消息系统的优势，常用消息系统对比，Kafka架构介绍，Kafka实现语义分析，Replication及Leader Election机制剖析，Consumer Group Rebalance实现原理介绍，以及Benchmark测试。]]>
+    
+    </summary>
+    
+      <category term="Kafka" scheme="http://www.jasongj.com/tags/Kafka/"/>
+    
+      <category term="Message Queue" scheme="http://www.jasongj.com/categories/Message-Queue/"/>
+    
+  </entry>
+  
+</feed>
