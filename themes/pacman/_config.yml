@@ -13,10 +13,10 @@ menu:
 
 #### Widgets
 widgets: 
+- wechat
 - category
 - tag
 - rss
-- popular_posts
 ##- links
 ## provide six widgets:category,tag,rss,archive,tagcloud,links.
 ## modify links in `/layout/_widget/links.ejs`.
