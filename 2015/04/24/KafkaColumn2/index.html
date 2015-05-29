@@ -1,0 +1,670 @@
+
+ <!DOCTYPE HTML>
+<html lang="en_US">
+<head>
+  <meta charset="UTF-8">
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?7dfdf667ba885e2b04d1c1cc561490f0";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script src="https://leancloud.cn/scripts/lib/av-0.4.6.min.js"></script>
+<script>AV.initialize("gf6bl21ziahh90wrgcooxuh1ou1wp1rhz3tf6oprya2cct7u", "4omkprxnmuw1zhi3z9zo18mnb363mskviwfm3qtura4smgba");</script>
+<script type="text/javascript" name="baidu-tc-cerfication" data-appid="5353011" src="http://apps.bdimg.com/cloudaapi/lightapp.js"></script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58959834-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  
+    <title>Kafka设计解析（二）  Kafka High Availability （上） | Jason&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Jason Guo">
+    
+    <meta name="description" itemprop="description" content="Kafka从0.8版本开始提供High Availability机制，从而提高了系统可用性及数据持久性。本文从Data Replication和Leader Election两方面介绍了Kafka的HA机制。">
+    
+    
+    
+    
+    <link rel="alternate" href="/atom.xml" title="Jason&#39;s Blog" type="application/atom+xml">
+    
+    
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Jason&#39;s Blog" title="Jason&#39;s Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Jason&#39;s Blog">Jason&#39;s Blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/tags">tags</a></li>
+					
+						<li><a href="/categories">categories</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:www.jasongj.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/04/24/KafkaColumn2/" title="Kafka设计解析（二）  Kafka High Availability （上）" itemprop="url">Kafka设计解析（二）  Kafka High Availability （上）</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://www.jasongj.com" title="Jason Guo">Jason Guo</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2015-04-24T14:21:18.000Z" itemprop="datePublished">2015-04-24</time>
+    Updated:<time datetime="2015-05-29T14:18:52.446Z" itemprop="dateModified">2015-05-29</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#摘要"><span class="toc-number">1.</span> <span class="toc-text">摘要</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Kafka为何需要High_Available"><span class="toc-number">2.</span> <span class="toc-text">Kafka为何需要High Available</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#为何需要Replication"><span class="toc-number">2.1.</span> <span class="toc-text">为何需要Replication</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#为何需要Leader_Election"><span class="toc-number">2.2.</span> <span class="toc-text">为何需要Leader Election</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Kafka_HA设计解析"><span class="toc-number">3.</span> <span class="toc-text">Kafka HA设计解析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#如何将所有Replica均匀分布到整个集群"><span class="toc-number">3.1.</span> <span class="toc-text">如何将所有Replica均匀分布到整个集群</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Data_Replication"><span class="toc-number">3.2.</span> <span class="toc-text">Data Replication</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Propagate消息"><span class="toc-number">3.2.1.</span> <span class="toc-text">Propagate消息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ACK前需要保证有多少个备份"><span class="toc-number">3.2.2.</span> <span class="toc-text">ACK前需要保证有多少个备份</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Leader_Election算法"><span class="toc-number">3.2.3.</span> <span class="toc-text">Leader Election算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如何处理所有Replica都不工作"><span class="toc-number">3.2.4.</span> <span class="toc-text">如何处理所有Replica都不工作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如何选举Leader"><span class="toc-number">3.2.5.</span> <span class="toc-text">如何选举Leader</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HA相关Zookeeper结构"><span class="toc-number">3.3.</span> <span class="toc-text">HA相关Zookeeper结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#broker_failover过程简介"><span class="toc-number">3.4.</span> <span class="toc-text">broker failover过程简介</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#下篇预告"><span class="toc-number">4.</span> <span class="toc-text">下篇预告</span></a></li></ol>
+		</div>
+		
+		<p>　　本文已授权InfoQ独家发表，如需转载请<a href="http://www.jasongj.com/2015/04/24/KafkaColumn2/" target="_blank" rel="external"><strong>注明出处</strong></a>并与InfoQ中文站联系。<a href="http://www.infoq.com/cn/articles/kafka-analysis-part-2" target="_blank" rel="external">InfoQ首发地址</a>为 <a href="http://www.infoq.com/cn/articles/kafka-analysis-part-2" target="_blank" rel="external">http://www.infoq.com/cn/articles/kafka-analysis-part-2</a></p>
+<h1 id="摘要">摘要</h1>
+<p>　　Kafka在0.8以前的版本中，并不提供High Availablity机制，一旦一个或多个Broker宕机，则宕机期间其上所有Partition都无法继续提供服务。若该Broker永远不能再恢复，亦或磁盘故障，则其上数据将丢失。而Kafka的设计目标之一即是提供数据持久化，同时对于分布式系统来说，尤其当集群规模上升到一定程度后，一台或者多台机器宕机的可能性大大提高，对于Failover机制的需求非常高。因此，Kafka从0.8开始提供High Availability机制。本文从Data Replication和Leader Election两方面介绍了Kafka的HA机制。</p>
+<h1 id="Kafka为何需要High_Available">Kafka为何需要High Available</h1>
+<h2 id="为何需要Replication">为何需要Replication</h2>
+<p>　　在Kafka在0.8以前的版本中，是没有Replication的，一旦某一个Broker宕机，则其上所有的Partition数据都不可被消费，这与Kafka数据持久性及Delivery Guarantee的设计目标相悖。同时Producer都不能再将数据存于这些Partition中。</p>
+<ul>
+<li>如果Producer使用同步模式则Producer会在尝试重新发送<code>message.send.max.retries</code>（默认值为3）次后抛出Exception，用户可以选择停止发送后续数据也可选择继续选择发送。而前者会造成数据的阻塞，后者会造成本应发往该Broker的数据的丢失。</li>
+<li>如果Producer使用异步模式，则Producer会尝试重新发送<code>message.send.max.retries</code>（默认值为3）次后记录该异常并继续发送后续数据，这会造成数据丢失并且用户只能通过日志发现该问题。</li>
+</ul>
+<p>　　由此可见，在没有Replication的情况下，一旦某机器宕机或者某个Broker停止工作则会造成整个系统的可用性降低。随着集群规模的增加，整个集群中出现该类异常的几率大大增加，因此对于生产系统而言Replication机制的引入非常重要。
+　　</p>
+<h2 id="为何需要Leader_Election">为何需要Leader Election</h2>
+<p>　　（本文所述Leader Election主要指Replica之间的Leader Election）<br>　　引入Replication之后，同一个Partition可能会有多个Replica，而这时需要在这些Replication之间选出一个Leader，Producer和Consumer只与这个Leader交互，其它Replica作为Follower从Leader中复制数据。<br>　　因为需要保证同一个Partition的多个Replica之间的数据一致性（其中一个宕机后其它Replica必须要能继续服务并且即不能造成数据重复也不能造成数据丢失）。如果没有一个Leader，所有Replica都可同时读/写数据，那就需要保证多个Replica之间互相（N×N条通路）同步数据，数据的一致性和有序性非常难保证，大大增加了Replication实现的复杂性，同时也增加了出现异常的几率。而引入Leader后，只有Leader负责数据读写，Follower只向Leader顺序Fetch数据（N条通路），系统更加简单且高效。
+　　
+　　</p>
+<h1 id="Kafka_HA设计解析">Kafka HA设计解析</h1>
+<h2 id="如何将所有Replica均匀分布到整个集群">如何将所有Replica均匀分布到整个集群</h2>
+<p>　　为了更好的做负载均衡，Kafka尽量将所有的Partition均匀分配到整个集群上。一个典型的部署方式是一个Topic的Partition数量大于Broker的数量。同时为了提高Kafka的容错能力，也需要将同一个Partition的Replica尽量分散到不同的机器。实际上，如果所有的Replica都在同一个Broker上，那一旦该Broker宕机，该Partition的所有Replica都无法工作，也就达不到HA的效果。同时，如果某个Broker宕机了，需要保证它上面的负载可以被均匀的分配到其它幸存的所有Broker上。<br>　　Kafka分配Replica的算法如下：</p>
+<ol>
+<li>将所有Broker（假设共n个Broker）和待分配的Partition排序</li>
+<li>将第i个Partition分配到第（i mod n）个Broker上</li>
+<li>将第i个Partition的第j个Replica分配到第（(i + j) mode n）个Broker上</li>
+</ol>
+<h2 id="Data_Replication">Data Replication</h2>
+<p>　　Kafka的Data Replication需要解决如下问题：</p>
+<ul>
+<li>怎样Propagate消息</li>
+<li>在向Producer发送ACK前需要保证有多少个Replica已经收到该消息 </li>
+<li>怎样处理某个Replica不工作的情况</li>
+<li>怎样处理Failed Replica恢复回来的情况</li>
+</ul>
+<h3 id="Propagate消息">Propagate消息</h3>
+<p>　　Producer在发布消息到某个Partition时，先通过Zookeeper找到该Partition的Leader，然后无论该Topic的Replication Factor为多少（也即该Partition有多少个Replica），Producer只将该消息发送到该Partition的Leader。Leader会将该消息写入其本地Log。每个Follower都从Leader pull数据。这种方式上，Follower存储的数据顺序与Leader保持一致。Follower在收到该消息并写入其Log后，向Leader发送ACK。一旦Leader收到了ISR中的所有Replica的ACK，该消息就被认为已经commit了，Leader将增加HW并且向Producer发送ACK。<br>    为了提高性能，每个Follower在接收到数据后就立马向Leader发送ACK，而非等到数据写入Log中。因此，对于已经commit的消息，Kafka只能保证它被存于多个Replica的内存中，而不能保证它们被持久化到磁盘中，也就不能完全保证异常发生后该条消息一定能被Consumer消费。但考虑到这种场景非常少见，可以认为这种方式在性能和数据持久化上做了一个比较好的平衡。在将来的版本中，Kafka会考虑提供更高的持久性。<br>    Consumer读消息也是从Leader读取，只有被commit过的消息（offset低于HW的消息）才会暴露给Consumer。<br>    Kafka Replication的数据流如下图所示<br><img src="http://www.jasongj.com/img/KafkaColumn2/Replication.png" alt="Kafka Replication Data Flow">    </p>
+<h3 id="ACK前需要保证有多少个备份">ACK前需要保证有多少个备份</h3>
+<p>　　和大部分分布式系统一样，Kafka处理失败需要明确定义一个Broker是否“活着”。对于Kafka而言，Kafka存活包含两个条件，一是它必须维护与Zookeeper的session(这个通过Zookeeper的Heartbeat机制来实现)。二是Follower必须能够及时将Leader的消息复制过来，不能“落后太多”。<br>　　Leader会跟踪与其保持同步的Replica列表，该列表称为ISR（即in-sync Replica）。如果一个Follower宕机，或者落后太多，Leader将把它从ISR中移除。这里所描述的“落后太多”指Follower复制的消息落后于Leader后的条数超过预定值（该值可在$KAFKA_HOME/config/server.properties中通过<code>replica.lag.max.messages</code>配置，其默认值是4000）或者Follower超过一定时间（该值可在$KAFKA_HOME/config/server.properties中通过<code>replica.lag.time.max.ms</code>来配置，其默认值是10000）未向Leader发送fetch请求。。<br>　　Kafka的复制机制既不是完全的同步复制，也不是单纯的异步复制。事实上，同步复制要求所有能工作的Follower都复制完，这条消息才会被认为commit，这种复制方式极大的影响了吞吐率（高吞吐率是Kafka非常重要的一个特性）。而异步复制方式下，Follower异步的从Leader复制数据，数据只要被Leader写入log就被认为已经commit，这种情况下如果Follower都复制完都落后于Leader，而如果Leader突然宕机，则会丢失数据。而Kafka的这种使用ISR的方式则很好的均衡了确保数据不丢失以及吞吐率。Follower可以批量的从Leader复制数据，这样极大的提高复制性能（批量写磁盘），极大减少了Follower与Leader的差距。<br>　　需要说明的是，Kafka只解决fail/recover，不处理“Byzantine”（“拜占庭”）问题。一条消息只有被ISR里的所有Follower都从Leader复制过去才会被认为已提交。这样就避免了部分数据被写进了Leader，还没来得及被任何Follower复制就宕机了，而造成数据丢失（Consumer无法消费这些数据）。而对于Producer而言，它可以选择是否等待消息commit，这可以通过<code>request.required.acks</code>来设置。这种机制确保了只要ISR有一个或以上的Follower，一条被commit的消息就不会丢失。
+　　</p>
+<h3 id="Leader_Election算法">Leader Election算法</h3>
+<p>　　上文说明了Kafka是如何做Replication的，另外一个很重要的问题是当Leader宕机了，怎样在Follower中选举出新的Leader。因为Follower可能落后许多或者crash了，所以必须确保选择“最新”的Follower作为新的Leader。一个基本的原则就是，如果Leader不在了，新的Leader必须拥有原来的Leader commit过的所有消息。这就需要作一个折衷，如果Leader在标明一条消息被commit前等待更多的Follower确认，那在它宕机之后就有更多的Follower可以作为新的Leader，但这也会造成吞吐率的下降。<br>　　一种非常常用的Leader Election的方式是“Majority Vote”（“少数服从多数”），但Kafka并未采用这种方式。这种模式下，如果我们有2f+1个Replica（包含Leader和Follower），那在commit之前必须保证有f+1个Replica复制完消息，为了保证正确选出新的Leader，fail的Replica不能超过f个。因为在剩下的任意f+1个Replica里，至少有一个Replica包含有最新的所有消息。这种方式有个很大的优势，系统的latency只取决于最快的几个Broker，而非最慢那个。Majority Vote也有一些劣势，为了保证Leader Election的正常进行，它所能容忍的fail的follower个数比较少。如果要容忍1个follower挂掉，必须要有3个以上的Replica，如果要容忍2个Follower挂掉，必须要有5个以上的Replica。也就是说，在生产环境下为了保证较高的容错程度，必须要有大量的Replica，而大量的Replica又会在大数据量下导致性能的急剧下降。这就是这种算法更多用在<a href="http://zookeeper.apache.org/" target="_blank" rel="external">Zookeeper</a>这种共享集群配置的系统中而很少在需要存储大量数据的系统中使用的原因。例如HDFS的HA Feature是基于<a href="http://blog.cloudera.com/blog/2012/10/quorum-based-journaling-in-cdh4-1" target="_blank" rel="external">majority-vote-based journal</a>，但是它的数据存储并没有使用这种方式。<br>　　实际上，Leader Election算法非常多，比如Zookeeper的<a href="http://web.stanford.edu/class/cs347/reading/zab.pdf" target="_blank" rel="external">Zab</a>, <a href="https://ramcloud.stanford.edu/wiki/download/attachments/11370504/raft.pdf" target="_blank" rel="external">Raft</a>和<a href="http://pmg.csail.mit.edu/papers/vr-revisited.pdf" target="_blank" rel="external">Viewstamped Replication</a>。而Kafka所使用的Leader Election算法更像微软的<a href="http://research.microsoft.com/apps/pubs/default.aspx?id=66814" target="_blank" rel="external">PacificA</a>算法。<br>　　Kafka在Zookeeper中动态维护了一个ISR（in-sync replicas），这个ISR里的所有Replica都跟上了leader，只有ISR里的成员才有被选为Leader的可能。在这种模式下，对于f+1个Replica，一个Partition能在保证不丢失已经commit的消息的前提下容忍f个Replica的失败。在大多数使用场景中，这种模式是非常有利的。事实上，为了容忍f个Replica的失败，Majority Vote和ISR在commit前需要等待的Replica数量是一样的，但是ISR需要的总的Replica的个数几乎是Majority Vote的一半。<br>　　虽然Majority Vote与ISR相比有不需等待最慢的Broker这一优势，但是Kafka作者认为Kafka可以通过Producer选择是否被commit阻塞来改善这一问题，并且节省下来的Replica和磁盘使得ISR模式仍然值得。
+　　</p>
+<h3 id="如何处理所有Replica都不工作">如何处理所有Replica都不工作</h3>
+<p>　　上文提到，在ISR中至少有一个follower时，Kafka可以确保已经commit的数据不丢失，但如果某个Partition的所有Replica都宕机了，就无法保证数据不丢失了。这种情况下有两种可行的方案：</p>
+<ul>
+<li>等待ISR中的任一个Replica“活”过来，并且选它作为Leader</li>
+<li>选择第一个“活”过来的Replica（不一定是ISR中的）作为Leader</li>
+</ul>
+<p>　　这就需要在可用性和一致性当中作出一个简单的折衷。如果一定要等待ISR中的Replica“活”过来，那不可用的时间就可能会相对较长。而且如果ISR中的所有Replica都无法“活”过来了，或者数据都丢失了，这个Partition将永远不可用。选择第一个“活”过来的Replica作为Leader，而这个Replica不是ISR中的Replica，那即使它并不保证已经包含了所有已commit的消息，它也会成为Leader而作为consumer的数据源（前文有说明，所有读写都由Leader完成）。Kafka0.8.*使用了第二种方式。根据Kafka的文档，在以后的版本中，Kafka支持用户通过配置选择这两种方式中的一种，从而根据不同的使用场景选择高可用性还是强一致性。
+　　</p>
+<h3 id="如何选举Leader">如何选举Leader</h3>
+<p>　　最简单最直观的方案是，所有Follower都在Zookeeper上设置一个Watch，一旦Leader宕机，其对应的ephemeral znode会自动删除，此时所有Follower都尝试创建该节点，而创建成功者（Zookeeper保证只有一个能创建成功）即是新的Leader，其它Replica即为Follower。<br>　　但是该方法会有3个问题：
+　　</p>
+<ul>
+<li>split-brain 这是由Zookeeper的特性引起的，虽然Zookeeper能保证所有Watch按顺序触发，但并不能保证同一时刻所有Replica“看”到的状态是一样的，这就可能造成不同Replica的响应不一致</li>
+<li>herd effect 如果宕机的那个Broker上的Partition比较多，会造成多个Watch被触发，造成集群内大量的调整</li>
+<li>Zookeeper负载过重 每个Replica都要为此在Zookeeper上注册一个Watch，当集群规模增加到几千个Partition时Zookeeper负载会过重。</li>
+</ul>
+<p>　　Kafka 0.8.*的Leader Election方案解决了上述问题，它在所有broker中选出一个controller，所有Partition的Leader选举都由controller决定。controller会将Leader的改变直接通过RPC的方式（比Zookeeper Queue的方式更高效）通知需为此作出响应的Broker。同时controller也负责增删Topic以及Replica的重新分配。</p>
+<h2 id="HA相关Zookeeper结构">HA相关Zookeeper结构</h2>
+<p>　　（本节所示Zookeeper结构中，实线框代表路径名是固定的，而虚线框代表路径名与业务相关）<br>　　<strong>admin</strong> （该目录下znode只有在有相关操作时才会存在，操作结束时会将其删除）<br><img src="http://www.jasongj.com/img/KafkaColumn2/kafka_zookeeper_admin.png" alt="Kafka Zookeeper Admin Structure"></p>
+<p>　　<code>/admin/preferred_replica_election</code>数据结构</p>
+<pre><code><span class="label">Schema:</span>
+{
+   <span class="string">"fields"</span>:[
+      {
+         <span class="string">"name"</span>:<span class="string">"version"</span>,
+         <span class="string">"type"</span>:<span class="string">"int"</span>,
+         <span class="string">"doc"</span>:<span class="string">"version id"</span>
+      },
+      {
+         <span class="string">"name"</span>:<span class="string">"partitions"</span>,
+         <span class="string">"type"</span>:{
+            <span class="string">"type"</span>:<span class="string">"array"</span>,
+            <span class="string">"items"</span>:{
+               <span class="string">"fields"</span>:[
+                  {
+                     <span class="string">"name"</span>:<span class="string">"topic"</span>,
+                     <span class="string">"type"</span>:<span class="string">"string"</span>,
+                     <span class="string">"doc"</span>:<span class="string">"topic of the partition for which preferred replica election should be triggered"</span>
+                  },
+                  {
+                     <span class="string">"name"</span>:<span class="string">"partition"</span>,
+                     <span class="string">"type"</span>:<span class="string">"int"</span>,
+                     <span class="string">"doc"</span>:<span class="string">"the partition for which preferred replica election should be triggered"</span>
+                  }
+               ],
+            }
+            <span class="string">"doc"</span>:<span class="string">"an array of partitions for which preferred replica election should be triggered"</span>
+         }
+      }
+   ]
+}
+
+<span class="label">Example:</span>     
+{
+  <span class="string">"version"</span>: <span class="number">1</span>,
+  <span class="string">"partitions"</span>:
+     [
+        {
+            <span class="string">"topic"</span>: <span class="string">"topic1"</span>,
+            <span class="string">"partition"</span>: <span class="number">8</span>         
+        },
+        {
+            <span class="string">"topic"</span>: <span class="string">"topic2"</span>,
+            <span class="string">"partition"</span>: <span class="number">16</span>        
+        }
+     ]            
+}
+</code></pre><p>　　<code>/admin/reassign_partitions</code>用于将一些Partition分配到不同的broker集合上。对于每个待重新分配的Partition，Kafka会在该znode上存储其所有的Replica和相应的Broker id。该znode由管理进程创建并且一旦重新分配成功它将会被自动移除。其数据结构如下</p>
+<pre><code><span class="label">Schema:</span>
+{
+   <span class="string">"fields"</span>:[
+      {
+         <span class="string">"name"</span>:<span class="string">"version"</span>,
+         <span class="string">"type"</span>:<span class="string">"int"</span>,
+         <span class="string">"doc"</span>:<span class="string">"version id"</span>
+      },
+      {
+         <span class="string">"name"</span>:<span class="string">"partitions"</span>,
+         <span class="string">"type"</span>:{
+            <span class="string">"type"</span>:<span class="string">"array"</span>,
+            <span class="string">"items"</span>:{
+               <span class="string">"fields"</span>:[
+                  {
+                     <span class="string">"name"</span>:<span class="string">"topic"</span>,
+                     <span class="string">"type"</span>:<span class="string">"string"</span>,
+                     <span class="string">"doc"</span>:<span class="string">"topic of the partition to be reassigned"</span>
+                  },
+                  {
+                     <span class="string">"name"</span>:<span class="string">"partition"</span>,
+                     <span class="string">"type"</span>:<span class="string">"int"</span>,
+                     <span class="string">"doc"</span>:<span class="string">"the partition to be reassigned"</span>
+                  },
+                  {
+                     <span class="string">"name"</span>:<span class="string">"replicas"</span>,
+                     <span class="string">"type"</span>:<span class="string">"array"</span>,
+                     <span class="string">"items"</span>:<span class="string">"int"</span>,
+                     <span class="string">"doc"</span>:<span class="string">"a list of replica ids"</span>
+                  }
+               ],
+            }
+            <span class="string">"doc"</span>:<span class="string">"an array of partitions to be reassigned to new replicas"</span>
+         }
+      }
+   ]
+}
+
+<span class="label">Example:</span>
+{
+  <span class="string">"version"</span>: <span class="number">1</span>,
+  <span class="string">"partitions"</span>:
+     [
+        {
+            <span class="string">"topic"</span>: <span class="string">"topic3"</span>,
+            <span class="string">"partition"</span>: <span class="number">1</span>,
+            <span class="string">"replicas"</span>: [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]
+        }
+     ]            
+}
+</code></pre><p>　　<code>/admin/delete_topics</code>数据结构</p>
+<pre><code><span class="label">Schema:</span>
+{ <span class="string">"fields"</span>:
+    [ {<span class="string">"name"</span>: <span class="string">"version"</span>, <span class="string">"type"</span>: <span class="string">"int"</span>, <span class="string">"doc"</span>: <span class="string">"version id"</span>},
+      {<span class="string">"name"</span>: <span class="string">"topics"</span>,
+       <span class="string">"type"</span>: { <span class="string">"type"</span>: <span class="string">"array"</span>, <span class="string">"items"</span>: <span class="string">"string"</span>, <span class="string">"doc"</span>: <span class="string">"an array of topics to be deleted"</span>}
+      } ]
+}
+
+<span class="label">Example:</span>
+{
+  <span class="string">"version"</span>: <span class="number">1</span>,
+  <span class="string">"topics"</span>: [<span class="string">"topic4"</span>, <span class="string">"topic5"</span>]
+}
+</code></pre><p>　　<strong>brokers</strong><br><img src="http://www.jasongj.com/img/KafkaColumn2/kafka_zookeeper_brokers.png" alt="Kafka Zookeeper brokers structure"></p>
+<p>　　broker（即<code>/brokers/ids/[brokerId]</code>）存储“活着”的Broker信息。数据结构如下</p>
+<pre><code><span class="label">Schema:</span>
+{ <span class="string">"fields"</span>:
+    [ {<span class="string">"name"</span>: <span class="string">"version"</span>, <span class="string">"type"</span>: <span class="string">"int"</span>, <span class="string">"doc"</span>: <span class="string">"version id"</span>},
+      {<span class="string">"name"</span>: <span class="string">"host"</span>, <span class="string">"type"</span>: <span class="string">"string"</span>, <span class="string">"doc"</span>: <span class="string">"ip address or host name of the broker"</span>},
+      {<span class="string">"name"</span>: <span class="string">"port"</span>, <span class="string">"type"</span>: <span class="string">"int"</span>, <span class="string">"doc"</span>: <span class="string">"port of the broker"</span>},
+      {<span class="string">"name"</span>: <span class="string">"jmx_port"</span>, <span class="string">"type"</span>: <span class="string">"int"</span>, <span class="string">"doc"</span>: <span class="string">"port for jmx"</span>}
+    ]
+}
+
+<span class="label">Example:</span>
+{
+    <span class="string">"jmx_port"</span>:-<span class="number">1</span>,
+    <span class="string">"host"</span>:<span class="string">"node1"</span>,
+    <span class="string">"version"</span>:<span class="number">1</span>,
+    <span class="string">"port"</span>:<span class="number">9092</span>
+}
+</code></pre><p>　　topic注册信息（<code>/brokers/topics/[topic]</code>），存储该Topic的所有Partition的所有Replica所在的Broker id，第一个Replica即为Preferred Replica，对一个给定的Partition，它在同一个Broker上最多只有一个Replica,因此Broker id可作为Replica id。数据结构如下</p>
+<pre><code><span class="label">Schema:</span>
+{ <span class="string">"fields"</span> :
+    [ {<span class="string">"name"</span>: <span class="string">"version"</span>, <span class="string">"type"</span>: <span class="string">"int"</span>, <span class="string">"doc"</span>: <span class="string">"version id"</span>},
+      {<span class="string">"name"</span>: <span class="string">"partitions"</span>,
+       <span class="string">"type"</span>: {<span class="string">"type"</span>: <span class="string">"map"</span>,
+                <span class="string">"values"</span>: {<span class="string">"type"</span>: <span class="string">"array"</span>, <span class="string">"items"</span>: <span class="string">"int"</span>, <span class="string">"doc"</span>: <span class="string">"a list of replica ids"</span>},
+                <span class="string">"doc"</span>: <span class="string">"a map from partition id to replica list"</span>},
+      }
+    ]
+}
+<span class="label">Example:</span>
+{
+    <span class="string">"version"</span>:<span class="number">1</span>,
+    <span class="string">"partitions"</span>:
+        {<span class="string">"12"</span>:[<span class="number">6</span>],
+        <span class="string">"8"</span>:[<span class="number">2</span>],
+        <span class="string">"4"</span>:[<span class="number">6</span>],
+        <span class="string">"11"</span>:[<span class="number">5</span>],
+        <span class="string">"9"</span>:[<span class="number">3</span>],
+        <span class="string">"5"</span>:[<span class="number">7</span>],
+        <span class="string">"10"</span>:[<span class="number">4</span>],
+        <span class="string">"6"</span>:[<span class="number">8</span>],
+        <span class="string">"1"</span>:[<span class="number">3</span>],
+        <span class="string">"0"</span>:[<span class="number">2</span>],
+        <span class="string">"2"</span>:[<span class="number">4</span>],
+        <span class="string">"7"</span>:[<span class="number">1</span>],
+        <span class="string">"3"</span>:[<span class="number">5</span>]}
+}
+</code></pre><p>　　partition state（<code>/brokers/topics/[topic]/partitions/[partitionId]/state</code>） 结构如下</p>
+<pre><code><span class="label">Schema:</span>
+{ <span class="string">"fields"</span>:
+    [ {<span class="string">"name"</span>: <span class="string">"version"</span>, <span class="string">"type"</span>: <span class="string">"int"</span>, <span class="string">"doc"</span>: <span class="string">"version id"</span>},
+      {<span class="string">"name"</span>: <span class="string">"isr"</span>,
+       <span class="string">"type"</span>: {<span class="string">"type"</span>: <span class="string">"array"</span>,
+                <span class="string">"items"</span>: <span class="string">"int"</span>,
+                <span class="string">"doc"</span>: <span class="string">"an array of the id of replicas in isr"</span>}
+      },
+      {<span class="string">"name"</span>: <span class="string">"leader"</span>, <span class="string">"type"</span>: <span class="string">"int"</span>, <span class="string">"doc"</span>: <span class="string">"id of the leader replica"</span>},
+      {<span class="string">"name"</span>: <span class="string">"controller_epoch"</span>, <span class="string">"type"</span>: <span class="string">"int"</span>, <span class="string">"doc"</span>: <span class="string">"epoch of the controller that last updated the leader and isr info"</span>},
+      {<span class="string">"name"</span>: <span class="string">"leader_epoch"</span>, <span class="string">"type"</span>: <span class="string">"int"</span>, <span class="string">"doc"</span>: <span class="string">"epoch of the leader"</span>}
+    ]
+}
+
+<span class="label">Example:</span>
+{
+    <span class="string">"controller_epoch"</span>:<span class="number">29</span>,
+    <span class="string">"leader"</span>:<span class="number">2</span>,
+    <span class="string">"version"</span>:<span class="number">1</span>,
+    <span class="string">"leader_epoch"</span>:<span class="number">48</span>,
+    <span class="string">"isr"</span>:[<span class="number">2</span>]
+}
+</code></pre><p>　　<strong>controller</strong><br>　　<code>/controller -&gt; int (broker id of the controller)</code>存储当前controller的信息</p>
+<pre><code><span class="label">Schema:</span>
+{ <span class="string">"fields"</span>:
+    [ {<span class="string">"name"</span>: <span class="string">"version"</span>, <span class="string">"type"</span>: <span class="string">"int"</span>, <span class="string">"doc"</span>: <span class="string">"version id"</span>},
+      {<span class="string">"name"</span>: <span class="string">"brokerid"</span>, <span class="string">"type"</span>: <span class="string">"int"</span>, <span class="string">"doc"</span>: <span class="string">"broker id of the controller"</span>}
+    ]
+}
+<span class="label">Example:</span>
+{
+    <span class="string">"version"</span>:<span class="number">1</span>,
+　　<span class="string">"brokerid"</span>:<span class="number">8</span>
+}
+</code></pre><p>　　<code>/controller_epoch -&gt; int (epoch)</code>直接以整数形式存储controller epoch，而非像其它znode一样以JSON字符串形式存储。
+　　
+　　</p>
+<h2 id="broker_failover过程简介">broker failover过程简介</h2>
+<ol>
+<li>Controller在Zookeeper注册Watch，一旦有Broker宕机（这是用宕机代表任何让系统认为其die的情景，包括但不限于机器断电，网络不可用，GC导致的Stop The World，进程crash等），其在Zookeeper对应的znode会自动被删除，Zookeeper会fire Controller注册的watch，Controller读取最新的幸存的Broker</li>
+<li>Controller决定set_p，该集合包含了宕机的所有Broker上的所有Partition</li>
+<li>对set_p中的每一个Partition<br>　　3.1 从<code>/brokers/topics/[topic]/partitions/[partition]/state</code>读取该Partition当前的ISR<br>　　3.2 决定该Partition的新Leader。如果当前ISR中有至少一个Replica还幸存，则选择其中一个作为新Leader，新的ISR则包含当前ISR中所有幸存的Replica。否则选择该Partition中任意一个幸存的Replica作为新的Leader以及ISR（该场景下可能会有潜在的数据丢失）。如果该Partition的所有Replica都宕机了，则将新的Leader设置为-1。<br>　　　3.3 将新的Leader，ISR和新的<code>leader_epoch</code>及<code>controller_epoch</code>写入<code>/brokers/topics/[topic]/partitions/[partition]/state</code>。注意，该操作只有其version在3.1至3.3的过程中无变化时才会执行，否则跳转到3.1</li>
+<li>直接通过RPC向set_p相关的Broker发送LeaderAndISRRequest命令。Controller可以在一个RPC操作中发送多个命令从而提高效率。<br>　　Broker failover顺序图如下所示。<br><img src="http://www.jasongj.com/img/KafkaColumn2/kafka_broker_failover.png" alt="broker failover sequence diagram "></li>
+</ol>
+<h1 id="下篇预告">下篇预告</h1>
+<p>　　下篇文章将详细介绍Kafka HA相关的异常情况处理，例如，怎样处理Broker failover，Follower如何从Leader fetch消息，如何重新分配Replica，如何处理Controller failure等。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Kafka/">Kafka</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Message-Queue/">Message Queue</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://www.jasongj.com/2015/04/24/KafkaColumn2/" data-title="Kafka设计解析（二）  Kafka High Availability （上） | Jason&#39;s Blog" data-tsina="1613215853" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2015/03/27/ml1_linear_regression/"  title="机器学习（一） 从一个R语言案例学线性回归">
+ <strong>NEXT:</strong><br/> 
+ <span>机器学习（一） 从一个R语言案例学线性回归
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section class="comment">
+	<div class="ds-thread"></div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#摘要"><span class="toc-number">1.</span> <span class="toc-text">摘要</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Kafka为何需要High_Available"><span class="toc-number">2.</span> <span class="toc-text">Kafka为何需要High Available</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#为何需要Replication"><span class="toc-number">2.1.</span> <span class="toc-text">为何需要Replication</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#为何需要Leader_Election"><span class="toc-number">2.2.</span> <span class="toc-text">为何需要Leader Election</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Kafka_HA设计解析"><span class="toc-number">3.</span> <span class="toc-text">Kafka HA设计解析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#如何将所有Replica均匀分布到整个集群"><span class="toc-number">3.1.</span> <span class="toc-text">如何将所有Replica均匀分布到整个集群</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Data_Replication"><span class="toc-number">3.2.</span> <span class="toc-text">Data Replication</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Propagate消息"><span class="toc-number">3.2.1.</span> <span class="toc-text">Propagate消息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ACK前需要保证有多少个备份"><span class="toc-number">3.2.2.</span> <span class="toc-text">ACK前需要保证有多少个备份</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Leader_Election算法"><span class="toc-number">3.2.3.</span> <span class="toc-text">Leader Election算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如何处理所有Replica都不工作"><span class="toc-number">3.2.4.</span> <span class="toc-text">如何处理所有Replica都不工作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如何选举Leader"><span class="toc-number">3.2.5.</span> <span class="toc-text">如何选举Leader</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HA相关Zookeeper结构"><span class="toc-number">3.3.</span> <span class="toc-text">HA相关Zookeeper结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#broker_failover过程简介"><span class="toc-number">3.4.</span> <span class="toc-text">broker failover过程简介</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#下篇预告"><span class="toc-number">4.</span> <span class="toc-text">下篇预告</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle"><b>作者微信公众号</b></p>
+	<div align="center">
+		<img src="/img/WeChat_QR.jpg"/>
+	</dev>
+</div>
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+			<li><a href="/categories/Database/" title="Database">Database<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Machine-Learning/" title="Machine Learning">Machine Learning<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Message-Queue/" title="Message Queue">Message Queue<sup>4</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/Disruptor/" title="Disruptor">Disruptor<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Kafka/" title="Kafka">Kafka<sup>3</sup></a></li>
+		
+			<li><a href="/tags/PostgreSQL/" title="PostgreSQL">PostgreSQL<sup>1</sup></a></li>
+		
+			<li><a href="/tags/SQL/" title="SQL">SQL<sup>1</sup></a></li>
+		
+			<li><a href="/tags/机器学习/" title="机器学习">机器学习<sup>1</sup></a></li>
+		
+			<li><a href="/tags/线性回归/" title="线性回归">线性回归<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font clearfix">
+		
+		<a href="http://weibo.com/1613215853" target="_blank" title="weibo"></a>
+		
+		
+		
+		
+		
+        <a href="https://www.linkedin.com/in/jasongj" target="_blank" title="linkedin"></a>
+        
+	</div>
+		<p class="copyright">Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2015 
+		
+		<a href="http://www.jasongj.com" target="_blank" title="Jason Guo">Jason Guo</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"habren"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+  <!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</body>
+</html>
