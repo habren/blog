@@ -1,6 +1,6 @@
 module.exports = function(hljs) {
   var IDENT_RE        = '[\\w-]+'; // yes, Less identifiers may begin with a digit
-  var INTERP_IDENT_RE = '(' + IDENT_RE + '|@{' + IDENT_RE + '})+';
+  var INTERP_IDENT_RE = '(' + IDENT_RE + '|@{' + IDENT_RE + '})';
 
   /* Generic Modes */
 
@@ -49,7 +49,7 @@ module.exports = function(hljs) {
   );
 
   var VALUE_WITH_RULESETS = VALUE.concat({
-    begin: '{', end: '}', contains: RULES,
+    begin: '{', end: '}', contains: RULES
   });
 
   var MIXIN_GUARD_MODE = {

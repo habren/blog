@@ -3,11 +3,13 @@ module.exports = function(hljs) {
     className: 'escape',
     begin: '`[\\s\\S]'
   };
-  var COMMENTS = {
-    className: 'comment',
-    begin: ';', end: '$',
-    relevance: 0
-  };
+  var COMMENTS = hljs.COMMENT(
+    ';',
+    '$',
+    {
+      relevance: 0
+    }
+  );
   var BUILT_IN = [
     {
       className: 'built_in',

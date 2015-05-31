@@ -335,7 +335,8 @@ module.exports = function(hljs) {
     '#\\s', // markdown
     '\\*\\s', // markdown
     '===\\s', // markdown
-    '\\|'
+    '\\|',
+    '%', // prolog
   ];
 
   return {

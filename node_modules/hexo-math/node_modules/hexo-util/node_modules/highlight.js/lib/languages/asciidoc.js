@@ -1,23 +1,26 @@
 module.exports = function(hljs) {
   return {
+    aliases: ['adoc'],
     contains: [
       // block comment
-      {
-        className: 'comment',
-        begin: '^/{4,}\\n',
-        end: '\\n/{4,}$',
+      hljs.COMMENT(
+        '^/{4,}\\n',
+        '\\n/{4,}$',
         // can also be done as...
-        //begin: '^/{4,}$',
-        //end: '^/{4,}$',
-        relevance: 10
-      },
+        //'^/{4,}$',
+        //'^/{4,}$',
+        {
+          relevance: 10
+        }
+      ),
       // line comment
-      {
-        className: 'comment',
-        begin: '^//',
-        end: '$',
-        relevance: 0
-      },
+      hljs.COMMENT(
+        '^//',
+        '$',
+        {
+          relevance: 0
+        }
+      ),
       // title
       {
         className: 'title',

@@ -16,12 +16,8 @@ module.exports = function(hljs) {
     };
     var GCODE_CODE = [
         hljs.C_LINE_COMMENT_MODE,
-        {
-            className: 'comment',
-            begin: /\(/, end: /\)/,
-            contains: [hljs.PHRASAL_WORDS_MODE]
-        },
         hljs.C_BLOCK_COMMENT_MODE,
+        hljs.COMMENT(/\(/, /\)/),
         hljs.inherit(hljs.C_NUMBER_MODE, {begin: '([-+]?([0-9]*\\.?[0-9]+\\.?))|' + hljs.C_NUMBER_RE}),
         hljs.inherit(hljs.APOS_STRING_MODE, {illegal: null}),
         hljs.inherit(hljs.QUOTE_STRING_MODE, {illegal: null}),
