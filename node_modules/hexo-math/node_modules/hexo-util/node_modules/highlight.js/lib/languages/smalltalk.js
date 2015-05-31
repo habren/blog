@@ -12,10 +12,7 @@ module.exports = function(hljs) {
     aliases: ['st'],
     keywords: 'self super nil true false thisContext', // only 6
     contains: [
-      {
-        className: 'comment',
-        begin: '"', end: '"'
-      },
+      hljs.COMMENT('"', '"'),
       hljs.APOS_STRING_MODE,
       {
         className: 'class',

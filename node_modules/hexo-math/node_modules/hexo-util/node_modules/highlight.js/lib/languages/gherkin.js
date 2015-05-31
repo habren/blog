@@ -7,17 +7,19 @@ module.exports = function (hljs) {
         className: 'keyword',
         begin: '\\*'
       },
+      hljs.COMMENT('@[^@\r\n\t ]+', '$'),
       {
-        className: 'comment',
-        begin: '@[^@\r\n\t ]+', end: '$'
-      },
-      {
-        className: 'string',
-        begin: '\\|', end: '\\$'
+        begin: '\\|', end: '\\|\\w*$',
+        contains: [
+          {
+            className: 'string',
+            begin: '[^|]+'
+          }
+        ]
       },
       {
         className: 'variable',
-        begin: '<', end: '>',
+        begin: '<', end: '>'
       },
       hljs.HASH_COMMENT_MODE,
       {

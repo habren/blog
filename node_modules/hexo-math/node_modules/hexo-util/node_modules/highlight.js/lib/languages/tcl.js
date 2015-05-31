@@ -14,13 +14,8 @@ module.exports = function(hljs) {
       'tcl_wordBreakBefore tcltest tclvars tell time tm trace unknown unload unset update '+
       'uplevel upvar variable vwait while',
     contains: [
-      {
-        className: 'comment',
-        variants: [
-          {begin: ';[ \\t]*#', end: '$'},
-          {begin: '^[ \\t]*#', end: '$'}
-        ]
-      },
+      hljs.COMMENT(';[ \\t]*#', '$'),
+      hljs.COMMENT('^[ \\t]*#', '$'),
       {
         beginKeywords: 'proc',
         end: '[\\{]',
@@ -31,7 +26,7 @@ module.exports = function(hljs) {
             begin: '[ \\t\\n\\r]+(::)?[a-zA-Z_]((::)?[a-zA-Z0-9_])*',
             end: '[ \\t\\n\\r]',
             endsWithParent: true,
-            excludeEnd: true,
+            excludeEnd: true
           }
         ]
       },
@@ -41,12 +36,12 @@ module.exports = function(hljs) {
         variants: [
           {
             begin: '\\$(\\{)?(::)?[a-zA-Z_]((::)?[a-zA-Z0-9_])*\\(([a-zA-Z0-9_])*\\)',
-            end: '[^a-zA-Z0-9_\\}\\$]',
+            end: '[^a-zA-Z0-9_\\}\\$]'
           },
           {
             begin: '\\$(\\{)?(::)?[a-zA-Z_]((::)?[a-zA-Z0-9_])*',
-            end: '(\\))?[^a-zA-Z0-9_\\}\\$]',
-          },
+            end: '(\\))?[^a-zA-Z0-9_\\}\\$]'
+          }
         ]
       },
       {
@@ -60,7 +55,7 @@ module.exports = function(hljs) {
       {
         className: 'number',
         variants: [hljs.BINARY_NUMBER_MODE, hljs.C_NUMBER_MODE]
-      },
+      }
     ]
   }
 };

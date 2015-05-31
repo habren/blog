@@ -25,7 +25,6 @@ module.exports = function(hljs) {
         ]
       },
       {
-        className: 'stl_container',
         begin: '\\b(set|list|map)\\s*<', end: '>',
         keywords: BUILT_IN_TYPES,
         contains: ['self']

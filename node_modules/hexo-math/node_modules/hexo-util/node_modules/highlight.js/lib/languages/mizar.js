@@ -12,10 +12,7 @@ module.exports = function(hljs) {
       'reflexivity irreflexivity connectedness uniqueness commutativity ' +
       'idempotence involutiveness projectivity',
     contains: [
-      {
-        className: 'comment',
-        begin: '::', end: '$'
-      }
+      hljs.COMMENT('::', '$')
     ]
   };
 };
