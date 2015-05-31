@@ -106,7 +106,7 @@ exclude_generator:
 # Deployment
 ## Docs: http://hexo.io/docs/deployment.html
 deploy:
-  type: github
+  type: git
   ##repository: git@github.com:habren/habren.github.io.git
   ##branch: master
   repository: git@gitcafe.com:jasongj/jasongj.git
