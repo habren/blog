@@ -178,19 +178,19 @@ description:
     $KAFKA_HOME/bin/kafka-topics.sh --describe --topic topic1 --zookeeper localhost:2181
 
 　　查询结果如下图所示，从图中可以看到，Kafka将所有Replica均匀分布到了整个集群，并且Leader也均匀分布。
-![](http://www.jasongj.com/img/KafkaColumn3/preferred_topic_test_1.png)
+![preferred_topic_test_1](http://www.jasongj.com/img/KafkaColumn3/preferred_topic_test_1.png)
 
 　　手动停止部分Broker，topic1的Partition/Replica分布如下图所示。从图中可以看到，由于Broker 1/2/4都被停止，Partition 0的Leader由原来的1变为3，Partition 1的Leader由原来的2变为5，Partition 2的Leader由原来的3变为6，Partition 3的Leader由原来的4变为7。
-![](http://www.jasongj.com/img/KafkaColumn3/preferred_topic_test_2.png)　　
+![preferred_topic_test_2](http://www.jasongj.com/img/KafkaColumn3/preferred_topic_test_2.png)　　
 　　
 　　再重新启动ID为1的Broker，topic1的Partition/Replica分布如下。可以看到，虽然Broker 1已经启动（Partition 0和Partition5的ISR中有1），但是1并不是任何一个Parititon的Leader，而Broker 5/6/7都是2个Partition的Leader，即Leader的分布不均衡——一个Broker最多是2个Partition的Leader，而最少是0个Partition的Leader。
-![](http://www.jasongj.com/img/KafkaColumn3/preferred_topic_test_3.png)
+![preferred_topic_test_3](http://www.jasongj.com/img/KafkaColumn3/preferred_topic_test_3.png)
 　　
 　　运行该工具后，topic1的Partition/Replica分布如下图所示。由图可见，除了Partition 1和Partition 3由于Broker 2和Broker 4还未启动，所以其Leader不是其Preferred Repliac外，其它所有Partition的Leader都是其Preferred Replica。同时，与运行该工具前相比，Leader的分配更均匀——一个Broker最多是2个Parittion的Leader，最少是1个Partition的Leader。
-![](http://www.jasongj.com/img/KafkaColumn3/preferred_topic_test_4.png)
+![preferred_topic_test_4](http://www.jasongj.com/img/KafkaColumn3/preferred_topic_test_4.png)
 　　
 　　启动Broker 2和Broker 4，Leader分布与上一步相比并未变化，如下图所示。
-![](http://www.jasongj.com/img/KafkaColumn3/preferred_topic_test_5.png)
+![preferred_topic_test_5](http://www.jasongj.com/img/KafkaColumn3/preferred_topic_test_5.png)
 
 　　再次运行该工具，所有Partition的Leader都由其Preferred Replica承担，Leader分布更均匀——每个Broker承担1个Partition的Leader角色。
 　　
@@ -230,7 +230,7 @@ description:
     --broker-list "4,5,6,7" --generate
 
 　　结果如下图所示
-![[](http://www.jasongj.com/img/KafkaColumn3/reassign_1.png)
+![reassign_1](http://www.jasongj.com/img/KafkaColumn3/reassign_1.png)
 　　
 2.　使用execute模式，执行reassign plan
 　　将上一步生成的reassignment plan存入`/tmp/reassign-plan.json`文件中，并执行
@@ -238,10 +238,10 @@ description:
     $KAFKA_HOME/bin/kafka-reassign-partitions.sh --zookeeper localhost:2181 
     --reassignment-json-file /tmp/reassign-plan.json --execute
 
-![](http://www.jasongj.com/img/KafkaColumn3/reassign_2.png)
+![reassign_2](http://www.jasongj.com/img/KafkaColumn3/reassign_2.png)
 
 　　此时，Zookeeper上`/admin/reassign_partitions`节点被创建，且其值与`/tmp/reassign-plan.json`文件的内容一致。
-![](http://www.jasongj.com/img/KafkaColumn3/reassign_3.png)
+![reassign_3](http://www.jasongj.com/img/KafkaColumn3/reassign_3.png)
 
 3.　使用verify模式，验证reassign是否完成
 　　执行verify命令
@@ -250,14 +250,14 @@ description:
     --reassignment-json-file /tmp/reassign-plan.json --verify
 
 　　结果如下所示，从图中可看出topic1的所有Partititon都重新分配成功。
-![](http://www.jasongj.com/img/KafkaColumn3/reassign_4.png)
+![reassign_4](http://www.jasongj.com/img/KafkaColumn3/reassign_4.png)
 
 　　接下来用Topic Tool再次验证。
 
     bin/kafka-topics.sh --zookeeper localhost:2181 --describe --topic topic1
 
 　　结果如下图所示，从图中可看出topic1的所有Partition都被重新分配到Broker 4/5/6/7，且每个Partition的AR与reassign plan一致。
-![](http://www.jasongj.com/img/KafkaColumn3/reassign_5.png)
+![reassign_5](http://www.jasongj.com/img/KafkaColumn3/reassign_5.png)
 
 
 　　需要说明的是，在使用execute之前，并不一定要使用generate模式自动生成reassign plan，使用generate模式只是为了方便。事实上，某些场景下，generate模式生成的reassign plan并不一定能满足需求，此时用户可以自己设置reassign plan。
