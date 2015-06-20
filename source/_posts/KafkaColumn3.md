@@ -106,7 +106,7 @@ description:
 　　
 ***注意***：最后一步才将Zookeeper中的AR更新，因为这是唯一一个持久存储AR的地方，如果Controller在这一步之前crash，新的Controller仍然能够继续完成该过程。
 　　以下是Partition重新分配的案例，OAR = ｛1，2，3｝，RAR = ｛4，5，6｝，Partition重新分配过程中Zookeeper中的AR和Leader/ISR路径如下
-| AR | leader/isr | Sttep |
+| AR | leader/isr | Step |
 |---------------------------|
 | {1,2,3} | 1/{1,2,3} | (initial state) |
 | {1,2,3,4,5,6} | 1/{1,2,3} | (step 2) |
@@ -169,13 +169,11 @@ description:
 2. Controller一直Watch该节点，一旦该节点被创建，Controller会收到通知，并获取该内容。
 3. Controller读取Preferred Replica，如果发现该Replica当前并非是Leader并且它在该Partition的ISR中，Controller向该Replica发送LeaderAndIsrRequest，使该Replica成为Leader。如果该Replica当前并非是Leader，且不在ISR中，Controller为了保证没有数据丢失，并不会将其设置为Leader。
 　
+
 ***用法***
+　　`$KAFKA_HOME/bin/kafka-preferred-replica-election.sh --zookeeper localhost:2181`
 
-    $KAFKA_HOME/bin/kafka-preferred-replica-election.sh --zookeeper localhost:2181
-
-　　在包含8个Broker的Kafka集群上，创建1个名为topic1，replication-factor为3，Partition数为8的Topic，使用如下命令查看其Partition/Replica分布。
-
-    $KAFKA_HOME/bin/kafka-topics.sh --describe --topic topic1 --zookeeper localhost:2181
+　　在包含8个Broker的Kafka集群上，创建1个名为topic1，replication-factor为3，Partition数为8的Topic，使用`$KAFKA_HOME/bin/kafka-topics.sh --describe --topic topic1 --zookeeper localhost:2181`命令查看其Partition/Replica分布。
 
 　　查询结果如下图所示，从图中可以看到，Kafka将所有Replica均匀分布到了整个集群，并且Leader也均匀分布。
 ![preferred_topic_test_1](http://www.jasongj.com/img/KafkaColumn3/preferred_topic_test_1.png)
@@ -222,39 +220,44 @@ description:
  - verify模式，验证重新分配Partition是否成功
 
 　　下面这个例子将使用该工具将Topic的所有Partition重新分配到Broker 4/5/6/7上，步骤如下：
-1.　使用generate模式，生成reassign plan
-　　指定需要重新分配的Topic （{"topics":[{"topic":"topic1"}],"version":1}），并存入`/tmp/topics-to-move.json`文件中，然后执行如下命令
-
-    $KAFKA_HOME/bin/kafka-reassign-partitions.sh --zookeeper localhost:2181
-    --topics-to-move-json-file /tmp/topics-to-move.json 
-    --broker-list "4,5,6,7" --generate
+1. 使用generate模式，生成reassign plan。指定需要重新分配的Topic （{"topics":[{"topic":"topic1"}],"version":1}），并存入`/tmp/topics-to-move.json`文件中，然后执行
+<pre><code>
+	$KAFKA_HOME/bin/kafka-reassign-partitions.sh 
+	--zookeeper localhost:2181 
+	--topics-to-move-json-file /tmp/topics-to-move.json  
+	--broker-list "4,5,6,7" --generate
+</code></pre>
 
 　　结果如下图所示
 ![reassign_1](http://www.jasongj.com/img/KafkaColumn3/reassign_1.png)
 　　
 2.　使用execute模式，执行reassign plan
 　　将上一步生成的reassignment plan存入`/tmp/reassign-plan.json`文件中，并执行
-
-    $KAFKA_HOME/bin/kafka-reassign-partitions.sh --zookeeper localhost:2181 
-    --reassignment-json-file /tmp/reassign-plan.json --execute
+<pre><code>
+    $KAFKA_HOME/bin/kafka-reassign-partitions.sh 
+	--zookeeper localhost:2181     
+	--reassignment-json-file /tmp/reassign-plan.json --execute
+</code></pre>
 
 ![reassign_2](http://www.jasongj.com/img/KafkaColumn3/reassign_2.png)
 
 　　此时，Zookeeper上`/admin/reassign_partitions`节点被创建，且其值与`/tmp/reassign-plan.json`文件的内容一致。
 ![reassign_3](http://www.jasongj.com/img/KafkaColumn3/reassign_3.png)
 
-3.　使用verify模式，验证reassign是否完成
-　　执行verify命令
-
-    $KAFKA_HOME/bin/kafka-reassign-partitions.sh --zookeeper localhost:2181 
-    --reassignment-json-file /tmp/reassign-plan.json --verify
+3.　使用verify模式，验证reassign是否完成。执行verify命令
+<pre><code>
+   $KAFKA_HOME/bin/kafka-reassign-partitions.sh 
+   --zookeeper localhost:2181 --verify
+   --reassignment-json-file /tmp/reassign-plan.json
+</code></pre>
 
 　　结果如下所示，从图中可看出topic1的所有Partititon都重新分配成功。
 ![reassign_4](http://www.jasongj.com/img/KafkaColumn3/reassign_4.png)
 
-　　接下来用Topic Tool再次验证。
-
-    bin/kafka-topics.sh --zookeeper localhost:2181 --describe --topic topic1
+　　接下来用Topic Tool再次验证。 
+<pre><code>
+	bin/kafka-topics.sh --zookeeper localhost:2181 --describe --topic topic1
+</code></pre>
 
 　　结果如下图所示，从图中可看出topic1的所有Partition都被重新分配到Broker 4/5/6/7，且每个Partition的AR与reassign plan一致。
 ![reassign_5](http://www.jasongj.com/img/KafkaColumn3/reassign_5.png)
@@ -267,11 +270,11 @@ description:
 　　该工具旨在从整个集群的Broker上收集状态改变日志，并生成一个集中的格式化的日志以帮助诊断状态改变相关的故障。每个Broker都会将其收到的状态改变相关的的指令存于名为`state-change.log`的日志文件中。某些情况下，Partition的Leader Election可能会出现问题，此时我们需要对整个集群的状态改变有个全局的了解从而诊断故障并解决问题。该工具将集群中相关的`state-change.log`日志按时间顺序合并，同时支持用户输入时间范围和目标Topic及Partition作为过滤条件，最终将格式化的结果输出。
 　　
 ***用法***
-
-    bin/kafka-run-class.sh kafka.tools.StateChangeLogMerger 
-    --logs /opt/kafka_2.11-0.8.2.1/logs/state-change.log 
-    --topic topic1 --partitions 0,1,2,3,4,5,6,7
-
+<pre><code>
+	bin/kafka-run-class.sh kafka.tools.StateChangeLogMerger
+	--logs /opt/kafka_2.11-0.8.2.1/logs/state-change.log
+	--topic topic1 --partitions 0,1,2,3,4,5,6,7`
+</code></pre>
 
 # 下篇预告
 　　下篇文章将详细介绍Kafka Simple Consumer API和High Level Consumer API，以及0.9.*版本中对Kafka Consumer的重新设计。
