@@ -188,10 +188,8 @@ description:
  - 如果一定要做到`Exactly once`，就需要协调offset和实际操作的输出。精典的做法是引入两阶段提交。如果能让offset和操作输入存在同一个地方，会更简洁和通用。这种方式可能更好，因为许多输出系统可能不支持两阶段提交。比如，Consumer拿到数据后可能把数据放到HDFS，如果把最新的offset和数据本身一起写到HDFS，那就可以保证数据的输出和offset的更新要么都完成，要么都不完成，间接实现`Exactly once`。（目前就high level API而言，offset是存于Zookeeper中的，无法存于HDFS，而low level API的offset是由自己去维护的，可以将之存于HDFS中）
 　　总之，Kafka默认保证`At least once`，并且允许通过设置Producer异步提交来实现`At most once`。而`Exactly once`要求与外部存储系统协作，幸运的是Kafka提供的offset可以非常直接非常容易得使用这种方式。
 
-# 下篇预告
-　　下一篇将深入讲解Kafka是如何做Replication和Leader Election的。在Kafka0.8以前的版本中，如果某个broker宕机，或者磁盘出现问题，则该broker上所有partition的数据都会丢失。而Kafka0.8以后加入了Replication机制，可以将每个Partition的数据备份多份，即使某些broker宕机也能保证系统的可用性和数据的完整性。
 　　
-
+　　　阅读下一篇[Kafka设计解析（二）- Kafka High Availability （上）](http://www.jasongj.com/2015/04/24/KafkaColumn2/)
 　　
 　　
 　　

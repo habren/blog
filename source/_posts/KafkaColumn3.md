@@ -276,10 +276,10 @@ description:
 	--topic topic1 --partitions 0,1,2,3,4,5,6,7`
 </code></pre>
 
-# 下篇预告
-　　下篇文章将详细介绍Kafka Simple Consumer API和High Level Consumer API，以及0.9.*版本中对Kafka Consumer的重新设计。
 　　
 
+	　阅读下一篇[Kafka设计解析（四）- Kafka Consumer设计解析](http://www.jasongj.com/2015/08/09/KafkaColumn4/)
+　　　阅读上一篇[Kafka设计解析（二）- Kafka High Availability （上）](http://www.jasongj.com/2015/04/24/KafkaColumn2/)
 
 
 

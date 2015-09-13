@@ -321,3 +321,7 @@ description:
 
 # 下篇预告
 　　下篇文章将详细介绍Kafka HA相关的异常情况处理，例如，怎样处理Broker failover，Follower如何从Leader fetch消息，如何重新分配Replica，如何处理Controller failure等。
+
+
+　　　阅读下一篇[Kafka设计解析（三）- Kafka High Availability （下）](http://www.jasongj.com/2015/06/08/KafkaColumn3/)
+　　　阅读上一篇[Kafka设计解析（一）- Kafka背景及架构介绍](http://www.jasongj.com/2015/03/10/KafkaColumn1/)
