@@ -3,5 +3,5 @@ Thumbs.db
 db.json
 debug.log
 public/
-node_modules/hexo
+node_modules
 .deploy/
