@@ -4,13 +4,13 @@
 
 # Site
 title: Jason's Blog
-subtitle: 
-description: Technology blog
-author: Jason Guo
+subtitle: 分享交流大数据领域技术，包括但不限于Storm、Spark、Hadoop等流行分布式计算系统，Kafka、MetaQ等分布式消息系统，MongoDB、Cassandra等NoSQL，PostgreSQL、MySQL等RDBMS以及其它前沿技术
+description: 分享交流大数据领域技术，包括但不限于Storm、Spark、Hadoop等流行分布式计算系统，Kafka、MetaQ等分布式消息系统，MongoDB、Cassandra等NoSQL，PostgreSQL、MySQL等RDBMS以及其它前沿技术
+author: 郭俊 Jason
 email: gj1989lh@163.com
 ## language: en_US
-language: en_US
-## language: zh-CN
+##language: en_US
+language: zh-CN
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
@@ -99,19 +99,19 @@ sitemap:
 # Extensions
 ## Plugins: https://github.com/hexojs/hexo/wiki/Plugins
 ## Themes: https://github.com/hexojs/hexo/wiki/Themes
-## theme: landscape
 theme: pacman
 exclude_generator:
 
 # Deployment
 ## Docs: http://hexo.io/docs/deployment.html
 deploy:
-  type: git
-  ##repository: git@github.com:habren/habren.github.io.git
-  ##branch: master
+- type: github
+  repository: git@github.com:habren/habren.github.io.git
+  branch: master
+- type: github
   repository: git@gitcafe.com:jasongj/jasongj.git
   branch: gitcafe-pages
-  
+
   # Markdown
 ## https://github.com/chjj/marked
 markdown:
@@ -126,6 +126,6 @@ markdown:
 # Stylus
 stylus:
   compress: false
-  
+
 livereload:
   port: 35729
