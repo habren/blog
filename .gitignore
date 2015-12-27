@@ -3,5 +3,7 @@ Thumbs.db
 db.json
 debug.log
 public/
-node_modules
+node_modules/
+themes/**/
+!themes/pacman/
 .deploy/
