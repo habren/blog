@@ -122,3 +122,6 @@ mse_test约100万条记录，nbar_test约165万条记录
 #### **Query 2 Test 1：**强制使用Hash Join，失败
 本次实验通过设置`enable_hashjoin=true`，`enable_nestloop=false`，`enable_mergejoin=false`来试图强制使用Hash Join，但是失败了。
 ![](http://www.jasongj.com/img/Join/Query2_Test1_Explain.png)
+
+
+　　阅读下一篇[SQL优化（二） 快速计算Distinct Count](http://www.jasongj.com/2015/03/15/count_distinct/)

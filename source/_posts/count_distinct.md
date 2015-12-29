@@ -161,3 +161,8 @@ description:
 　　如果必须要计算精确的distinct count，可以针对不同的情况使用count distinct或者count group by来实现较好的效率，同时对于数据的存储类型，能使用macaddr/intger/bigint的，尽量不要使用text。
 　　
 　　另外不必要精确计算，只需要保证误差在可接受的范围之内，或者计算效率更重要时，可以采用本文所介绍的[daptive sampling Algorithm](http://en.wikipedia.org/wiki/Adaptive_sampling)，[Distinct Counting with a Self-Learning Bitmap](http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=4812493&tag=1)，[HyperLogLog](http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf)，[LogLog](http://algo.inria.fr/flajolet/Publications/DuFl03-LNCS.pdf)，[Probabilistic Counting Algorithms](http://www.mathcs.emory.edu/~cheung/papers/StreamDB/Probab/1985-Flajolet-Probabilistic-counting.pdf)等近似算法。另外，对于data warehouse这种存储数据量随着时间不断超增加且最终数据总量非常巨大的应用场景，可以使用hll这种支持合并dintinct count结果的数据类型，并周期性的（比如daily/weekly/monthly）计算部分数据的distinct值，然后通过合并部分结果的方式得到总结果的方式来快速响应查询请求。
+
+
+
+　　阅读下一篇[SQL优化（三） Postgre Sql Table Partitioning](http://www.jasongj.com/2015/12/13/SQL3_partition/)
+　　阅读上一篇[SQL优化（一） Sql优化（一） Merge Join vs. Hash Join vs. Nested Loop](http://www.jasongj.com/2015/03/07/Join1/)

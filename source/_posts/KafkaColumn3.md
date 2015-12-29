@@ -270,16 +270,15 @@ description:
 　　该工具旨在从整个集群的Broker上收集状态改变日志，并生成一个集中的格式化的日志以帮助诊断状态改变相关的故障。每个Broker都会将其收到的状态改变相关的的指令存于名为`state-change.log`的日志文件中。某些情况下，Partition的Leader Election可能会出现问题，此时我们需要对整个集群的状态改变有个全局的了解从而诊断故障并解决问题。该工具将集群中相关的`state-change.log`日志按时间顺序合并，同时支持用户输入时间范围和目标Topic及Partition作为过滤条件，最终将格式化的结果输出。
 　　
 ***用法***
-<pre><code>
+```sh
 	bin/kafka-run-class.sh kafka.tools.StateChangeLogMerger
 	--logs /opt/kafka_2.11-0.8.2.1/logs/state-change.log
-	--topic topic1 --partitions 0,1,2,3,4,5,6,7`
-</code></pre>
+	--topic topic1 --partitions 0,1,2,3,4,5,6,7
+```
 
-　　
 
-	　阅读下一篇[Kafka设计解析（四）- Kafka Consumer设计解析](http://www.jasongj.com/2015/08/09/KafkaColumn4/)
-　　　阅读上一篇[Kafka设计解析（二）- Kafka High Availability （上）](http://www.jasongj.com/2015/04/24/KafkaColumn2/)
+　　阅读下一篇[Kafka设计解析（四）- Kafka Consumer设计解析](http://www.jasongj.com/2015/08/09/KafkaColumn4/)
+　　阅读上一篇[Kafka设计解析（二）- Kafka High Availability （上）](http://www.jasongj.com/2015/04/24/KafkaColumn2/)
 
 
 

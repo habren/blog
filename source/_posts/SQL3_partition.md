@@ -400,4 +400,5 @@ SELECT * FROM almart_2015_12_30;
  - 大量的分区表会极大地增加查询计划时间。表分区在多达几百个分区表时能很好地发挥优势，但不要使用多达几千个分区表。
 
 
+　　阅读下一篇[SQL优化（四） Postgre Sql存储过程](http://www.jasongj.com/2015/12/27/SQL4_%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B_Store%20Procedure/)
 　　阅读上一篇[SQL优化（二） 快速计算Distinct Count](http://www.jasongj.com/2015/03/15/count_distinct/)
