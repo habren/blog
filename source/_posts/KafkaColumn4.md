@@ -227,8 +227,6 @@ description:
 
 
 
-#下篇预告
-　　下篇文章将详细介绍Kafka性能测试方法及相应的性能测试报告。
-
-　　　阅读上一篇文章[fka设计解析（三）- Kafka High Availability （下）](http://www.jasongj.com/2015/06/08/KafkaColumn3/)
+　　　阅读下一篇文章[Kafka设计解析（五） Kafka性能测试方法及Benchmark报告](http://www.jasongj.com/2015/12/31/KafkaColumn5_kafka_benchmark/)
+　　　阅读上一篇文章[Kafka设计解析（三）- Kafka High Availability （下）](http://www.jasongj.com/2015/06/08/KafkaColumn3/)
 
