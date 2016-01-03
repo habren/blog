@@ -104,13 +104,20 @@ exclude_generator:
 
 # Deployment
 ## Docs: http://hexo.io/docs/deployment.html
+#deploy 2.8.3
+#deploy:
+#- type: github
+#  repository: git@github.com:habren/habren.github.io.git
+#  branch: master
+#- type: github
+#  repository: git@gitcafe.com:jasongj/jasongj.git
+#  branch: gitcafe-pages
+
 deploy:
-- type: github
-  repository: git@github.com:habren/habren.github.io.git
-  branch: master
-- type: github
-  repository: git@gitcafe.com:jasongj/jasongj.git
-  branch: gitcafe-pages
+  type: git
+  repo:
+    github: git@github.com:habren/habren.github.io.git, master
+    gitcafe: git@gitcafe.com:jasongj/jasongj.git, gitcafe-pages
 
   # Markdown
 ## https://github.com/chjj/marked
