@@ -12,7 +12,8 @@ menu:
   categories: /categories
 
 #### Widgets
-widgets: 
+widgets:
+- mail_subscribe
 - wechat
 - links
 - category
