@@ -11,6 +11,8 @@ description:
   - 本文介绍了存储过程的概念，优势，并结合实例讲解了存储过程在PostgreSQL中的实现，注意事项
 ---
 
+原创文章，转载请务必在文章开头处注明出自[Jason's Blog](http://www.jasongj.com)，并给出原文链接[http://www.jasongj.com/2015/12/27/SQL4_%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B_Store%20Procedure/](http://www.jasongj.com/2015/12/27/SQL4_%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B_Store%20Procedure/)
+
 # 存储过程简介
 ## 什么是存储过程
 　　百度百科是这么描述存储过程的：存储过程（Stored Procedure）是在大型数据库系统中，一组为了完成特定功能的SQL语句集，存储在数据库中，首次编译后再次调用不需要再次编译，用户通过指定存储过程的名字并给出参数（如果有）来执行它。它是数据库中的一个重要对象，任何一个设计良好的数据库应用程序都应该用到存储过程。
@@ -472,4 +474,9 @@ DROP FUNCTION get_array(anyelement, anyelement);
 　　另外，在实际项目中，经常会用到CREATE OR REPLACE FUNCTION去替换已有的函数实现。如果同名函数已存在，但输入参数列表不同，会创建同名的函数，也即重载。如果同名函数已存在，且输入输出参数列表均相同，则替换。如果已有的函数输入参数列表相同，但输出参数列表不同，则会报错，并提示需要先DROP已有的函数定义。
 
 
-　　阅读上一篇[SQL优化（三） Postgre Sql Table Partitioning](http://www.jasongj.com/2015/12/13/SQL3_partition/)
+# SQL优化系列
+- [SQL优化（一） Merge Join vs. Hash Join vs. Nested Loop](http://www.jasongj.com/2015/03/07/Join1/)
+- [SQL优化（二） 快速计算Distinct Count](http://www.jasongj.com/2015/03/15/count_distinct/)
+- [SQL优化（三） PostgreSQL Table Partitioning](http://www.jasongj.com/2015/12/13/SQL3_partition/)
+- [SQL优化（四） Postgre Sql存储过程](http://www.jasongj.com/2015/12/27/SQL4_%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B_Store%20Procedure/)
+　　

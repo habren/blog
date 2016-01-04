@@ -8,6 +8,7 @@ description:
   - 本文介绍了distinct count的SQL优化方法，以及常用的高效近似算法及其在PostgreSQL上的实现。
 ---
 
+原创文章，转载请务必在文章开头处注明转载自Jason's Blog，并给出[原文链接](http://www.jasongj.com/2015/03/15/count_distinct/) [http://www.jasongj.com/2015/03/15/count_distinct/](http://www.jasongj.com/2015/03/15/count_distinct/)
 
 # UV vs. PV
 　　在互联网中，经常需要计算UV和PV。所谓PV即Page View，网页被打开多少次（YouTube等视频网站非常重视视频的点击率，即被播放多少次，也即PV）。而UV即Unique Visitor（微信朋友圈或者微信公众号中的文章则统计有多少人看过该文章，也即UV。虽然微信上显示是指明该值是PV，但经笔者测试，实为UV）。这两个概念非常重要，比如淘宝卖家在做活动时，他往往需要统计宝贝被看了多少次，有多少个不同的人看过该活动介绍。至于如何在互联网上唯一标识一个自然人，也是一个难点，目前还没有一个非常准确的方法，常用的方法是用户名加cookie，这里不作深究。
@@ -164,5 +165,8 @@ description:
 
 
 
-　　阅读下一篇[SQL优化（三） Postgre Sql Table Partitioning](http://www.jasongj.com/2015/12/13/SQL3_partition/)
-　　阅读上一篇[SQL优化（一） Sql优化（一） Merge Join vs. Hash Join vs. Nested Loop](http://www.jasongj.com/2015/03/07/Join1/)
+# SQL优化系列
+- [SQL优化（一） Merge Join vs. Hash Join vs. Nested Loop](http://www.jasongj.com/2015/03/07/Join1/)
+- [SQL优化（二） 快速计算Distinct Count](http://www.jasongj.com/2015/03/15/count_distinct/)
+- [SQL优化（三） PostgreSQL Table Partitioning](http://www.jasongj.com/2015/12/13/SQL3_partition/)
+- [SQL优化（四） Postgre Sql存储过程](http://www.jasongj.com/2015/12/27/SQL4_%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B_Store%20Procedure/)

@@ -11,7 +11,7 @@ description:
   - 本文介绍了数据库分区表的使用场景，优势，原理，及在PostgreSQL中的实现和注意事项。
 ---
 
-
+原创文章，转载请务必在文章开头处注明出自Jason's Blog，并给出原文链接[http://www.jasongj.com/2015/12/13/SQL3_partition/](http://www.jasongj.com/2015/12/13/SQL3_partition/)
 
 # 典型使用场景
 　　随着使用时间的增加，数据库中的数据量也不断增加，因此数据库查询越来越慢。
@@ -400,5 +400,8 @@ SELECT * FROM almart_2015_12_30;
  - 大量的分区表会极大地增加查询计划时间。表分区在多达几百个分区表时能很好地发挥优势，但不要使用多达几千个分区表。
 
 
-　　阅读下一篇[SQL优化（四） Postgre Sql存储过程](http://www.jasongj.com/2015/12/27/SQL4_%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B_Store%20Procedure/)
-　　阅读上一篇[SQL优化（二） 快速计算Distinct Count](http://www.jasongj.com/2015/03/15/count_distinct/)
+# SQL优化系列
+- [SQL优化（一） Merge Join vs. Hash Join vs. Nested Loop](http://www.jasongj.com/2015/03/07/Join1/)
+- [SQL优化（二） 快速计算Distinct Count](http://www.jasongj.com/2015/03/15/count_distinct/)
+- [SQL优化（三） PostgreSQL Table Partitioning](http://www.jasongj.com/2015/12/13/SQL3_partition/)
+- [SQL优化（四） Postgre Sql存储过程](http://www.jasongj.com/2015/12/27/SQL4_%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B_Store%20Procedure/)

@@ -8,6 +8,7 @@ description:
   - 本文介绍了Merge Join，Hash Join，Nested Loop这三种数据库Join方式的工作原理，并通过实验进一步说明了其适用范围。
 ---
 
+原创文章，转载请务必在文章开头处注明转载自Jason's Blog，并给出[原文链接](http://www.jasongj.com/2015/03/07/Join1/) [http://www.jasongj.com/2015/03/07/Join1/](http://www.jasongj.com/2015/03/07/Join1/)
 
 # Nested Loop，Hash Join，Merge Join介绍
  - Nested Loop:
@@ -124,4 +125,8 @@ mse_test约100万条记录，nbar_test约165万条记录
 ![](http://www.jasongj.com/img/Join/Query2_Test1_Explain.png)
 
 
-　　阅读下一篇[SQL优化（二） 快速计算Distinct Count](http://www.jasongj.com/2015/03/15/count_distinct/)
+# SQL优化系列
+- [SQL优化（一） Merge Join vs. Hash Join vs. Nested Loop](http://www.jasongj.com/2015/03/07/Join1/)
+- [SQL优化（二） 快速计算Distinct Count](http://www.jasongj.com/2015/03/15/count_distinct/)
+- [SQL优化（三） PostgreSQL Table Partitioning](http://www.jasongj.com/2015/12/13/SQL3_partition/)
+- [SQL优化（四） Postgre Sql存储过程](http://www.jasongj.com/2015/12/27/SQL4_%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B_Store%20Procedure/)
