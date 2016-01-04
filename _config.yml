@@ -113,11 +113,21 @@ exclude_generator:
 #  repository: git@gitcafe.com:jasongj/jasongj.git
 #  branch: gitcafe-pages
 
+#deploy:
+#- type: git
+#  repo: https://github.com/habren/habren.github.io.git
+#  branch: master
+#- type: git
+#  repo:  git@gitcafe.com:jasongj/jasongj.git
+#  branch: gitcafe-pages
+
+
 deploy:
   type: git
   repo:
-    github: git@github.com:habren/habren.github.io.git, master
-    gitcafe: git@gitcafe.com:jasongj/jasongj.git, gitcafe-pages
+    github: https://github.com/habren/habren.github.io.git,master
+    gitcafe: git@gitcafe.com:jasongj/jasongj.git,gitcafe-pages
+
 
   # Markdown
 ## https://github.com/chjj/marked
