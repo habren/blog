@@ -5,3 +5,4 @@ debug.log
 public/
 node_modules/
 .deploy/
+.deploy_git/
