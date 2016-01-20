@@ -8,6 +8,9 @@ description:
   - 介绍Kafka背景，使用消息系统的优势，常用消息系统对比，Kafka架构介绍，Kafka实现语义分析，Replication及Leader Election机制剖析，Consumer Group Rebalance实现原理介绍，以及Benchmark测试。
 ---
 
+原创文章，转载请在文章开头著明出自[Jason's Blog](http://www.jasongj.com)并给出[原文链接](http://www.jasongj.com/2015/01/02/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/)。
+
+
 # 背景介绍
 ## Kafka简介
 　　Kafka是一种分布式的，基于发布/订阅的消息系统。主要设计目标如下：
@@ -67,8 +70,8 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
 
 
 
-#Kafka解析
-##Terminology
+# Kafka解析
+## Terminology
  - **Broker**
  Kafka集群包含一个或多个服务器，这种服务器被称为broker
  - **Topic**
@@ -80,15 +83,15 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
  - **Consumer**
 消费消息。每个consumer属于一个特定的consumer group（可为每个consumer指定group name，若不指定group name则属于默认的group）。使用consumer high level API时，同一topic的一条消息只能被同一个consumer group内的一个consumer消费，但多个consumer group可同时消费这一消息。
 
-##Kafka架构
+## Kafka架构
 ![](/img/Kafka深度解析/KafkaArchitecture.png)
 　　如上图所示，一个典型的kafka集群中包含若干producer（可以是web前端产生的page view，或者是服务器日志，系统CPU、memory等），若干broker（Kafka支持水平扩展，一般broker数量越多，集群吞吐率越高），若干consumer group，以及一个[Zookeeper](http://zookeeper.apache.org/)集群。Kafka通过Zookeeper管理集群配置，选举leader，以及在consumer group发生变化时进行rebalance。producer使用push模式将消息发布到broker，consumer使用pull模式从broker订阅并消费消息。
 　　
-###Push vs. Pull
+### Push vs. Pull
 　　作为一个messaging system，Kafka遵循了传统的方式，选择由producer向broker push消息并由consumer从broker pull消息。一些logging-centric system，比如Facebook的[Scribe](https://github.com/facebookarchive/scribe)和Cloudera的[Flume](http://flume.apache.org/),采用非常不同的push模式。事实上，push模式和pull模式各有优劣。
 　　push模式很难适应消费速率不同的消费者，因为消息发送速率是由broker决定的。push模式的目标是尽可能以最快速度传递消息，但是这样很容易造成consumer来不及处理消息，典型的表现就是拒绝服务以及网络拥塞。而pull模式则可以根据consumer的消费能力以适当的速率消费消息。
 
-###Topic & Partition
+### Topic & Partition
 　　Topic在逻辑上可以被认为是一个queue。每条消费都必须指定它的topic，可以简单理解为必须指明把这条消息放进哪个queue里。为了使得Kafka的吞吐率可以水平扩展，物理上把topic分成一个或多个partition，每个partition在物理上对应一个文件夹，该文件夹下存储这个partition的所有消息和索引文件。
 　　![](/img/Kafka深度解析/topic-partition.png)
 　　每个日志文件都是“log entries”序列，每一个`log entry`包含一个4字节整型数（值为N），其后跟N个字节的消息体。每条消息都有一个当前partition下唯一的64字节的offset，它指明了这条消息的起始位置。磁盘上存储的消息格式如下：
@@ -175,7 +178,7 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
 　　这里要注意，因为Kafka读取特定消息的时间复杂度为O(1)，即与文件大小无关，所以这里删除文件与Kafka性能无关，选择怎样的删除策略只与磁盘以及具体的需求有关。另外，Kafka会为每一个consumer group保留一些metadata信息--当前消费的消息的position，也即offset。这个offset由consumer控制。正常情况下consumer会在消费完一条消息后线性增加这个offset。当然，consumer也可将offset设成一个较小的值，重新消费一些消息。因为offet由consumer控制，所以Kafka broker是无状态的，它不需要标记哪些消息被哪些consumer过，不需要通过broker去保证同一个consumer group只有一个consumer能消费某一条消息，因此也就不需要锁机制，这也为Kafka的高吞吐率提供了有力保障。
 　　
 　　
-###Replication & Leader election
+### Replication & Leader election
 　　Kafka从0.8开始提供partition级别的replication，replication的数量可在`$KAFKA_HOME/config/server.properties`中配置。
 
     default.replication.factor = 1
@@ -212,7 +215,7 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
 　　这样做的好处是，可以批量的通知leadership的变化，从而使得选举过程成本更低，尤其对大量的partition而言。如果controller失败了，幸存的所有broker都会尝试在Zookeeper中创建/controller->{this broker id}，如果创建成功（只可能有一个创建成功），则该broker会成为controller，若创建不成功，则该broker会等待新controller的命令。
 　　![](/img/Kafka深度解析/controller_failover.png)
 
-###Consumer group
+### Consumer group
 　　（本节所有描述都是基于consumer hight level API而非low level API）。
 　　每一个consumer实例都属于一个consumer group，每一条消息只会被同一个consumer group里的一个consumer实例消费。（不同consumer group可以同时消费同一条消息）
 　　![](/img/Kafka深度解析/consumer_group.png)
@@ -222,7 +225,7 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
 　　为了更清晰展示Kafka consumer group的特性，笔者作了一项测试。创建一个topic (名为topic1)，创建一个属于group1的consumer实例，并创建三个属于group2的consumer实例，然后通过producer向topic1发送key分别为1，2，3r的消息。结果发现属于group1的consumer收到了所有的这三条消息，同时group2中的3个consumer分别收到了key为1，2，3的消息。如下图所示。
 　　![](/img/Kafka深度解析/consumer_group_test.png)
 
-###Consumer Rebalance
+### Consumer Rebalance
 　　（本节所讲述内容均基于Kafka consumer high level API）
 　　Kafka保证同一consumer group中只有一个consumer会消费某条消息，实际上，Kafka保证的是稳定状态下每一个consumer实例只会消费某一个或多个特定partition的数据，而某个partition的数据只会被某一个特定的consumer实例所消费。这样设计的劣势是无法让同一个consumer group里的consumer均匀消费数据，优势是每个consumer不用都跟大量的broker通信，减少通信开销，同时也降低了分配难度，实现也更简单。另外，因为同一个partition里的数据是有序的，这种设计可以保证每个partition里的数据也是有序被消费。
 　　如果某consumer group中consumer数量少于partition数量，则至少有一个consumer会消费多个partition的数据，如果consumer的数量与partition数量相同，则正好一个consumer消费一个partition的数据，而如果consumer的数量多于partition的数量时，会有部分consumer无法消费该topic下任何一条消息。
@@ -269,7 +272,7 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
 　　![](/img/Kafka深度解析/coordinator.png)
 　　
 　　
-###消息Deliver guarantee
+### 消息Deliver guarantee
 　　通过上文介绍，想必读者已经明天了producer和consumer是如何工作的，以及Kafka是如何做replication的，接下来要讨论的是Kafka如何确保消息在producer和consumer之间传输。有这么几种可能的delivery guarantee：
 
  - `At most once` 消息可能会丢，但绝不会重复传输
@@ -284,9 +287,10 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
 　　总之，Kafka默认保证`At least once`，并且允许通过设置producer异步提交来实现`At most once`。而`Exactly once`要求与目标存储系统协作，幸运的是Kafka提供的offset可以使用这种方式非常直接非常容易。
 
 
-#Benchmark
+# Benchmark
 　　纸上得来终觉浅，绝知些事要躬行。笔者希望能亲自测一下Kafka的性能，而非从网上找一些测试数据。所以笔者曾在0.8发布前两个月做过详细的Kafka0.8性能测试，不过很可惜测试报告不慎丢失。所幸在网上找到了Kafka的创始人之一的[Jay Kreps的bechmark](http://engineering.linkedin.com/kafka/benchmarking-apache-kafka-2-million-writes-second-three-cheap-machines)。以下描述皆基于该benchmark。（该benchmark基于Kafka0.8.1）
-##测试环境  
+
+## 测试环境  
 　　该benchmark用到了六台机器，机器配置如下
 
  - Intel Xeon 2.5 GHz processor with six cores
@@ -296,9 +300,9 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
 　　
 　　这6台机器其中3台用来搭建Kafka broker集群，另外3台用来安装Zookeeper及生成测试数据。6个drive都直接以非RAID方式挂载。实际上kafka对机器的需求与Hadoop的类似。
 
-##producer吞吐率
+## Producer吞吐率
 　　该项测试只测producer的吞吐率，也就是数据只被持久化，没有consumer读数据。
-###1个producer线程，无replication
+### 1个producer线程，无replication
 　　在这一测试中，创建了一个包含6个partition且没有replication的topic。然后通过一个线程尽可能快的生成50 million条比较短（payload100字节长）的消息。测试结果是***821,557 records/second***（***78.3MB/second***）。
 　　之所以使用短消息，是因为对于消息系统来说这种使用场景更难。因为如果使用MB/second来表征吞吐率，那发送长消息无疑能使得测试结果更好。
 　　整个测试中，都是用每秒钟delivery的消息的数量乘以payload的长度来计算MB/second的，没有把消息的元信息算在内，所以实际的网络使用量会比这个大。对于本测试来说，每次还需传输额外的22个字节，包括一个可选的key，消息长度描述，CRC等。另外，还包含一些请求相关的overhead，比如topic，partition，acknowledgement等。这就导致我们比较难判断是否已经达到网卡极限，但是把这些overhead都算在吞吐率里面应该更合理一些。因此，我们已经基本达到了网卡的极限。
@@ -307,53 +311,53 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
  - Kafka确保写磁盘的过程是线性磁盘I/O，测试中使用的6块廉价磁盘线性I/O的最大吞吐量是822MB/second，这已经远大于1Gb网卡所能带来的吞吐量了。许多消息系统把数据持久化到磁盘当成是一个开销很大的事情，这是因为他们对磁盘的操作都不是线性I/O。
  - 在每一个阶段，Kafka都尽量使用批量处理。如果想了解批处理在I/O操作中的重要性，可以参考David Patterson的"[Latency Lags Bandwidth](http://www.ll.mit.edu/HPEC/agendas/proc04/invited/patterson_keynote.pdf)"
 
-###1个producer线程，3个异步replication
+### 1个producer线程，3个异步replication
 　　该项测试与上一测试基本一样，唯一的区别是每个partition有3个replica（所以网络传输的和写入磁盘的总的数据量增加了3倍）。每一个broker即要写作为leader的partition，也要读（从leader读数据）写（将数据写到磁盘）作为follower的partition。测试结果为***786,980 records/second***（***75.1MB/second***）。
 　　该项测试中replication是异步的，也就是说broker收到数据并写入本地磁盘后就acknowledge producer，而不必等所有replica都完成replication。也就是说，如果leader crash了，可能会丢掉一些最新的还未备份的数据。但这也会让message acknowledgement延迟更少，实时性更好。
 　　这项测试说明，replication可以很快。整个集群的写能力可能会由于3倍的replication而只有原来的三分之一，但是对于每一个producer来说吞吐率依然足够好。
 　　
-###1个producer线程，3个同步replication
+### 1个producer线程，3个同步replication
 　　该项测试与上一测试的唯一区别是replication是同步的，每条消息只有在被`in sync`集合里的所有replica都复制过去后才会被置为committed（此时broker会向producer发送acknowledgement）。在这种模式下，Kafka可以保证即使leader crash了，也不会有数据丢失。测试结果为***421,823 records/second***（***40.2MB/second***）。
 　　Kafka同步复制与异步复制并没有本质的不同。leader会始终track follower replica从而监控它们是否还alive，只有所有`in sync`集合里的replica都acknowledge的消息才可能被consumer所消费。而对follower的等待影响了吞吐率。可以通过增大batch size来改善这种情况，但为了避免特定的优化而影响测试结果的可比性，本次测试并没有做这种调整。
 　　
-###3个producer,3个异步replication
+### 3个producer,3个异步replication
 　　该测试相当于把上文中的1个producer,复制到了3台不同的机器上（在1台机器上跑多个实例对吞吐率的增加不会有太大帮忙，因为网卡已经基本饱和了），这3个producer同时发送数据。整个集群的吞吐率为***2,024,032 records/second***（***193,0MB/second***）。
 
-##Producer Throughput Vs. Stored Data
+## Producer Throughput Vs. Stored Data
 　　消息系统的一个潜在的危险是当数据能都存于内存时性能很好，但当数据量太大无法完全存于内存中时（然后很多消息系统都会删除已经被消费的数据，但当消费速度比生产速度慢时，仍会造成数据的堆积），数据会被转移到磁盘，从而使得吞吐率下降，这又反过来造成系统无法及时接收数据。这样就非常糟糕，而实际上很多情景下使用queue的目的就是解决数据消费速度和生产速度不一致的问题。
 　　但Kafka不存在这一问题，因为Kafka始终以O（1）的时间复杂度将数据持久化到磁盘，所以其吞吐率不受磁盘上所存储的数据量的影响。为了验证这一特性，做了一个长时间的大数据量的测试，下图是吞吐率与数据量大小的关系图。
 　　![](/img/Kafka深度解析/throughput_size.png)
 　　上图中有一些variance的存在，并可以明显看到，吞吐率并不受磁盘上所存数据量大小的影响。实际上从上图可以看到，当磁盘数据量达到1TB时，吞吐率和磁盘数据只有几百MB时没有明显区别。
 　　这个variance是由Linux I/O管理造成的，它会把数据缓存起来再批量flush。上图的测试结果是在生产环境中对Kafka集群做了些tuning后得到的，这些tuning方法可参考[这里](http://kafka.apache.org/documentation.html#hwandos)。
 　　
-##consumer吞吐率
+## consumer吞吐率
 　　需要注意的是，replication factor并不会影响consumer的吞吐率测试，因为consumer只会从每个partition的leader读数据，而与replicaiton factor无关。同样，consumer吞吐率也与同步复制还是异步复制无关。
 　　
-###1个consumer
+### 1个consumer
 　　该测试从有6个partition，3个replication的topic消费50 million的消息。测试结果为***940,521 records/second***（***89.7MB/second***）。
 　　可以看到，Kafkar的consumer是非常高效的。它直接从broker的文件系统里读取文件块。Kafka使用[sendfile API](http://www.ibm.com/developerworks/library/j-zerocopy/)来直接通过操作系统直接传输，而不用把数据拷贝到用户空间。该项测试实际上从log的起始处开始读数据，所以它做了真实的I/O。在生产环境下，consumer可以直接读取producer刚刚写下的数据（它可能还在缓存中）。实际上，如果在生产环境下跑[I/O stat](http://en.wikipedia.org/wiki/Iostat)，你可以看到基本上没有物理“读”。也就是说生产环境下consumer的吞吐率会比该项测试中的要高。
 
-###3个consumer
+### 3个consumer
 　　将上面的consumer复制到3台不同的机器上，并且并行运行它们（从同一个topic上消费数据）。测试结果为***2,615,968 records/second***（***249.5MB/second***）。
 　　正如所预期的那样，consumer的吞吐率几乎线性增涨。
 　　
-##Producer and Consumer
+## Producer and Consumer
 　　上面的测试只是把producer和consumer分开测试，而该项测试同时运行producer和consumer，这更接近使用场景。实际上目前的replication系统中follower就相当于consumer在工作。
 　　该项测试，在具有6个partition和3个replica的topic上同时使用1个producer和1个consumer，并且使用异步复制。测试结果为***795,064 records/second***（***75.8MB/second***）。
 　　可以看到，该项测试结果与单独测试1个producer时的结果几乎一致。所以说consumer非常轻量级。
 　　
-##消息长度对吞吐率的影响
+## 消息长度对吞吐率的影响
 　　上面的所有测试都基于短消息（payload 100字节），而正如上文所说，短消息对Kafka来说是更难处理的使用方式，可以预期，随着消息长度的增大，records/second会减小，但MB/second会有所提高。下图是records/second与消息长度的关系图。
 　　![](/img/Kafka深度解析/record_size_throughput.png)
 　　正如我们所预期的那样，随着消息长度的增加，每秒钟所能发送的消息的数量逐渐减小。但是如果看每秒钟发送的消息的总大小，它会随着消息长度的增加而增加，如下图所示。
 　　![](/img/Kafka深度解析/records_MB.png)
 　　从上图可以看出，当消息长度为10字节时，因为要频繁入队，花了太多时间获取锁，CPU成了瓶颈，并不能充分利用带宽。但从100字节开始，我们可以看到带宽的使用逐渐趋于饱和（虽然MB/second还是会随着消息长度的增加而增加，但增加的幅度也越来越小）。
 　　
-##端到端的Latency
+## 端到端的Latency
 　　上文中讨论了吞吐率，那消息传输的latency如何呢？也就是说消息从producer到consumer需要多少时间呢？该项测试创建1个producer和1个consumer并反复计时。结果是，***2 ms (median), 3ms (99th percentile, 14ms (99.9th percentile)***。
 　　（这里并没有说明topic有多少个partition，也没有说明有多少个replica，replication是同步还是异步。实际上这会极大影响producer发送的消息被commit的latency，而只有committed的消息才能被consumer所消费，所以它会最终影响端到端的latency）
 　　
-##重现该benchmark
+## 重现该benchmark
 　　如果读者想要在自己的机器上重现本次benchmark测试，可以参考[本次测试的配置和所使用的命令](https://gist.github.com/jkreps/c7ddb4041ef62a900e6c)。
 　　实际上Kafka Distribution提供了producer性能测试工具，可通过`bin/kafka-producer-perf-test.sh`脚本来启动。所使用的命令如下
 　　
@@ -513,8 +517,16 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
     replica.lag.max.messages=10000000
 
 　　读者也可参考另外一份[Kafka性能测试报告](http://liveramp.com/blog/kafka-0-8-producer-performance-2/)
-　　
-# 参考  
+
+# Kafka系列文章
+- [Kafka设计解析（一）- Kafka背景及架构介绍](http://www.jasongj.com/2015/03/10/KafkaColumn1/)
+- [Kafka设计解析（二）- Kafka High Availability （上）](http://www.jasongj.com/2015/04/24/KafkaColumn2/)
+- [Kafka设计解析（三）- Kafka High Availability （下）](http://www.jasongj.com/2015/06/08/KafkaColumn3/)
+- [Kafka设计解析（四）- Kafka Consumer设计解析](http://www.jasongj.com/2015/08/09/KafkaColumn4/)
+- [Kafka设计解析（五）- Kafka性能测试方法及Benchmark报告](http://www.jasongj.com/2015/12/31/KafkaColumn5_kafka_benchmark/)
+
+
+# 参考
 - [使用消息队列的 10 个理由](http://www.oschina.net/translate/top-10-uses-for-message-queue)
 - [Apache Kafka](http://kafka.apache.org/)
 - [Efficient data transfer through zero copy](http://www.ibm.com/developerworks/library/j-zerocopy/)

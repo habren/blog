@@ -11,7 +11,7 @@ description:
   - 本文介绍了存储过程的概念，优势，并结合实例讲解了存储过程在PostgreSQL中的实现，注意事项
 ---
 
-原创文章，转载请务必在文章开头处注明出自[Jason's Blog](http://www.jasongj.com)，并给出原文链接[http://www.jasongj.com/2015/12/27/SQL4_%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B_Store%20Procedure/](http://www.jasongj.com/2015/12/27/SQL4_%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B_Store%20Procedure/)
+原创文章，转载请务必在文章开头处注明出自[Jason's Blog](http://www.jasongj.com)，并给出[原文链接](http://www.jasongj.com/2015/12/27/SQL4_%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B_Store%20Procedure/)
 
 # 存储过程简介
 ## 什么是存储过程
@@ -109,7 +109,7 @@ AS $$
 	SELECT a-b, a+b;
 $$ LANGUAGE SQL;
 ```
-　　其效果如果
+　　其效果如下
 ```SQL
 SELECT * FROM plus_and_minus(5,3);
  c | d
