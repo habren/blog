@@ -4,8 +4,8 @@ tags:
   - Kafka
 categories:
   - Message Queue
-description:
-  - 本文详细阐述了Kafka的性能测试方法，并全面展示了Kafka各组件的性能测试报告。
+  - Kafka
+description: 本文详细阐述了Kafka的性能测试方法，并全面展示了Kafka各组件的性能测试报告。
 ------
 
 　　原创文章，转载请在文章开头著明出自[Jason's Blog](http://www.jasongj.com)并给出原文链接。本文已授权InfoQ独家首发。

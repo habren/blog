@@ -8,8 +8,13 @@ subtitle: 分享交流大数据领域技术，包括但不限于Storm、Spark、
 description: 分享交流大数据领域技术，包括但不限于Storm、Spark、Hadoop等流行分布式计算系统，Kafka、MetaQ等分布式消息系统，MongoDB、Cassandra等NoSQL，PostgreSQL、MySQL等RDBMS以及其它前沿技术
 author: 郭俊 Jason
 email: gj1989lh@163.com
+
+## Sidebar profile image, only for next theme
+avatar: /img/WeChat_QR.jpg
+
 ## language: en_US
 ##language: en_US
+##language: zh-CN
 language: zh-CN
 
 # URL
@@ -72,7 +77,7 @@ time_format: HH:mm:ss
 
 # Pagination
 ## Set per_page to 0 to disable pagination
-per_page: 10
+per_page: 20
 pagination_dir: page
 
 # Disqus
@@ -89,7 +94,7 @@ Plugins:
 feed:
   type: atom
   path: atom.xml
-  limit: 20
+  limit: 50
 
 #sitemap
 sitemap:
@@ -99,27 +104,27 @@ sitemap:
 # Extensions
 ## Plugins: https://github.com/hexojs/hexo/wiki/Plugins
 ## Themes: https://github.com/hexojs/hexo/wiki/Themes
-theme: pacman
+#theme: pacman
+theme: next
 exclude_generator:
 
 # Deployment
 ## Docs: http://hexo.io/docs/deployment.html
 #deploy 2.8.3
-deploy:
-- type: github
-  repository: git@github.com:habren/habren.github.io.git
-  branch: master
-- type: github
-  repository: git@gitcafe.com:jasongj/jasongj.git
-  branch: gitcafe-pages
-
 #deploy:
-#- type: git
-#  repo: https://github.com/habren/habren.github.io.git
+#- type: github
+#  repository: git@github.com:habren/habren.github.io.git
 #  branch: master
-#- type: git
-#  repo:  git@gitcafe.com:jasongj/jasongj.git
+#- type: github
+#  repository: git@gitcafe.com:jasongj/jasongj.git
 #  branch: gitcafe-pages
+
+# Deploy 3.1.1
+deploy:
+  type: git
+  repo:
+    github: https://github.com/habren/habren.github.io.git,master
+    gitcafe: git@gitcafe.com:jasongj/jasongj.git,gitcafe-pages
 
 
 #deploy:
@@ -146,3 +151,37 @@ stylus:
 
 livereload:
   port: 35729
+
+## For next theme
+since: 2015
+social:
+  github: https://github.com/habren
+  weibo: http://weibo.com/habren
+  linkedin: https://www.linkedin.com/in/jasongj
+
+## Comments, for next
+duoshuo_shortname: habren
+
+## Hotest articles
+duoshuo_hotartical: false
+
+## Analytics, for next
+baidu_analytics: 7dfdf667ba885e2b04d1c1cc561490f0
+google_analytics: UA-58959834-1
+
+## Google Webmaster tools, for next
+google_site_verification: _lpnaoq9f4n68-jMrHuEIsB1kJO_6WMxvONibOMBdxM
+
+## Swiftype search engine, for next
+swiftype_key: WSzRURyW4ED82aapXRTZ
+
+## Friend links, for next
+links_title: Links
+links:
+  发表在InfoQ上的文章: http://www.infoq.com/cn/author/%E9%83%AD%E4%BF%8A
+
+## Share, for next
+baidushare: true
+
+
+

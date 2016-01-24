@@ -7,8 +7,8 @@ tags:
 categories:
   - Database
   - SQL优化
-description:
-  - 本文介绍了数据库分区表的使用场景，优势，原理，及在PostgreSQL中的实现和注意事项。
+  - PostgreSQL
+description: 本文介绍了数据库分区表的使用场景，优势，原理，及在PostgreSQL中的实现和注意事项。
 ---
 
 原创文章，转载请务必在文章开头处注明出自Jason's Blog，并给出原文链接[http://www.jasongj.com/2015/12/13/SQL3_partition/](http://www.jasongj.com/2015/12/13/SQL3_partition/)

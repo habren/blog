@@ -4,8 +4,9 @@ tags:
   - PostgreSQL
 categories:
   - Database
-description:
-  - 本文介绍了Merge Join，Hash Join，Nested Loop这三种数据库Join方式的工作原理，并通过实验进一步说明了其适用范围。
+  - PostgreSQL
+  - SQL优化
+description: 本文介绍了Merge Join，Hash Join，Nested Loop这三种数据库Join方式的工作原理，并通过实验进一步说明了其适用范围。
 ---
 
 原创文章，转载请务必在文章开头处注明转载自Jason's Blog，并给出[原文链接](http://www.jasongj.com/2015/03/07/Join1/) [http://www.jasongj.com/2015/03/07/Join1/](http://www.jasongj.com/2015/03/07/Join1/)

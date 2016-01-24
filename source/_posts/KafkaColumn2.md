@@ -5,8 +5,8 @@ tags:
   - HA
 categories:
   - Message Queue
-description:
-  - Kafka从0.8版本开始提供High Availability机制，从而提高了系统可用性及数据持久性。本文从Data Replication和Leader Election两方面介绍了Kafka的HA机制。
+  - Kafka
+description: Kafka从0.8版本开始提供High Availability机制，从而提高了系统可用性及数据持久性。本文从Data Replication和Leader Election两方面介绍了Kafka的HA机制。
 ------
 
 　　本文已授权InfoQ独家发表，如需转载请[**注明出处**](http://www.jasongj.com/2015/04/24/KafkaColumn2/)并与InfoQ中文站联系。[InfoQ首发地址](http://www.infoq.com/cn/articles/kafka-analysis-part-2)为 [http://www.infoq.com/cn/articles/kafka-analysis-part-2](http://www.infoq.com/cn/articles/kafka-analysis-part-2)

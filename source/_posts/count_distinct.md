@@ -4,8 +4,9 @@ tags:
   - SQL
 categories:
   - Database
-description:
-  - 本文介绍了distinct count的SQL优化方法，以及常用的高效近似算法及其在PostgreSQL上的实现。
+  - PostgreSQL
+  - SQL优化
+description: 本文介绍了distinct count的SQL优化方法，以及常用的高效近似算法及其在PostgreSQL上的实现。
 ---
 
 原创文章，转载请务必在文章开头处注明转载自Jason's Blog，并给出[原文链接](http://www.jasongj.com/2015/03/15/count_distinct/) [http://www.jasongj.com/2015/03/15/count_distinct/](http://www.jasongj.com/2015/03/15/count_distinct/)

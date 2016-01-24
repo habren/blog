@@ -4,6 +4,7 @@ tags:
   - Disruptor
 categories:
   - Message Queue
+  - Disruptor
 ---
 
 #Disruptor简介
