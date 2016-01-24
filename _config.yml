@@ -87,6 +87,7 @@ disqus_shortname:
 Plugins:
  - hexo-generator-feed
  - hexo-generator-sitemap
+ - hexo-generator-baidu-sitemap
  - hexo-math
  - livereload
 
@@ -99,6 +100,8 @@ feed:
 #sitemap
 sitemap:
   path: /sitemap.xml
+baidusitemap:
+  path: /baidusitemap.xml
 
 
 # Extensions
