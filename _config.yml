@@ -107,7 +107,7 @@ baidusitemap:
 # Extensions
 ## Plugins: https://github.com/hexojs/hexo/wiki/Plugins
 ## Themes: https://github.com/hexojs/hexo/wiki/Themes
-#theme: pacman
+#theme: jacman
 theme: next
 exclude_generator:
 
@@ -150,7 +150,7 @@ markdown:
 
 # Stylus
 stylus:
-  compress: false
+  compress: true
 
 livereload:
   port: 35729
@@ -161,6 +161,7 @@ social:
   github: https://github.com/habren
   weibo: http://weibo.com/habren
   linkedin: https://www.linkedin.com/in/jasongj
+  mail: mailto:gj1989lh@163.com
 
 ## Comments, for next
 duoshuo_shortname: habren
