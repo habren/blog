@@ -104,8 +104,7 @@ description: 本文介绍了Kafka的创建背景，设计目标，使用消息�
 　　![](http://www.jasongj.com/img/KafkaColumn1/partition.png)
 　　
 　　对于传统的message queue而言，一般会删除已经被消费的消息，而Kafka集群会保留所有的消息，无论其被消费与否。当然，因为磁盘限制，不可能永久保留所有数据（实际上也没必要），因此Kafka提供两种策略删除旧数据。一是基于时间，二是基于Partition文件大小。例如可以通过配置`$KAFKA_HOME/config/server.properties`，让Kafka删除一周前的数据，也可在Partition文件超过1GB时删除旧数据，配置如下所示。
-
-    　　
+```bash
     # The minimum age of a log file to be eligible for deletion
     log.retention.hours=168
     # The maximum size of a log segment file. When this size is reached a new log segment will be created.
@@ -114,15 +113,15 @@ description: 本文介绍了Kafka的创建背景，设计目标，使用消息�
     log.retention.check.interval.ms=300000
     # If log.cleaner.enable=true is set the cleaner will be enabled and individual logs can then be marked for log compaction.
     log.cleaner.enable=false
+```
 
-　　
 　　这里要注意，因为Kafka读取特定消息的时间复杂度为O(1)，即与文件大小无关，所以这里删除过期文件与提高Kafka性能无关。选择怎样的删除策略只与磁盘以及具体的需求有关。另外，Kafka会为每一个Consumer Group保留一些metadata信息——当前消费的消息的position，也即offset。这个offset由Consumer控制。正常情况下Consumer会在消费完一条消息后递增该offset。当然，Consumer也可将offset设成一个较小的值，重新消费一些消息。因为offet由Consumer控制，所以Kafka broker是无状态的，它不需要标记哪些消息被哪些消费过，也不需要通过broker去保证同一个Consumer Group只有一个Consumer能消费某一条消息，因此也就不需要锁机制，这也为Kafka的高吞吐率提供了有力保障。
 　　
 ##Producer消息路由
 　　Producer发送消息到broker时，会根据Paritition机制选择将其存储到哪一个Partition。如果Partition机制设置合理，所有消息可以均匀分布到不同的Partition里，这样就实现了负载均衡。如果一个Topic对应一个文件，那这个文件所在的机器I/O将会成为这个Topic的性能瓶颈，而有了Partition后，不同的消息可以并行写入不同broker的不同Partition里，极大的提高了吞吐率。可以在`$KAFKA_HOME/config/server.properties`中通过配置项`num.partitions`来指定新建Topic的默认Partition数量，也可在创建Topic时通过参数指定，同时也可以在Topic创建之后通过Kafka提供的工具修改。
 　　
 　　在发送一条消息时，可以指定这条消息的key，Producer根据这个key和Partition机制来判断应该将这条消息发送到哪个Parition。Paritition机制可以通过指定Producer的`paritition. class`这一参数来指定，该class必须实现`kafka.producer.Partitioner`接口。本例中如果key可以被解析为整数则将对应的整数与Partition总数取余，该消息会被发送到该数对应的Partition。（每个Parition都会有个序号,序号从0开始）
-
+```java
     import kafka.producer.Partitioner;
     import kafka.utils.VerifiableProperties;
     
@@ -140,10 +139,11 @@ description: 本文介绍了Kafka的创建背景，设计目标，使用消息�
             }
         }
     }
-　
+```
+
 　　如果将上例中的类作为`partition.class`，并通过如下代码发送20条消息（key分别为0，1，2，3）至topic3（包含4个Partition）。
 　　
-
+```java
     public void sendMessage() throws InterruptedException{
     　　for(int i = 1; i <= 5; i++){
     　　      List messageList = new ArrayList<KeyedMessage<String, String>>();
@@ -154,6 +154,7 @@ description: 本文介绍了Kafka的创建背景，设计目标，使用消息�
         }
     　　producer.close();
     }
+```
 
 　　则key相同的消息会被发送并存储到同一个partition里，而且key的序号正好和Partition序号相同。（Partition序号从0开始，本例中的key也从0开始）。下图所示是通过Java程序调用Consumer后打印出的消息列表。
 　　![](http://www.jasongj.com/img/KafkaColumn1/partition_key.png)

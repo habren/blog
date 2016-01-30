@@ -91,7 +91,7 @@ description: Kafka从0.8版本开始提供High Availability机制，从而提高
 ![Kafka Zookeeper Admin Structure](http://www.jasongj.com/img/KafkaColumn2/kafka_zookeeper_admin.png)
 
 　　`/admin/preferred_replica_election`数据结构
-
+```json
     Schema:
 	{
        "fields":[
@@ -139,9 +139,10 @@ description: Kafka从0.8版本开始提供High Availability机制，从而提高
             }
          ]            
     }
+```
 
 　　`/admin/reassign_partitions`用于将一些Partition分配到不同的broker集合上。对于每个待重新分配的Partition，Kafka会在该znode上存储其所有的Replica和相应的Broker id。该znode由管理进程创建并且一旦重新分配成功它将会被自动移除。其数据结构如下
-
+```json
     Schema:
 	{
        "fields":[
@@ -179,7 +180,7 @@ description: Kafka从0.8版本开始提供High Availability机制，从而提高
           }
        ]
     }
-     
+
     Example:
     {
       "version": 1,
@@ -192,9 +193,10 @@ description: Kafka从0.8版本开始提供High Availability机制，从而提高
             }
          ]            
     }
+```
 
 　　`/admin/delete_topics`数据结构
-
+```json
     Schema:
     { "fields":
         [ {"name": "version", "type": "int", "doc": "version id"},
@@ -208,12 +210,13 @@ description: Kafka从0.8版本开始提供High Availability机制，从而提高
       "version": 1,
       "topics": ["topic4", "topic5"]
     }
+```
 
 　　**brokers**
 ![Kafka Zookeeper brokers structure](http://www.jasongj.com/img/KafkaColumn2/kafka_zookeeper_brokers.png)
 
 　　broker（即`/brokers/ids/[brokerId]`）存储“活着”的Broker信息。数据结构如下
-
+```json
     Schema:
     { "fields":
         [ {"name": "version", "type": "int", "doc": "version id"},
@@ -230,9 +233,10 @@ description: Kafka从0.8版本开始提供High Availability机制，从而提高
         "version":1,
         "port":9092
     }
+```
 
 　　topic注册信息（`/brokers/topics/[topic]`），存储该Topic的所有Partition的所有Replica所在的Broker id，第一个Replica即为Preferred Replica，对一个给定的Partition，它在同一个Broker上最多只有一个Replica,因此Broker id可作为Replica id。数据结构如下
-
+```json
     Schema:
     { "fields" :
         [ {"name": "version", "type": "int", "doc": "version id"},
@@ -261,9 +265,10 @@ description: Kafka从0.8版本开始提供High Availability机制，从而提高
             "7":[1],
             "3":[5]}
     }
+```
 
 　　partition state（`/brokers/topics/[topic]/partitions/[partitionId]/state`） 结构如下
-
+```json
     Schema:
     { "fields":
         [ {"name": "version", "type": "int", "doc": "version id"},
@@ -286,10 +291,11 @@ description: Kafka从0.8版本开始提供High Availability机制，从而提高
         "leader_epoch":48,
         "isr":[2]
     }
+```
 
 　　**controller**  
 　　`/controller -> int (broker id of the controller)`存储当前controller的信息
-
+```json
     Schema:
     { "fields":
         [ {"name": "version", "type": "int", "doc": "version id"},
@@ -301,6 +307,7 @@ description: Kafka从0.8版本开始提供High Availability机制，从而提高
         "version":1,
     　　"brokerid":8
     }
+```
 
 　　`/controller_epoch -> int (epoch)`直接以整数形式存储controller epoch，而非像其它znode一样以JSON字符串形式存储。
 　　

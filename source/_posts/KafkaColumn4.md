@@ -135,7 +135,7 @@ description: 本文主要介绍了Kafka High Level Consumer，Consumer Group，C
 
 ***Consumer***
 　　1) Consumer启动时，先向Broker列表中的任意一个Broker发送ConsumerMetadataRequest，并通过ConsumerMetadataResponse获取它所在Group的Coordinator信息。ConsumerMetadataRequest和ConsumerMetadataResponse的结构如下
-
+```json
     ConsumerMetadataRequest
     {
       GroupId                => String
@@ -146,9 +146,11 @@ description: 本文主要介绍了Kafka High Level Consumer，Consumer Group，C
       ErrorCode              => int16
       Coordinator            => Broker
     }
+```
 
 　　2）Consumer连接到Coordinator并发送HeartbeatRequest，如果返回的HeartbeatResponse没有任何错误码，Consumer继续fetch数据。若其中包含IllegalGeneration错误码，即说明Coordinator已经发起了Rebalance操作，此时Consumer停止fetch数据，commit offset，并发送JoinGroupRequest给它的Coordinator，并在JoinGroupResponse中获得它应该拥有的所有Partition列表和它所属的Group的新的Generation ID。此时Rebalance完成，Consumer开始fetch数据。相应Request和Response结构如下
 
+```json
     HeartbeatRequest
     {
       GroupId                => String
@@ -179,6 +181,7 @@ description: 本文主要介绍了Kafka High Level Consumer，Consumer Group，C
     }
     TopicName => String
     Partition => int32
+```
 
 ***Consumer状态机***
 　　![Consumer状态图](http://www.jasongj.com/img/KafkaColumn4/consumer_state_diagram.png)

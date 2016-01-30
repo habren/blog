@@ -111,7 +111,7 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
     num.partitions=3
 
 　　在发送一条消息时，可以指定这条消息的key，producer根据这个key和partition机制来判断将这条消息发送到哪个parition。paritition机制可以通过指定producer的paritition. class这一参数来指定，该class必须实现`kafka.producer.Partitioner`接口。本例中如果key可以被解析为整数则将对应的整数与partition总数取余，该消息会被发送到该数对应的partition。（每个parition都会有个序号）
-
+```java
     import kafka.producer.Partitioner;
     import kafka.utils.VerifiableProperties;
     
@@ -143,11 +143,11 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
         }
     　　producer.close();
     }
-
+```
 　　则key相同的消息会被发送并存储到同一个partition里，而且key的序号正好和partition序号相同。（partition序号从0开始，本例中的key也正好从0开始）。如下图所示。
 　　![](/img/Kafka深度解析/partition_key.png)
 　　对于传统的message queue而言，一般会删除已经被消费的消息，而Kafka集群会保留所有的消息，无论其被消费与否。当然，因为磁盘限制，不可能永久保留所有数据（实际上也没必要），因此Kafka提供两种策略去删除旧数据。一是基于时间，二是基于partition文件大小。例如可以通过配置`$KAFKA_HOME/config/server.properties`，让Kafka删除一周前的数据，也可通过配置让Kafka在partition文件超过1GB时删除旧数据，如下所示。
-
+```bash
     　　############################# Log Retention Policy #############################
     
     # The following configurations control the disposal of log segments. The policy can
@@ -174,23 +174,26 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
     # If log.cleaner.enable=true is set the cleaner will be enabled and individual logs 
     #can then be marked for log compaction.
     log.cleaner.enable=false
-
+```
 　　这里要注意，因为Kafka读取特定消息的时间复杂度为O(1)，即与文件大小无关，所以这里删除文件与Kafka性能无关，选择怎样的删除策略只与磁盘以及具体的需求有关。另外，Kafka会为每一个consumer group保留一些metadata信息--当前消费的消息的position，也即offset。这个offset由consumer控制。正常情况下consumer会在消费完一条消息后线性增加这个offset。当然，consumer也可将offset设成一个较小的值，重新消费一些消息。因为offet由consumer控制，所以Kafka broker是无状态的，它不需要标记哪些消息被哪些consumer过，不需要通过broker去保证同一个consumer group只有一个consumer能消费某一条消息，因此也就不需要锁机制，这也为Kafka的高吞吐率提供了有力保障。
 　　
 　　
 ### Replication & Leader election
 　　Kafka从0.8开始提供partition级别的replication，replication的数量可在`$KAFKA_HOME/config/server.properties`中配置。
-
+```bash
     default.replication.factor = 1
+```
+
 　　该 Replication与leader election配合提供了自动的failover机制。replication对Kafka的吞吐率是有一定影响的，但极大的增强了可用性。默认情况下，Kafka的replication数量为1。　　每个partition都有一个唯一的leader，所有的读写操作都在leader上完成，leader批量从leader上pull数据。一般情况下partition的数量大于等于broker的数量，并且所有partition的leader均匀分布在broker上。follower上的日志和其leader上的完全一样。
 　　和大部分分布式系统一样，Kakfa处理失败需要明确定义一个broker是否alive。对于Kafka而言，Kafka存活包含两个条件，一是它必须维护与Zookeeper的session(这个通过Zookeeper的heartbeat机制来实现)。二是follower必须能够及时将leader的writing复制过来，不能“落后太多”。
 　　leader会track“in sync”的node list。如果一个follower宕机，或者落后太多，leader将把它从"in sync" list中移除。这里所描述的“落后太多”指follower复制的消息落后于leader后的条数超过预定值，该值可在`$KAFKA_HOME/config/server.properties`中配置
-
+```bash
     #If a replica falls more than this many messages behind the leader, the leader will remove the follower from ISR and treat it as dead
     replica.lag.max.messages=4000
     
     #If a follower hasn't sent any fetch requests for this window of time, the leader will remove the follower from ISR (in-sync replicas) and treat it as dead
     replica.lag.time.max.ms=10000  
+```
 
 　　需要说明的是，Kafka只解决"fail/recover"，不处理“Byzantine”（“拜占庭”）问题。
 　　一条消息只有被“in sync” list里的所有follower都从leader复制过去才会被认为已提交。这样就避免了部分数据被写进了leader，还没来得及被任何follower复制就宕机了，而造成数据丢失（consumer无法消费这些数据）。而对于producer而言，它可以选择是否等待消息commit，这可以通过`request.required.acks`来设置。这种机制确保了只要“in sync” list有一个或以上的flollower，一条被commit的消息就不会丢失。
@@ -361,7 +364,7 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
 　　如果读者想要在自己的机器上重现本次benchmark测试，可以参考[本次测试的配置和所使用的命令](https://gist.github.com/jkreps/c7ddb4041ef62a900e6c)。
 　　实际上Kafka Distribution提供了producer性能测试工具，可通过`bin/kafka-producer-perf-test.sh`脚本来启动。所使用的命令如下
 　　
-
+```bash
     Producer
     Setup
     bin/kafka-topics.sh --zookeeper esv4-hcl197.grid.linkedin.com:2181 --create --topic test-rep-one --partitions 6 --replication-factor 1
@@ -415,11 +418,10 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
     bin/kafka-run-class.sh org.apache.kafka.clients.tools.ProducerPerformance test 50000000 100 -1 acks=1 bootstrap.servers=esv4-hcl198.grid.linkedin.com:9092 buffer.memory=67108864 batch.size=8196
     
     bin/kafka-consumer-perf-test.sh --zookeeper esv4-hcl197.grid.linkedin.com:2181 --messages 50000000 --topic test --threads 1
+```
 
 　　broker配置如下
-
-    
-    
+```bash
     ############################# Server Basics #############################
     
     # The id of the broker. This must be set to a unique integer for each broker.
@@ -515,6 +517,7 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
     kafka.csv.metrics.reporter.enabled=false
     
     replica.lag.max.messages=10000000
+```
 
 　　读者也可参考另外一份[Kafka性能测试报告](http://liveramp.com/blog/kafka-0-8-producer-performance-2/)
 

@@ -2,10 +2,14 @@ title: SQL优化（一） Merge Join VS. Hash Join VS. Nested Loop
 date: 2015-03-07 21:00:00
 tags:
   - PostgreSQL
-categories:
   - Database
-  - PostgreSQL
   - SQL优化
+  - SQL
+categories:
+  - PostgreSQL
+  - Database
+  - SQL优化
+  - SQL
 description: 本文介绍了Merge Join，Hash Join，Nested Loop这三种数据库Join方式的工作原理，并通过实验进一步说明了其适用范围。
 ---
 
@@ -42,7 +46,7 @@ Hash Join是做大数据集连接时的常用方式，优化器使用两个表�
 ## 小于万条记录小表与大表Join
 一张记录数1万以下的小表nbar.mse_test_test，一张大表165万条记录的大表nbar.nbar_test，大表上建有索引
 ### **Query 1:**等值Join
-
+```SQL
     select 
     	count(*)
     from 
@@ -50,6 +54,7 @@ Hash Join是做大数据集连接时的常用方式，优化器使用两个表�
     	nbar_test 
     where 
     	mse_test_test.client_key = nbar_test.client_key;
+```
 
 #### **Query 1 Test 1：** 查询优化器自动选择Nested Loop，耗时784.845 ms
 ![](http://www.jasongj.com/img/Join/Nest_Nest_Explain.png)
@@ -110,7 +115,7 @@ Hash Join是做大数据集连接时的常用方式，优化器使用两个表�
 ## 两大表Join
 mse_test约100万条记录，nbar_test约165万条记录
 ###**Query 2:**不等值Join
-
+```SQL
     select 
     	count(*)
     from 
@@ -120,6 +125,7 @@ mse_test约100万条记录，nbar_test约165万条记录
     	mse_test.client_key = nbar_test.client_key
 	and
 		mse_test.client_key between 100000 and 300000;
+```
 
 #### **Query 2 Test 1：**强制使用Hash Join，失败
 本次实验通过设置`enable_hashjoin=true`，`enable_nestloop=false`，`enable_mergejoin=false`来试图强制使用Hash Join，但是失败了。

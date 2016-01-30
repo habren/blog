@@ -4,10 +4,12 @@ tags:
   - PostgreSQL
   - Database
   - SQL优化
+  - SQL
 categories:
+  - PostgreSQL
   - Database
   - SQL优化
-  - PostgreSQL
+  - SQL
 description: 本文介绍了数据库分区表的使用场景，优势，原理，及在PostgreSQL中的实现和注意事项。
 ---
 

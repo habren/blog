@@ -1,11 +1,15 @@
 title: SQL优化（二） 快速计算Distinct Count
 date: 2015-03-15 16:00:00
 tags:
+  - PostgreSQL
+  - Database
+  - SQL优化
   - SQL
 categories:
-  - Database
   - PostgreSQL
+  - Database
   - SQL优化
+  - SQL
 description: 本文介绍了distinct count的SQL优化方法，以及常用的高效近似算法及其在PostgreSQL上的实现。
 ---
 
@@ -27,17 +31,17 @@ description: 本文介绍了distinct count的SQL优化方法，以及常用的�
 | mac_macaddr | macaddr |  |
 | mac_text | text |  |
 
-并插入1000万条记录，并保证mac_bigint为mac_macaddr去掉冒号后的16进制转换而成的10进制bigint，而mac_text为mac_macaddr的文本形式，从而保证在这三个字段上查询的结果，也及复杂度相同。
-    
-　　count distinct SQL如下
+　　并插入1000万条记录，并保证mac_bigint为mac_macaddr去掉冒号后的16进制转换而成的10进制bigint，而mac_text为mac_macaddr的文本形式，从而保证在这三个字段上查询的结果，并且复杂度相同。
 
+　　count distinct SQL如下
+```SQL
     select 
         count(distinct mac_macaddr) 
     from 
         testmac 
-
+```
 　　count group by SQL如下
-
+```SQL
     select
         count(*)
     from
@@ -47,6 +51,7 @@ description: 本文介绍了distinct count的SQL优化方法，以及常用的�
             testmac
         group by
             1) foo
+```
 
 　　对于不同记录数较大的情景（1000万条记录中，有300多万条不同记录），查询时间（单位毫秒）如下表所示。
 
@@ -64,16 +69,17 @@ description: 本文介绍了distinct count的SQL优化方法，以及常用的�
 
 　　从上面两组实验可看出，在不同记录数较小时，count group by性能普遍高于count distinct，尤其对于text类型表现的更明显。而对于不同记录数较大的场景，count group by性能反而低于直接count distinct。为什么会造成这种差异呢，我们以macaddr类型为例来对比不同结果集下count group by的query plan。
 　　当结果集较小时，planner会使用HashAggregation。
-
+```SQL
     explain analyze select count(*) from (select mac_macaddr from testmac_small group by 1) foo;
                                             QUERY PLAN
      Aggregate  (cost=668465.04..668465.05 rows=1 width=0) (actual time=9166.486..9166.486 rows=1 loops=1)
        ->  HashAggregate  (cost=668296.74..668371.54 rows=7480 width=6) (actual time=9161.796..9164.393 rows=10001 loops=1)
              ->  Seq Scan on testmac_small  (cost=0.00..572898.79 rows=38159179 width=6) (actual time=323.338..5091.112 rows=10000000 l
     oops=1)
+```
 
 　　而当结果集较大时，无法通过在内存中维护Hash表的方式使用HashAggregation，planner会使用GroupAggregation，并会用到排序，而且因为目标数据集太大，无法在内存中使用Quick Sort，而要在外存中使用Merge Sort，而这就极大的增加了I/O开销。
-
+```SQL
     explain analyze select count(*) from (select mac_macaddr from testmac group by 1) foo;
                                             QUERY PLAN
      Aggregate  (cost=1881542.62..1881542.63 rows=1 width=0) (actual time=34288.232..34288.232 rows=1 loops=1)
@@ -83,6 +89,7 @@ description: 本文介绍了distinct count的SQL优化方法，以及常用的�
                    Sort Method: external merge  Disk: 156440kB
                    ->  Seq Scan on testmac  (cost=0.00..219206.64 rows=10013464 width=6) (actual time=0.082..4312.053 rows=10000000 loo
     ps=1)
+```
 
 # dinstinct count高效近似算法
 　　由于distinct count的需求非常普遍（如互联网中计算UV），而该计算的代价又相比较高，很难适应实时性要求较高的场景，如流计算，因此有很多相关研究试图解决该问题。比较著名的算法有[daptive sampling Algorithm](http://en.wikipedia.org/wiki/Adaptive_sampling)，[Distinct Counting with a Self-Learning Bitmap](http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=4812493&tag=1)，[HyperLogLog](http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf)，[LogLog](http://algo.inria.fr/flajolet/Publications/DuFl03-LNCS.pdf)，[Probabilistic Counting Algorithms](http://www.mathcs.emory.edu/~cheung/papers/StreamDB/Probab/1985-Flajolet-Probabilistic-counting.pdf)。这些算法都不能精确计算distinct count，都是在保证误差较小的情况下高效计算出结果。本文分别就这几种算法做了两组实验。
@@ -123,8 +130,8 @@ description: 本文介绍了distinct count的SQL优化方法，以及常用的�
 | sales | numeric |  |
 
 
-　插入三年的数据，并保证总共有10万个不同的user_id，总数据量为1亿条（一天10万条左右）。
-
+　　插入三年的数据，并保证总共有10万个不同的user_id，总数据量为1亿条（一天10万条左右）。
+```SQL
     insert into fact
     select
         current_date - (random()*1095)::integer * '1 day'::interval,
@@ -132,10 +139,11 @@ description: 本文介绍了distinct count的SQL优化方法，以及常用的�
         random() * 10000 + 500
     from
         generate_series(1, 100000000, 1);
-    
+```
+
 　　直接从fact表中查询不同用户的总数，耗时115143.217 ms。
     利用hll，创建daily_unique_user_hll表，将每天的不同用户信息存于hll类型的字段中。
-    
+```SQL
     create table daily_unique_user_hll 
     as select
         day, 
@@ -143,9 +151,9 @@ description: 本文介绍了distinct count的SQL优化方法，以及常用的�
     from 
         fact
     group by 1;
-    
+```
 　　通过上面的daily aggregation table可计算任意日期范围内的unique user count。如计算整个三年的不同用户数，耗时17.485 ms，查询结果为101044，误差为(101044-100000)/100000=1.044%。
-
+```SQL
     explain analyze select hll_cardinality(hll_union_agg(hll_add_agg)) from daily_unique_user_hll;
                                        QUERY PLAN
      Aggregate  (cost=196.70..196.72 rows=1 width=32) (actual time=16.772..16.772 rows=1 loops=1)
@@ -154,7 +162,8 @@ description: 本文介绍了distinct count的SQL优化方法，以及常用的�
      Planning time: 0.081 ms
      Execution time: 16.851 ms
      Time: 17.485 ms
-    
+```
+
 　　而如果直接使用count distinct基于fact表计算该值，则耗时长达 127807.105 ms。
 　　
 　　从上面的实验中可以看到，hll类型实现了distinct count的合并，并可以通过hll存储各个部分数据集上的distinct count值，并可通过合并这些hll值来快速计算整个数据集上的distinct count值，耗时只有直接使用count distinct在原始数据上计算的1/7308，并且误差非常小，1%左右。

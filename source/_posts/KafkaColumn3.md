@@ -138,7 +138,7 @@ description: 本文在上篇文章 基础上，更加深入讲解了Kafka的HA�
 #Replication工具
 ## Topic Tool
 　　`$KAFKA_HOME/bin/kafka-topics.sh`，该工具可用于创建、删除、修改、查看某个Topic，也可用于列出所有Topic。另外，该工具还可修改以下配置。
-
+```bash
     unclean.leader.election.enable
     delete.retention.ms
     segment.jitter.ms
@@ -155,6 +155,7 @@ description: 本文在上篇文章 基础上，更加深入讲解了Kafka的HA�
     file.delete.delay.ms
     min.insync.replicas
     index.interval.bytes
+```
 
 ## Replica Verification Tool
 　　`$KAFKA_HOME/bin/kafka-replica-verification.sh`，该工具用来验证所指定的一个或多个Topic下每个Partition对应的所有Replica是否都同步。可通过`topic-white-list`这一参数指定所需要验证的所有Topic，支持正则表达式。
@@ -221,23 +222,23 @@ description: 本文在上篇文章 基础上，更加深入讲解了Kafka的HA�
 
 　　下面这个例子将使用该工具将Topic的所有Partition重新分配到Broker 4/5/6/7上，步骤如下：
 1. 使用generate模式，生成reassign plan。指定需要重新分配的Topic （{"topics":[{"topic":"topic1"}],"version":1}），并存入`/tmp/topics-to-move.json`文件中，然后执行
-<pre><code>
-	$KAFKA_HOME/bin/kafka-reassign-partitions.sh 
+```bash
+$KAFKA_HOME/bin/kafka-reassign-partitions.sh 
 	--zookeeper localhost:2181 
 	--topics-to-move-json-file /tmp/topics-to-move.json  
 	--broker-list "4,5,6,7" --generate
-</code></pre>
+```
 
 　　结果如下图所示
 ![reassign_1](http://www.jasongj.com/img/KafkaColumn3/reassign_1.png)
 　　
 2.　使用execute模式，执行reassign plan
 　　将上一步生成的reassignment plan存入`/tmp/reassign-plan.json`文件中，并执行
-<pre><code>
+```bash
     $KAFKA_HOME/bin/kafka-reassign-partitions.sh 
 	--zookeeper localhost:2181     
 	--reassignment-json-file /tmp/reassign-plan.json --execute
-</code></pre>
+```
 
 ![reassign_2](http://www.jasongj.com/img/KafkaColumn3/reassign_2.png)
 
@@ -245,19 +246,19 @@ description: 本文在上篇文章 基础上，更加深入讲解了Kafka的HA�
 ![reassign_3](http://www.jasongj.com/img/KafkaColumn3/reassign_3.png)
 
 3.　使用verify模式，验证reassign是否完成。执行verify命令
-<pre><code>
+```bash
    $KAFKA_HOME/bin/kafka-reassign-partitions.sh 
    --zookeeper localhost:2181 --verify
    --reassignment-json-file /tmp/reassign-plan.json
-</code></pre>
+```
 
 　　结果如下所示，从图中可看出topic1的所有Partititon都重新分配成功。
 ![reassign_4](http://www.jasongj.com/img/KafkaColumn3/reassign_4.png)
 
 　　接下来用Topic Tool再次验证。 
-<pre><code>
+```bash
 	bin/kafka-topics.sh --zookeeper localhost:2181 --describe --topic topic1
-</code></pre>
+```
 
 　　结果如下图所示，从图中可看出topic1的所有Partition都被重新分配到Broker 4/5/6/7，且每个Partition的AR与reassign plan一致。
 ![reassign_5](http://www.jasongj.com/img/KafkaColumn3/reassign_5.png)
@@ -270,7 +271,7 @@ description: 本文在上篇文章 基础上，更加深入讲解了Kafka的HA�
 　　该工具旨在从整个集群的Broker上收集状态改变日志，并生成一个集中的格式化的日志以帮助诊断状态改变相关的故障。每个Broker都会将其收到的状态改变相关的的指令存于名为`state-change.log`的日志文件中。某些情况下，Partition的Leader Election可能会出现问题，此时我们需要对整个集群的状态改变有个全局的了解从而诊断故障并解决问题。该工具将集群中相关的`state-change.log`日志按时间顺序合并，同时支持用户输入时间范围和目标Topic及Partition作为过滤条件，最终将格式化的结果输出。
 　　
 ***用法***
-```sh
+```bash
 	bin/kafka-run-class.sh kafka.tools.StateChangeLogMerger
 	--logs /opt/kafka_2.11-0.8.2.1/logs/state-change.log
 	--topic topic1 --partitions 0,1,2,3,4,5,6,7
