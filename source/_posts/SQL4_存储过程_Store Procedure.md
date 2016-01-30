@@ -130,7 +130,7 @@ SELECT * FROM test;
 ## 基于PL/PgSQL的存储过程定义
 
 　　PL/pgSQL是一个块结构语言。函数定义的所有文本都必须是一个块。一个块用下面的方法定义：
-```PLPGSQL
+```SQL
 [ <<label>> ]
 [DECLARE
 	declarations]
@@ -183,7 +183,7 @@ $$ LANGUAGE plpgsql;
 
 ## 声明函数参数
 　　如果只指定输入参数类型，不指定参数名，则函数体里一般用$1，$n这样的标识符来使用参数。
-```PLPGSQL
+```SQL
 CREATE OR REPLACE FUNCTION discount(NUMERIC)
 RETURNS NUMERIC
 AS $$
@@ -195,7 +195,7 @@ $$ LANGUAGE PLPGSQL;
 
 
 　　但该方法可读性不好，此时可以为$n参数声明别名，然后可以在函数体内通过别名指向该参数值。
-```PLPGSQL
+```SQL
 CREATE OR REPLACE FUNCTION discount(NUMERIC)
 RETURNS NUMERIC
 AS $$
@@ -209,7 +209,7 @@ $$ LANGUAGE PLPGSQL;
 
 
 　　笔者认为上述方法仍然不够直观，也不够完美。幸好PostgreSQL提供另外一种更为直接的方法来声明函数参数，即在声明参数类型时同时声明相应的参数名。
-```PLPGSQL
+```SQL
 CREATE OR REPLACE FUNCTION discount(total NUMERIC)
 RETURNS NUMERIC
 AS $$
@@ -223,7 +223,7 @@ $$ LANGUAGE PLPGSQL;
 
 ### 使用自定义复合类型返回一行多列
 　　PostgreSQL除了支持自带的类型外，还支持用户创建自定义类型。在这里可以自定义一个复合类型，并在函数中返回一个该复合类型的值，从而实现返回一行多列。
-```PLPGSQL
+```SQL
 CREATE TYPE compfoo AS (col1 INTEGER, col2 TEXT);
 
 
@@ -252,7 +252,7 @@ SELECT * FROM getCompFoo(1,'1');
 ### 使用输出参数名返回一行多列
 　　在声明函数时，除指定输入参数名及类型外，还可同时声明输出参数类型及参数名。此时函数可以输出一行多列。
 
-```PLPGSQL
+```SQL
 CREATE OR REPLACE FUNCTION get2Col
 (IN in_col1 INTEGER,IN in_col2 TEXT,
 OUT out_col1 INTEGER, OUT out_col2 TEXT)
@@ -274,7 +274,7 @@ SELECT * FROM get2Col(1,'1');
 
 ### 使用SETOF返回多行记录
 　　实际项目中，存储过程经常需要返回多行记录，可以通过SETOF实现。
-```PLPGSQL
+```SQL
 CREATE TYPE compfoo AS (col1 INTEGER, col2 TEXT);
 
 CREATE OR REPLACE FUNCTION getSet(rows INTEGER)
@@ -300,7 +300,7 @@ SELECT col1, col2 FROM getSet(2);
 
 
 ### 使用RETURN TABLE返回多行多列
-```PLPGSQL
+```SQL
 CREATE OR REPLACE FUNCTION getTable(rows INTEGER)
 RETURNS TABLE(col1 INTEGER, col2 TEXT)
 AS $$
@@ -324,13 +324,13 @@ SELECT col1, col2 FROM getTable(2);
 
 ## 使用EXECUTE语句执行动态命令
 　　有时在PL/pgSQL函数中需要生成动态命令，这个命令将包括他们每次执行时使用不同的表或者字符。EXECUTE语句用法如下：
-```PLPGSQL
+```SQL
 EXECUTE command-string [ INTO [STRICT] target] [USING expression [, ...]];
 ```
 
 　　此时PL/plSQL将不再缓存该命令的执行计划。相反，在该语句每次被执行的时候，命令都会编译一次。这也让该语句获得了对各种不同的字段甚至表进行操作的能力。
 　　command-string包含了要执行的命令，它可以使用参数值，在命令中通过引用如$1，$2等来引用参数值。这些符号的值是指USING字句的值。这种方法对于在命令字符串中使用参数是最好的：它能避免运行时数值从文本来回转换，并且不容易产生SQL注入，而且它不需要引用或者转义。
-```PLPGSQL
+```SQL
 CREATE TABLE testExecute
 AS
 SELECT
@@ -364,7 +364,7 @@ SELECT * FROM execute('3'' or ''c''=''c');
 
 
 　　当然，也可以使用字符串拼接的方式在command-string中使用参数，但会有SQL注入的风险。
-```PLPGSQL
+```SQL
 CREATE TABLE testExecute
 AS
 SELECT
@@ -417,7 +417,7 @@ SELECT * FROM execute(3);
 ## 多态SQL函数
 　　SQL函数可以声明为接受多态类型（anyelement和anyarray）的参数或返回多态类型的返回值。
 - 函数参数和返回值均为多态类型。其调用方式和调用其它类型的SQL函数完全相同，只是在传递字符串类型的参数时，需要显示转换到目标类型，否则将会被视为unknown类型。
-```PLPGSQL
+```SQL
 CREATE OR REPLACE FUNCTION get_array(anyelement, anyelement)
 RETURNS anyarray
 AS $$
@@ -432,7 +432,7 @@ SELECT get_array(1,2), get_array('a'::text,'b'::text);
 ```
 
 -  函数参数为多态类型，而返回值为基本类型
-```PLPGSQL
+```SQL
 CREATE OR REPLACE FUNCTION is_greater(anyelement, anyelement)
 RETURNS BOOLEAN
 AS $$
@@ -453,7 +453,7 @@ SELECT is_greater(2, 4);
 ```
 
 - 输入输出参数均为多态类型。这种情况与第一种情况一样。
-```PLPGSQL
+```SQL
 CREATE OR REPLACE FUNCTION get_array
 (IN anyelement, IN anyelement, OUT anyelement, OUT anyarray)
 AS $$
