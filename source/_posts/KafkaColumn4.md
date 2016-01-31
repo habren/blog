@@ -1,10 +1,21 @@
 title: Kafka设计解析（四）- Kafka Consumer设计解析
 date: 2015-08-09 20:36:27
+keywords:
+  - kafka
+  - 分布式
+  - 大数据
+  - 集群
+  - 消息系统
+  - 消息总线
+  - MQ
 tags:
   - Kafka
+  - 大数据
+  - 分布式
 categories:
-  - Message Queue
   - Kafka
+  - 大数据
+  - 分布式
 description: 本文主要介绍了Kafka High Level Consumer，Consumer Group，Consumer Rebalance，Low Level Consumer实现的语义，以及适用场景。以及未来版本中对High Level Consumer的重新设计--使用Consumer Coordinator解决Split Brain和Herd等问题。
 ------
 

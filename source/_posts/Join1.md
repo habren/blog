@@ -1,5 +1,18 @@
 title: SQL优化（一） Merge Join VS. Hash Join VS. Nested Loop
 date: 2015-03-07 21:00:00
+keywords:
+  - SQL
+  - sql
+  - SQL优化
+  - sql优化
+  - 数据库
+  - PostgreSQL
+  - postgres
+  - join
+  - merge join
+  - hash join
+  - nested loop
+  - nest loop
 tags:
   - PostgreSQL
   - Database

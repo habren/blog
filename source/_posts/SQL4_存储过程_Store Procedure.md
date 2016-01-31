@@ -1,5 +1,14 @@
 title: SQL优化（四） PostgreSQL存储过程
 date: 2015-12-27 14:59:45
+keywords:
+  - SQL
+  - sql
+  - SQL优化
+  - sql优化
+  - 数据库
+  - 存储过程
+  - UDF
+  - PostgreSQL
 tags:
   - PostgreSQL
   - Database

@@ -1,10 +1,21 @@
 title: Kafka设计解析（一）- Kafka背景及架构介绍
 date: 2015-03-10 14:00:00
+keywords:
+  - kafka
+  - 分布式
+  - 大数据
+  - 集群
+  - 消息系统
+  - 消息总线
+  - MQ
 tags:
   - Kafka
+  - 大数据
+  - 分布式
 categories:
   - Kafka
-  - Message Queue
+  - 大数据
+  - 分布式
 description: 本文介绍了Kafka的创建背景，设计目标，使用消息系统的优势以及目前流行的消息系统对比。并介绍了Kafka的架构，Producer消息路由，Consumer Group以及由其实现的不同消息分发方式，Topic & Partition，最后介绍了Kafka Consumer为何使用pull模式以及Kafka提供的三种delivery guarantee。
 ------
 　　本文已授权InfoQ独家发布，如需转载请[**注明出处**](http://www.jasongj.com/2015/03/10/KafkaColumn1/)并与InfoQ中文站联系。[InfoQ首发地址](http://www.infoq.com/cn/articles/kafka-analysis-part-1)为 [http://www.infoq.com/cn/articles/kafka-analysis-part-1 ]( http://www.infoq.com/cn/articles/kafka-analysis-part-1 )

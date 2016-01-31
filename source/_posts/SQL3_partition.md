@@ -1,5 +1,15 @@
 title: SQL优化（三） PostgreSQL Table Partitioning
 date: 2015-12-13 12:13:05
+keywords:
+  - SQL
+  - sql
+  - SQL优化
+  - sql优化
+  - 数据库
+  - PostgreSQL
+  - postgres
+  - 表分区
+  - partition
 tags:
   - PostgreSQL
   - Database

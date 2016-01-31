@@ -1,11 +1,21 @@
 title: Kafka设计解析（二）- Kafka High Availability （上）
 date: 2015-04-24 22:21:18
+keywords:
+  - kafka
+  - 分布式
+  - 大数据
+  - 集群
+  - 消息系统
+  - 消息总线
+  - MQ
 tags:
   - Kafka
-  - HA
+  - 大数据
+  - 分布式
 categories:
-  - Message Queue
   - Kafka
+  - 大数据
+  - 分布式
 description: Kafka从0.8版本开始提供High Availability机制，从而提高了系统可用性及数据持久性。本文从Data Replication和Leader Election两方面介绍了Kafka的HA机制。
 ------
 

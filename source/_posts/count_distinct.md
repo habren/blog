@@ -1,5 +1,16 @@
 title: SQL优化（二） 快速计算Distinct Count
 date: 2015-03-15 16:00:00
+keywords:
+  - SQL
+  - sql
+  - SQL优化
+  - sql优化
+  - 数据库
+  - PostgreSQL
+  - postgres
+  - distinct
+  - uv
+  - unique
 tags:
   - PostgreSQL
   - Database

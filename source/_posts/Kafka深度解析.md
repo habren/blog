@@ -1,10 +1,21 @@
 title: Kafka深度解析
 date: 2015-01-02 15:30:25
+keywords:
+  - kafka
+  - 分布式
+  - 大数据
+  - 集群
+  - 消息系统
+  - 消息总线
+  - MQ
 tags:
   - Kafka
+  - 大数据
+  - 分布式
 categories:
-  - Message Queue
   - Kafka
+  - 大数据
+  - 分布式
 description: 介绍Kafka背景，使用消息系统的优势，常用消息系统对比，Kafka架构介绍，Kafka实现语义分析，Replication及Leader Election机制剖析，Consumer Group Rebalance实现原理介绍，以及Benchmark测试。
 ---
 

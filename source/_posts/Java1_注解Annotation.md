@@ -1,6 +1,13 @@
 ---
 title: Java系列（一）Annotation（注解）
 date: 2016-01-17 15:11:29
+keywords:
+  - java
+  - Java
+  - JAVA
+  - 注解
+  - annotation
+  - Annotation
 tags:
   - Java
 categories:

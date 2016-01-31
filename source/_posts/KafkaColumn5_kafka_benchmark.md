@@ -1,10 +1,21 @@
 title: Kafka设计解析（五）- Kafka性能测试方法及Benchmark报告
 date: 2015-12-31 07:01:27
+keywords:
+  - kafka
+  - 分布式
+  - 大数据
+  - 集群
+  - 消息系统
+  - 消息总线
+  - MQ
 tags:
   - Kafka
+  - 大数据
+  - 分布式
 categories:
-  - Message Queue
   - Kafka
+  - 大数据
+  - 分布式
 description: 本文详细阐述了Kafka的性能测试方法，并全面展示了Kafka各组件的性能测试报告。
 ------
 
