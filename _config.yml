@@ -5,12 +5,12 @@
 # Site
 title: Jason's Blog
 subtitle: 分享交流大数据领域技术，包括但不限于Storm、Spark、Hadoop等流行分布式计算系统，Kafka、MetaQ等分布式消息系统，MongoDB、Cassandra等NoSQL，PostgreSQL、MySQL等RDBMS以及其它前沿技术
-description: 分享交流大数据领域技术，包括但不限于Storm、Spark、Hadoop等流行分布式计算系统，Kafka、MetaQ等分布式消息系统，MongoDB、Cassandra等NoSQL，PostgreSQL、MySQL等RDBMS以及其它前沿技术
+description: 分享交流大数据领域技术，包括但不限于Storm、Spark、Hadoop等流行分布式计算系统，Kafka、MetaQ等分布式消息系统，MongoDB、Cassandra等NoSQL，PostgreSQL、MySQL等RDBMS及其它前沿技术
 author: 郭俊 Jason
 email: gj1989lh@163.com
 
 ## Sidebar profile image, only for next theme
-avatar: /img/WeChat_QR.jpg
+avatar: http://www.jasongj.com/img/WeChat_QR.jpg
 
 ## language: en_US
 ##language: en_US
@@ -88,6 +88,7 @@ Plugins:
  - hexo-generator-feed
  - hexo-generator-sitemap
  - hexo-generator-baidu-sitemap
+ - hexo-generator-seo-friendly-sitemap
  - hexo-math
  - livereload
 
@@ -128,6 +129,7 @@ deploy:
   repo:
     github: https://github.com/habren/habren.github.io.git,master
     gitcafe: git@gitcafe.com:jasongj/jasongj.git,gitcafe-pages
+#    gitcafe: git@gitcafe.com:habren/habren.git,gitcafe-pages
 
 
 #deploy:
@@ -177,7 +179,7 @@ google_analytics: UA-58959834-1
 google_site_verification: _lpnaoq9f4n68-jMrHuEIsB1kJO_6WMxvONibOMBdxM
 
 ## Swiftype search engine, for next
-swiftype_key: WSzRURyW4ED82aapXRTZ
+#swiftype_key: WSzRURyW4ED82aapXRTZ
 
 ## Friend links, for next
 links_title: Links
