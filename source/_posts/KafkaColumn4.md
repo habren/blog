@@ -8,6 +8,13 @@ keywords:
   - 消息系统
   - 消息总线
   - MQ
+  - Jason's Blog
+  - 郭俊 Jason
+  - 大数据架构
+  - kafka consumer
+  - kafka rebalance
+  - kafka 脑裂
+  - kafka split brain
 tags:
   - Kafka
   - 大数据

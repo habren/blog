@@ -3,7 +3,6 @@ date: 2015-03-07 21:00:00
 keywords:
   - SQL
   - sql
-  - SQL优化
   - sql优化
   - 数据库
   - PostgreSQL
@@ -12,7 +11,9 @@ keywords:
   - merge join
   - hash join
   - nested loop
-  - nest loop
+  - Jason's Blog
+  - 郭俊 Jason
+  - 大数据架构
 tags:
   - PostgreSQL
   - Database

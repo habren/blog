@@ -8,6 +8,12 @@ keywords:
   - 线性回归
   - 梯度下降
   - machine learning
+  - 前向选择
+  - 后向选择
+  - 正规方程
+  - Jason's Blog
+  - 郭俊 Jason
+  - 大数据架构
 tags:
   - 线性回归
   - 机器学习

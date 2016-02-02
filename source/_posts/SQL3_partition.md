@@ -10,6 +10,9 @@ keywords:
   - postgres
   - 表分区
   - partition
+  - Jason's Blog
+  - 郭俊 Jason
+  - 大数据架构
 tags:
   - PostgreSQL
   - Database

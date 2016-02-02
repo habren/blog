@@ -9,6 +9,9 @@ keywords:
   - 存储过程
   - UDF
   - PostgreSQL
+  - Jason's Blog
+  - 郭俊 Jason
+  - 大数据架构
 tags:
   - PostgreSQL
   - Database

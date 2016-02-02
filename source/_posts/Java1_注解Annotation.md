@@ -8,6 +8,11 @@ keywords:
   - 注解
   - annotation
   - Annotation
+  - Jason's Blog
+  - 郭俊 Jason
+  - 大数据架构
+  - java 注解
+  - java annotation
 tags:
   - Java
 categories:
