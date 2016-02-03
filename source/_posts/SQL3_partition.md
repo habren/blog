@@ -26,7 +26,9 @@ categories:
 description: 本文介绍了数据库分区表的使用场景，优势，原理，及在PostgreSQL中的实现和注意事项。
 ---
 
-原创文章，转载请务必在文章开头处注明出自Jason's Blog，并给出原文链接[http://www.jasongj.com/2015/12/13/SQL3_partition/](http://www.jasongj.com/2015/12/13/SQL3_partition/)
+　　原创文章，转载请务必将下面这段话置于文章开头处。
+　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/12/13/SQL3_partition)　[http://www.jasongj.com/2015/12/13/SQL3_partition](http://www.jasongj.com/2015/12/13/SQL3_partition)
+
 
 # 典型使用场景
 　　随着使用时间的增加，数据库中的数据量也不断增加，因此数据库查询越来越慢。
