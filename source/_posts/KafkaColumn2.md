@@ -25,7 +25,9 @@ categories:
 description: Kafka从0.8版本开始提供High Availability机制，从而提高了系统可用性及数据持久性。本文从Data Replication和Leader Election两方面介绍了Kafka的HA机制。
 ------
 
-　　本文已授权InfoQ独家发表，如需转载请[**注明出处**](http://www.jasongj.com/2015/04/24/KafkaColumn2/)并与InfoQ中文站联系。[InfoQ首发地址](http://www.infoq.com/cn/articles/kafka-analysis-part-2)为 [http://www.infoq.com/cn/articles/kafka-analysis-part-2](http://www.infoq.com/cn/articles/kafka-analysis-part-2)
+
+　　原创文章，转载请务必将下面这段话置于文章开头处。（已授权[InfoQ中文站发布](http://www.infoq.com/cn/articles/kafka-analysis-part-2)）
+　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/04/24/KafkaColumn2)　[http://www.jasongj.com/2015/04/24/KafkaColumn2](http://www.jasongj.com/2015/04/24/KafkaColumn2)
 
 
 # 摘要
