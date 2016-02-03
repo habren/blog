@@ -20,7 +20,8 @@ categories:
 description: 本文介绍了Java Annotation的概念及Java提供的四种Meta Annotation的功能，并结合实例详解了自定义Annotation的方法和注意事项
 ---
 
-原创文章，转载请务必在文章开头处注明出自[Jason's Blog](http://www.jasongj.com)，并给出[原文链接](http://www.jasongj.com/2016/01/17/Java1_%E6%B3%A8%E8%A7%A3Annotation/)[http://www.jasongj.com/2016/01/17/Java1_注解Annotation/](http://www.jasongj.com/2016/01/17/Java1_%E6%B3%A8%E8%A7%A3Annotation/)
+　　原创文章，转载请务必将下面这段话置于文章开头处。
+　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2016/01/17/Java1_注解Annotation)　[http://www.jasongj.com/2016/01/17/Java1_注解Annotation](http://www.jasongj.com/2016/01/17/Java1_注解Annotation)
 
 
 
