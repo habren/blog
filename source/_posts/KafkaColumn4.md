@@ -40,13 +40,13 @@ description: 本文主要介绍了Kafka High Level Consumer，Consumer Group，C
 ![Consumer Zookeeper Structure](http://www.jasongj.com/img/KafkaColumn4/KafkaColumn4-consumers.png)
 　　
 　　很多传统的Message Queue都会在消息被消费完后将消息删除，一方面避免重复消费，另一方面可以保证Queue的长度比较短，提高效率。而如上文所述，Kafka并不删除已消费的消息，为了实现传统Message Queue消息只被消费一次的语义，Kafka保证每条消息在同一个Consumer Group里只会被某一个Consumer消费。与传统Message Queue不同的是，Kafka还允许不同Consumer Group同时消费同一条消息，这一特性可以为消息的多元化处理提供支持。
-![](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/consumer_group.png)
+![kafka consumer group](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/consumer_group.png)
 　　
 　　实际上，Kafka的设计理念之一就是同时提供离线处理和实时处理。根据这一特性，可以使用Storm这种实时流处理系统对消息进行实时在线处理，同时使用Hadoop这种批处理系统进行离线处理，还可以同时将数据实时备份到另一个数据中心，只需要保证这三个操作所使用的Consumer在不同的Consumer Group即可。下图展示了Kafka在LinkedIn的一种简化部署模型。
-![](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/kafka_in_linkedin.png)
+![kafka sample deployment in linkedin](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/kafka_in_linkedin.png)
 　　
 　　为了更清晰展示Kafka Consumer Group的特性，笔者进行了一项测试。创建一个Topic (名为topic1)，再创建一个属于group1的Consumer实例，并创建三个属于group2的Consumer实例，然后通过Producer向topic1发送Key分别为1，2，3的消息。结果发现属于group1的Consumer收到了所有的这三条消息，同时group2中的3个Consumer分别收到了Key为1，2，3的消息，如下图所示。
-![](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/consumer_group_test.png)
+![kafka consumer group](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/consumer_group_test.png)
 　　注：上图中每个黑色区域代表一个Consumer实例，每个实例只创建一个MessageStream。实际上，本实验将Consumer应用程序打成jar包，并在4个不同的命令行终端中传入不同的参数运行。
 
 
@@ -55,25 +55,25 @@ description: 本文主要介绍了Kafka High Level Consumer，Consumer Group，C
 　　Kafka保证同一Consumer Group中只有一个Consumer会消费某条消息，实际上，Kafka保证的是稳定状态下每一个Consumer实例只会消费某一个或多个特定Partition的数据，而某个Partition的数据只会被某一个特定的Consumer实例所消费。也就是说Kafka对消息的分配是以Partition为单位分配的，而非以每一条消息作为分配单元。这样设计的劣势是无法保证同一个Consumer Group里的Consumer均匀消费数据，优势是每个Consumer不用都跟大量的Broker通信，减少通信开销，同时也降低了分配难度，实现也更简单。另外，因为同一个Partition里的数据是有序的，这种设计可以保证每个Partition里的数据可以被有序消费。
 　　如果某Consumer Group中Consumer（每个Consumer只创建1个MessageStream）数量少于Partition数量，则至少有一个Consumer会消费多个Partition的数据，如果Consumer的数量与Partition数量相同，则正好一个Consumer消费一个Partition的数据。而如果Consumer的数量多于Partition的数量时，会有部分Consumer无法消费该Topic下任何一条消息。
 　　如下例所示，如果topic1有0，1，2共三个Partition，当group1只有一个Consumer(名为consumer1)时，该 Consumer可消费这3个Partition的所有数据。
-　　![](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/group1_consumer1.png)
+　　![kafka rebalance 3 partition 1 consumer](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/group1_consumer1.png)
 　　
 　　增加一个Consumer(consumer2)后，其中一个Consumer（consumer1）可消费2个Partition的数据（Partition 0和Partition 1），另外一个Consumer(consumer2)可消费另外一个Partition（Partition 2）的数据。
-　　![](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/group1_consumer_1_2.png)
+　　![kafka rebalance 3 partitin 2 consumer](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/group1_consumer_1_2.png)
 　　
 　　再增加一个Consumer(consumer3)后，每个Consumer可消费一个Partition的数据。consumer1消费partition0，consumer2消费partition1，consumer3消费partition2。
-　　![](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/group1_consumer_1_2_3.png)
+　　![kafka rebalance 3 partition 3 consumer](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/group1_consumer_1_2_3.png)
 　　
 　　再增加一个Consumer（consumer4）后，其中3个Consumer可分别消费一个Partition的数据，另外一个Consumer（consumer4）不能消费topic1的任何数据。
-　　![](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/group1_consumer_1_2_3_4.png)
+　　![kafka rebalance 3 partition 4 consumer](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/group1_consumer_1_2_3_4.png)
 　　
 　　此时关闭consumer1，其余3个Consumer可分别消费一个Partition的数据。
-　　![](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/group1_consumer_2_3_4.png)
+　　![kafka rebalance 3 partition 3 consumer](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/group1_consumer_2_3_4.png)
 　　
 　　接着关闭consumer2，consumer3可消费2个Partition，consumer4可消费1个Partition。
-　　![](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/group1_consumer_3_4.png)
+　　![kafka rebalance 3 partition 2 consumer](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/group1_consumer_3_4.png)
 　　
 　　再关闭consumer3，仅存的consumer4可同时消费topic1的3个Partition。
-　　![](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/group1_consumer_4.png)
+　　![kafka rebalance 3 partition 1 consumer](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/group1_consumer_4.png)
 
 　　Consumer Rebalance的算法如下：
 
@@ -221,7 +221,7 @@ description: 本文主要介绍了Kafka High Level Consumer，Consumer Group，C
 　　3）在Coordinator完成加载其管理的Group列表及其相应的成员信息之前，它将为HeartbeatRequest，OffsetCommitRequest和JoinGroupRequests返回CoordinatorStartupNotComplete错误码。此时，Consumer会重新发送请求。
 　　4）Coordinator会跟踪被其所管理的任何Consumer Group注册的Topic的Partition的变化，并为该变化触发Rebalance操作。创建新的Topic也可能触发Rebalance，因为Consumer可以在Topic被创建之前就已经订阅它了。
 　　Coordinator发起Rebalance操作流程如下所示。
-![](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/coordinator.png)
+![kafka coordinator rebalance](http://www.jasongj.com/img/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/coordinator.png)
 
 ***Coordinator状态机***
 　　![Coordinator状态图](http://www.jasongj.com/img/KafkaColumn4/coordinator_state_diagram.png)

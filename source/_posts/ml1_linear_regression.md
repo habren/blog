@@ -83,7 +83,7 @@ description: 本文简要介绍了线性回归的原理，适用场景，并结�
     model1 <- lm(Temp ~ MEI + CO2 + CH4 + N2O + CFC.11 + CFC.12 + TSI + Aerosols, temp)
     summary(model1)
     
-![](http://www.jasongj.com/img/ml1/model1.png)
+![adjusted r](http://www.jasongj.com/img/ml1/model1.png)
 
 ***逐一去掉feature***
 　　在model1中去掉任一个feature，并记下相应的Adjusted $R^2$如下
@@ -115,7 +115,7 @@ description: 本文简要介绍了线性回归的原理，适用场景，并结�
 
    任一组合的Adjusted $R^2$都比上一轮小，因此选择上一轮的feature组合作为最终的模型，也即`Temp ~ MEI + CO2 + N2O + CFC.11 + CFC.12 + TSI + Aerosols`
    由`summary(model2)`可算出每个feature的coefficient如下 。
-![](http://www.jasongj.com/img/ml1/model2.png)
+![feature coefficient](http://www.jasongj.com/img/ml1/model2.png)
 
 # 线性回归介绍
 　　
