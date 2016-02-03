@@ -1,5 +1,6 @@
 title: SQL优化（一） Merge Join VS. Hash Join VS. Nested Loop
 date: 2015-03-07 21:00:00
+permalink: 2015/03/07/Join1
 keywords:
   - SQL
   - sql
@@ -30,8 +31,6 @@ description: 本文介绍了Merge Join，Hash Join，Nested Loop这三种数据�
 　　原创文章，转载请务必将下面这段话置于文章开头处。
 　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/03/07/Join1)　[http://www.jasongj.com/2015/03/07/Join1](http://www.jasongj.com/2015/03/07/Join1)
 
-
-原创文章，转载请务必在文章开头处注明转载自Jason's Blog，并给出[原文链接](http://www.jasongj.com/2015/03/07/Join1/) [http://www.jasongj.com/2015/03/07/Join1/](http://www.jasongj.com/2015/03/07/Join1/)
 
 # Nested Loop，Hash Join，Merge Join介绍
  - Nested Loop:

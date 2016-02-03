@@ -5,7 +5,7 @@
 # Site
 title: Jason's Blog
 subtitle: 分享交流大数据领域技术，包括但不限于Storm、Spark、Hadoop等流行分布式计算系统，Kafka、MetaQ等分布式消息系统，MongoDB、Cassandra等NoSQL，PostgreSQL、MySQL等RDBMS以及其它前沿技术
-description: 分享交流大数据领域技术，包括但不限于Storm、Spark、Hadoop等流行分布式计算系统，Kafka、MetaQ等分布式消息系统，MongoDB、Cassandra等NoSQL，PostgreSQL、MySQL等RDBMS及其它前沿技术
+description: 分享交流大数据领域技术，包括但不限于Storm、Spark、Hadoop等流行分布式计算系统，Kafka、MetaQ等分布式消息系统，MongoDB、Cassandra等NoSQL，PostgreSQL、MySQL等RDBMS及其它前沿技术。微信公众号【大数据架构】
 author: 郭俊 Jason
 email: gj1989lh@163.com
 
@@ -21,7 +21,8 @@ language: zh-CN
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 url: http://www.jasongj.com
 root: /
-permalink: :year/:month/:day/:title/
+#permalink: :year/:month/:day/:title/
+permalink: :title/
 tag_dir: tags
 archive_dir: archives
 category_dir: categories

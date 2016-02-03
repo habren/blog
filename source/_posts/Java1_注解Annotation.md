@@ -1,6 +1,7 @@
 ---
 title: Java系列（一）Annotation（注解）
 date: 2016-01-17 15:11:29
+permalink: 2016/01/17/Java1_注解Annotation
 keywords:
   - java
   - Java

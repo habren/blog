@@ -1,5 +1,6 @@
 title: Kafka设计解析（五）- Kafka性能测试方法及Benchmark报告
 date: 2015-12-31 07:01:27
+permalink: 2015/12/31/KafkaColumn5_kafka_benchmark
 keywords:
   - kafka
   - 分布式

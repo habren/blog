@@ -1,5 +1,6 @@
 title: SQL优化（三） PostgreSQL Table Partitioning
 date: 2015-12-13 12:13:05
+permalink: 2015/12/13/SQL3_partition
 keywords:
   - SQL
   - sql

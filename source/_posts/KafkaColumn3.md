@@ -1,5 +1,6 @@
 title: Kafka设计解析（三）- Kafka High Availability （下）
 date: 2015-06-08 15:43:29
+permalink: 2015/06/08/KafkaColumn3
 keywords:
   - kafka
   - 分布式
