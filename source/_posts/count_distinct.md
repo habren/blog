@@ -4,15 +4,13 @@ permalink: 2015/03/15/count_distinct
 keywords:
   - SQL
   - sql
-  - SQL优化
   - sql优化
   - 数据库
   - PostgreSQL
   - postgres
-  - distinct
+  - count distinct
   - uv
   - unique
-  - Jason's Blog
   - 郭俊 Jason
   - 大数据架构
 tags:
