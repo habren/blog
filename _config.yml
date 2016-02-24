@@ -126,12 +126,19 @@ exclude_generator:
 
 # Deploy 3.1.1
 deploy:
-  type: git
+- type: git
   repo:
     github: https://github.com/habren/habren.github.io.git,master
     gitcafe: git@gitcafe.com:jasongj/jasongj.git,gitcafe-pages
-#    gitcafe: git@gitcafe.com:habren/habren.git,gitcafe-pages
-
+- type: ftpsync
+  host: 121.42.101.9
+  user: qxu1192580078
+  pass: gj418692341lh
+  remote: /htdocs
+  port: 21
+  ignore: ['.svn','logreport']
+  connections: 2
+  verbose: true
 
 #deploy:
 #  type: git
@@ -157,6 +164,8 @@ stylus:
 
 livereload:
   port: 35729
+
+icp: 沪ICP备16005463号
 
 ## For next theme
 since: 2015
