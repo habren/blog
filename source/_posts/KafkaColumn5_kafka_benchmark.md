@@ -28,7 +28,6 @@ description: 本文详细阐述了Kafka的性能测试方法，并全面展示�
 　　原创文章，转载请务必将下面这段话置于文章开头处。（已授权[InfoQ中文站发布](http://www.infoq.com/cn/articles/kafka-analysis-part-5)）
 　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/12/31/KafkaColumn5_kafka_benchmark)　[http://www.jasongj.com/2015/12/31/KafkaColumn5_kafka_benchmark](http://www.jasongj.com/2015/12/31/KafkaColumn5_kafka_benchmark)
 
-　　原创文章，转载请在文章开头著明出自[Jason's Blog](http://www.jasongj.com)并给出原文链接。本文已授权InfoQ独家首发。
 
 # 摘要
 　　本文主要介绍了如何利用Kafka自带的性能测试脚本及Kafka Manager测试Kafka的性能，以及如何使用Kafka Manager监控Kafka的工作状态，最后给出了Kafka的性能测试报告。
