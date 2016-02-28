@@ -21,6 +21,7 @@ tags:
 categories:
   - Machine Learning
 description: 本文简要介绍了线性回归的原理，适用场景，并结合实例讲解如何使用R语言解决线性回归问题
+mathjax: true
 ------
 
 　　原创文章，转载请务必将下面这段话置于文章开头处。
