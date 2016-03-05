@@ -128,17 +128,17 @@ exclude_generator:
 deploy:
 - type: git
   repo:
-    github: https://github.com/habren/habren.github.io.git,master
+#    github: git@github.com:habren/habren.github.io.git,master
     gitcafe: git@gitcafe.com:jasongj/jasongj.git,gitcafe-pages
-- type: ftpsync
-  host: 121.42.101.9
-  user: qxu1192580078
-  pass: gj418692341lh
-  remote: /htdocs
-  port: 21
-  ignore: ['.svn','logreport']
-  connections: 2
-  verbose: true
+#- type: ftpsync
+#  host: 121.42.101.9
+#  user: qxu1192580078
+#  pass: gj418692341lh
+#  remote: /htdocs
+#  port: 21
+# ignore: ['.svn','logreport']
+#  connections: 2
+#  verbose: true
 
 #deploy:
 #  type: git
@@ -197,7 +197,7 @@ links:
   发表在InfoQ上的文章: http://www.infoq.com/cn/author/%E9%83%AD%E4%BF%8A
 
 ## Share, for next
-baidushare: true
+baidushare: false
 
 
 

@@ -3,12 +3,11 @@ date: 2015-04-24 22:21:18
 permalink: 2015/04/24/KafkaColumn2
 keywords:
   - kafka
-  - 分布式
   - 大数据
   - 集群
   - 消息系统
   - 消息总线
-  - MQ
+  - kafka 架构
   - Jason's Blog
   - 郭俊 Jason
   - 大数据架构

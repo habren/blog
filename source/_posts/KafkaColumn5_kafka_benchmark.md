@@ -3,14 +3,13 @@ date: 2015-12-31 07:01:27
 permalink: 2015/12/31/KafkaColumn5_kafka_benchmark
 keywords:
   - kafka
-  - 分布式
   - 大数据
   - 集群
   - 消息系统
   - 消息总线
-  - MQ
   - Jason's Blog
   - 郭俊 Jason
+  - kafka 架构
   - 大数据架构
   - kafka 性能
   - kafka benchmark

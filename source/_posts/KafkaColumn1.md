@@ -1,14 +1,14 @@
 title: Kafka设计解析（一）- Kafka背景及架构介绍
 date: 2015-03-10 14:00:00
 permalink: 2015/03/10/KafkaColumn1
+sticky: 10
 keywords:
   - kafka
-  - 分布式
   - 大数据
   - 集群
   - 消息系统
   - 消息总线
-  - MQ
+  - kafka 架构
   - Jason's Blog
   - 郭俊 Jason
   - 大数据架构

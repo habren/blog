@@ -1,20 +1,19 @@
 title: Kafka深度解析
 date: 2015-01-02 15:30:25
 permalink: 2015/01/02/Kafka深度解析
+sticky: 6
 keywords:
   - kafka
-  - 分布式
   - 大数据
   - 集群
-  - 消息系统
-  - 消息总线
-  - MQ
+  - kafka 架构
   - Jason's Blog
   - 郭俊 Jason
   - 大数据架构
   - Kafka HA
   - kafka benchmark
   - kafka split brain
+  - kafka 脑裂
 tags:
   - Kafka
   - 大数据
