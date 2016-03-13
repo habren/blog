@@ -10,7 +10,7 @@ author: 郭俊 Jason
 email: gj1989lh@163.com
 
 ## Sidebar profile image, only for next theme
-avatar: http://www.jasongj.com/img/WeChat_QR.jpg
+avatar: //www.jasongj.com/img/WeChat_QR.jpg
 
 ## language: en_US
 ##language: en_US
@@ -81,6 +81,10 @@ time_format: HH:mm:ss
 per_page: 20
 pagination_dir: page
 
+
+auto_detect: true
+
+
 # Disqus
 disqus_shortname:
 
@@ -90,6 +94,7 @@ Plugins:
  - hexo-generator-sitemap
  - hexo-generator-baidu-sitemap
  - hexo-generator-seo-friendly-sitemap
+ - hexo-deployer-ftpsync
  - hexo-math
  - livereload
 
@@ -128,16 +133,16 @@ exclude_generator:
 deploy:
 - type: git
   repo:
-#    github: git@github.com:habren/habren.github.io.git,master
-    gitcafe: git@gitcafe.com:jasongj/jasongj.git,gitcafe-pages
+    github: git@github.com:habren/habren.github.io.git,master
+    coding: git@git.coding.net:habren/habren.git,coding-pages
 #- type: ftpsync
-#  host: 121.42.101.9
-#  user: qxu1192580078
+#  host: 120.24.239.7
+#  user: syu2201940001
 #  pass: gj418692341lh
 #  remote: /htdocs
 #  port: 21
-# ignore: ['.svn','logreport']
-#  connections: 2
+#  ignore: ['.svn','logreport', '.git']
+#  connections: 8
 #  verbose: true
 
 #deploy:
@@ -170,10 +175,10 @@ icp: 沪ICP备16005463号
 ## For next theme
 since: 2015
 social:
-  github: https://github.com/habren
-  weibo: http://weibo.com/habren
-  linkedin: https://www.linkedin.com/in/jasongj
-  mail: mailto:gj1989lh@163.com
+#  GitHub: https://github.com/habren
+  Linkedin: https://www.linkedin.com/in/jasongj
+  E-Mail: mailto:gj1989lh@163.com
+  Weibo: http://weibo.com/habren
 
 ## Comments, for next
 duoshuo_shortname: habren
@@ -198,6 +203,7 @@ links:
 
 ## Share, for next
 baidushare: false
+
 
 
 
