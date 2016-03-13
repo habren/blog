@@ -102,7 +102,7 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
 消费消息。每个consumer属于一个特定的consumer group（可为每个consumer指定group name，若不指定group name则属于默认的group）。使用consumer high level API时，同一topic的一条消息只能被同一个consumer group内的一个consumer消费，但多个consumer group可同时消费这一消息。
 
 ## Kafka架构
-![kafka architecture 架构](http://www.jasongj.com/img/Kafka深度解析/KafkaArchitecture.png)
+![kafka architecture 架构](http://www.jasongj.com/img/KafkaAnalysis/KafkaArchitecture.png)
 　　如上图所示，一个典型的kafka集群中包含若干producer（可以是web前端产生的page view，或者是服务器日志，系统CPU、memory等），若干broker（Kafka支持水平扩展，一般broker数量越多，集群吞吐率越高），若干consumer group，以及一个[Zookeeper](http://zookeeper.apache.org/)集群。Kafka通过Zookeeper管理集群配置，选举leader，以及在consumer group发生变化时进行rebalance。producer使用push模式将消息发布到broker，consumer使用pull模式从broker订阅并消费消息。
 　　
 ### Push vs. Pull
@@ -111,16 +111,16 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
 
 ### Topic & Partition
 　　Topic在逻辑上可以被认为是一个queue。每条消费都必须指定它的topic，可以简单理解为必须指明把这条消息放进哪个queue里。为了使得Kafka的吞吐率可以水平扩展，物理上把topic分成一个或多个partition，每个partition在物理上对应一个文件夹，该文件夹下存储这个partition的所有消息和索引文件。
-　　![kafka topic partition](http://www.jasongj.com/img/Kafka深度解析/topic-partition.png)
+　　![kafka topic partition](http://www.jasongj.com/img/KafkaAnalysis/topic-partition.png)
 　　每个日志文件都是“log entries”序列，每一个`log entry`包含一个4字节整型数（值为N），其后跟N个字节的消息体。每条消息都有一个当前partition下唯一的64字节的offset，它指明了这条消息的起始位置。磁盘上存储的消息格式如下：
 　　message length    ：   4 bytes (value: 1+4+n)
 　　"magic" value         ：   1 byte
 　　crc               ：   4 bytes
 　　payload           ：   n bytes
 　　这个“log entries”并非由一个文件构成，而是分成多个segment，每个segment名为该segment第一条消息的offset和“.kafka”组成。另外会有一个索引文件，它标明了每个segment下包含的`log entry`的offset范围，如下图所示。
-　　![kafka partition segment](http://www.jasongj.com/img/Kafka深度解析/partition_segment.png)
+　　![kafka partition segment](http://www.jasongj.com/img/KafkaAnalysis/partition_segment.png)
 　　因为每条消息都被append到该partition中，是顺序写磁盘，因此效率非常高（经验证，顺序写磁盘效率比随机写内存还要高，这是Kafka高吞吐率的一个很重要的保证）。
-　　![kafka partition](http://www.jasongj.com/img/Kafka深度解析/partition.png)
+　　![kafka partition](http://www.jasongj.com/img/KafkaAnalysis/partition.png)
 　　每一条消息被发送到broker时，会根据paritition规则选择被存储到哪一个partition。如果partition规则设置的合理，所有消息可以均匀分布到不同的partition里，这样就实现了水平扩展。（如果一个topic对应一个文件，那这个文件所在的机器I/O将会成为这个topic的性能瓶颈，而partition解决了这个问题）。在创建topic时可以在`$KAFKA_HOME/config/server.properties`中指定这个partition的数量(如下所示)，当然也可以在topic创建之后去修改parition数量。
 ```bash
     # The default number of log partitions per topic. More partitions allow greater
@@ -164,7 +164,7 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
     }
 ```
 　　则key相同的消息会被发送并存储到同一个partition里，而且key的序号正好和partition序号相同。（partition序号从0开始，本例中的key也正好从0开始）。如下图所示。
-　　![kafka partition key](http://www.jasongj.com/img/Kafka深度解析/partition_key.png)
+　　![kafka partition key](http://www.jasongj.com/img/KafkaAnalysis/partition_key.png)
 　　对于传统的message queue而言，一般会删除已经被消费的消息，而Kafka集群会保留所有的消息，无论其被消费与否。当然，因为磁盘限制，不可能永久保留所有数据（实际上也没必要），因此Kafka提供两种策略去删除旧数据。一是基于时间，二是基于partition文件大小。例如可以通过配置`$KAFKA_HOME/config/server.properties`，让Kafka删除一周前的数据，也可通过配置让Kafka在partition文件超过1GB时删除旧数据，如下所示。
 ```bash
     　　############################# Log Retention Policy #############################
@@ -232,39 +232,39 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
 　　这就需要在可用性和一致性当中作出一个简单的平衡。如果一定要等待ISR中的replica“活”过来，那不可用的时间就可能会相对较长。而且如果ISR中的所有replica都无法“活”过来了，或者数据都丢失了，这个partition将永远不可用。选择第一个“活”过来的replica作为leader，而这个replica不是ISR中的replica，那即使它并不保证已经包含了所有已commit的消息，它也会成为leader而作为consumer的数据源（前文有说明，所有读写都由leader完成）。Kafka0.8.*使用了第二种方式。根据Kafka的文档，在以后的版本中，Kafka支持用户通过配置选择这两种方式中的一种，从而根据不同的使用场景选择高可用性还是强一致性。
 　　
 　　上文说明了一个parition的replication过程，然尔Kafka集群需要管理成百上千个partition，Kafka通过round-robin的方式来平衡partition从而避免大量partition集中在了少数几个节点上。同时Kafka也需要平衡leader的分布，尽可能的让所有partition的leader均匀分布在不同broker上。另一方面，优化leadership election的过程也是很重要的，毕竟这段时间相应的partition处于不可用状态。一种简单的实现是暂停宕机的broker上的所有partition，并为之选举leader。实际上，Kafka选举一个broker作为controller，这个controller通过watch Zookeeper检测所有的broker failure，并负责为所有受影响的parition选举leader，再将相应的leader调整命令发送至受影响的broker，过程如下图所示。
-　　![kafka controller](http://www.jasongj.com/img/Kafka深度解析/controller.png)
+　　![kafka controller](http://www.jasongj.com/img/KafkaAnalysis/controller.png)
 　　
 　　这样做的好处是，可以批量的通知leadership的变化，从而使得选举过程成本更低，尤其对大量的partition而言。如果controller失败了，幸存的所有broker都会尝试在Zookeeper中创建/controller->{this broker id}，如果创建成功（只可能有一个创建成功），则该broker会成为controller，若创建不成功，则该broker会等待新controller的命令。
-　　![kafka controller failover](http://www.jasongj.com/img/Kafka深度解析/controller_failover.png)
+　　![kafka controller failover](http://www.jasongj.com/img/KafkaAnalysis/controller_failover.png)
 
 ### Consumer group
 　　（本节所有描述都是基于consumer hight level API而非low level API）。
 　　每一个consumer实例都属于一个consumer group，每一条消息只会被同一个consumer group里的一个consumer实例消费。（不同consumer group可以同时消费同一条消息）
-　　![kafka consumer group](http://www.jasongj.com/img/Kafka深度解析/consumer_group.png)
+　　![kafka consumer group](http://www.jasongj.com/img/KafkaAnalysis/consumer_group.png)
 　　
 　　很多传统的message queue都会在消息被消费完后将消息删除，一方面避免重复消费，另一方面可以保证queue的长度比较少，提高效率。而如上文所将，Kafka并不删除已消费的消息，为了实现传统message queue消息只被消费一次的语义，Kafka保证保证同一个consumer group里只有一个consumer会消费一条消息。与传统message queue不同的是，Kafka还允许不同consumer group同时消费同一条消息，这一特性可以为消息的多元化处理提供了支持。实际上，Kafka的设计理念之一就是同时提供离线处理和实时处理。根据这一特性，可以使用Storm这种实时流处理系统对消息进行实时在线处理，同时使用Hadoop这种批处理系统进行离线处理，还可以同时将数据实时备份到另一个数据中心，只需要保证这三个操作所使用的consumer在不同的consumer group即可。下图展示了Kafka在Linkedin的一种简化部署。
-　　![kafka deployment in linkedin](http://www.jasongj.com/img/Kafka深度解析/kafka_in_linkedin.png)
+　　![kafka deployment in linkedin](http://www.jasongj.com/img/KafkaAnalysis/kafka_in_linkedin.png)
 　　为了更清晰展示Kafka consumer group的特性，笔者作了一项测试。创建一个topic (名为topic1)，创建一个属于group1的consumer实例，并创建三个属于group2的consumer实例，然后通过producer向topic1发送key分别为1，2，3r的消息。结果发现属于group1的consumer收到了所有的这三条消息，同时group2中的3个consumer分别收到了key为1，2，3的消息。如下图所示。
-　　![kafka consumer group](http://www.jasongj.com/img/Kafka深度解析/consumer_group_test.png)
+　　![kafka consumer group](http://www.jasongj.com/img/KafkaAnalysis/consumer_group_test.png)
 
 ### Consumer Rebalance
 　　（本节所讲述内容均基于Kafka consumer high level API）
 　　Kafka保证同一consumer group中只有一个consumer会消费某条消息，实际上，Kafka保证的是稳定状态下每一个consumer实例只会消费某一个或多个特定partition的数据，而某个partition的数据只会被某一个特定的consumer实例所消费。这样设计的劣势是无法让同一个consumer group里的consumer均匀消费数据，优势是每个consumer不用都跟大量的broker通信，减少通信开销，同时也降低了分配难度，实现也更简单。另外，因为同一个partition里的数据是有序的，这种设计可以保证每个partition里的数据也是有序被消费。
 　　如果某consumer group中consumer数量少于partition数量，则至少有一个consumer会消费多个partition的数据，如果consumer的数量与partition数量相同，则正好一个consumer消费一个partition的数据，而如果consumer的数量多于partition的数量时，会有部分consumer无法消费该topic下任何一条消息。
 　　如下例所示，如果topic1有0，1，2共三个partition，当group1只有一个consumer(名为consumer1)时，该 consumer可消费这3个partition的所有数据。
-　　![kafka consumer group rebalance](http://www.jasongj.com/img/Kafka深度解析/group1_consumer1.png)
+　　![kafka consumer group rebalance](http://www.jasongj.com/img/KafkaAnalysis/group1_consumer1.png)
 　　增加一个consumer(consumer2)后，其中一个consumer（consumer1）可消费2个partition的数据，另外一个consumer(consumer2)可消费另外一个partition的数据。
-　　![kafka consumer group rebalance](http://www.jasongj.com/img/Kafka深度解析/group1_consumer_1_2.png)
+　　![kafka consumer group rebalance](http://www.jasongj.com/img/KafkaAnalysis/group1_consumer_1_2.png)
 　　再增加一个consumer(consumer3)后，每个consumer可消费一个partition的数据。consumer1消费partition0，consumer2消费partition1，consumer3消费partition2
-　　![kafka consumer group rebalance](http://www.jasongj.com/img/Kafka深度解析/group1_consumer_1_2_3.png)
+　　![kafka consumer group rebalance](http://www.jasongj.com/img/KafkaAnalysis/group1_consumer_1_2_3.png)
 　　再增加一个consumer（consumer4）后，其中3个consumer可分别消费一个partition的数据，另外一个consumer（consumer4）不能消费topic1任何数据。
-　　![kafka consumer group rebalance](http://www.jasongj.com/img/Kafka深度解析/group1_consumer_1_2_3_4.png)
+　　![kafka consumer group rebalance](http://www.jasongj.com/img/KafkaAnalysis/group1_consumer_1_2_3_4.png)
 　　此时关闭consumer1，剩下的consumer可分别消费一个partition的数据。
-　　![kafka consumer group](http://www.jasongj.com/img/Kafka深度解析/group1_consumer_2_3_4.png)
+　　![kafka consumer group](http://www.jasongj.com/img/KafkaAnalysis/group1_consumer_2_3_4.png)
 　　接着关闭consumer2，剩下的consumer3可消费2个partition，consumer4可消费1个partition。
-　　![kafka consumer group](http://www.jasongj.com/img/Kafka深度解析/group1_consumer_3_4.png)
+　　![kafka consumer group](http://www.jasongj.com/img/KafkaAnalysis/group1_consumer_3_4.png)
 　　再关闭consumer3，剩下的consumer4可同时消费topic1的3个partition。
-　　![kafka consumer group](http://www.jasongj.com/img/Kafka深度解析/group1_consumer_4.png)
+　　![kafka consumer group](http://www.jasongj.com/img/KafkaAnalysis/group1_consumer_4.png)
 
 　　consumer rebalance算法如下：
 　　
@@ -291,7 +291,7 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
 　　每个consumer分别单独通过Zookeeper判断哪些partition down了，那么不同consumer从Zookeeper“看”到的view就可能不一样，这就会造成错误的reblance尝试。而且有可能所有的consumer都认为rebalance已经完成了，但实际上可能并非如此。
 
 　　根据Kafka官方文档，Kafka作者正在考虑在还未发布的[0.9.x版本中使用中心协调器(coordinator)](https://cwiki.apache.org/confluence/display/KAFKA/Kafka+0.9+Consumer+Rewrite+Design)。大体思想是选举出一个broker作为coordinator，由它watch Zookeeper，从而判断是否有partition或者consumer的增减，然后生成rebalance命令，并检查是否这些rebalance在所有相关的consumer中被执行成功，如果不成功则重试，若成功则认为此次rebalance成功（这个过程跟replication controller非常类似，所以我很奇怪为什么当初设计replication controller时没有使用类似方式来解决consumer rebalance的问题）。流程如下：
-　　![kafka coordinator](http://www.jasongj.com/img/Kafka深度解析/coordinator.png)
+　　![kafka coordinator](http://www.jasongj.com/img/KafkaAnalysis/coordinator.png)
 　　
 　　
 ### 消息Deliver guarantee
@@ -348,7 +348,7 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
 ## Producer Throughput Vs. Stored Data
 　　消息系统的一个潜在的危险是当数据能都存于内存时性能很好，但当数据量太大无法完全存于内存中时（然后很多消息系统都会删除已经被消费的数据，但当消费速度比生产速度慢时，仍会造成数据的堆积），数据会被转移到磁盘，从而使得吞吐率下降，这又反过来造成系统无法及时接收数据。这样就非常糟糕，而实际上很多情景下使用queue的目的就是解决数据消费速度和生产速度不一致的问题。
 　　但Kafka不存在这一问题，因为Kafka始终以O（1）的时间复杂度将数据持久化到磁盘，所以其吞吐率不受磁盘上所存储的数据量的影响。为了验证这一特性，做了一个长时间的大数据量的测试，下图是吞吐率与数据量大小的关系图。
-　　![kafka throughput](http://www.jasongj.com/img/Kafka深度解析/throughput_size.png)
+　　![kafka throughput](http://www.jasongj.com/img/KafkaAnalysis/throughput_size.png)
 　　上图中有一些variance的存在，并可以明显看到，吞吐率并不受磁盘上所存数据量大小的影响。实际上从上图可以看到，当磁盘数据量达到1TB时，吞吐率和磁盘数据只有几百MB时没有明显区别。
 　　这个variance是由Linux I/O管理造成的，它会把数据缓存起来再批量flush。上图的测试结果是在生产环境中对Kafka集群做了些tuning后得到的，这些tuning方法可参考[这里](http://kafka.apache.org/documentation.html#hwandos)。
 　　
@@ -370,9 +370,9 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
 　　
 ## 消息长度对吞吐率的影响
 　　上面的所有测试都基于短消息（payload 100字节），而正如上文所说，短消息对Kafka来说是更难处理的使用方式，可以预期，随着消息长度的增大，records/second会减小，但MB/second会有所提高。下图是records/second与消息长度的关系图。
-　　![kafka throughput](http://www.jasongj.com/img/Kafka深度解析/record_size_throughput.png)
+　　![kafka throughput](http://www.jasongj.com/img/KafkaAnalysis/record_size_throughput.png)
 　　正如我们所预期的那样，随着消息长度的增加，每秒钟所能发送的消息的数量逐渐减小。但是如果看每秒钟发送的消息的总大小，它会随着消息长度的增加而增加，如下图所示。
-　　![kafka benchmark](http://www.jasongj.com/img/Kafka深度解析/records_MB.png)
+　　![kafka benchmark](http://www.jasongj.com/img/KafkaAnalysis/records_MB.png)
 　　从上图可以看出，当消息长度为10字节时，因为要频繁入队，花了太多时间获取锁，CPU成了瓶颈，并不能充分利用带宽。但从100字节开始，我们可以看到带宽的使用逐渐趋于饱和（虽然MB/second还是会随着消息长度的增加而增加，但增加的幅度也越来越小）。
 　　
 ## 端到端的Latency
