@@ -1,7 +1,7 @@
 title: Kafka深度解析
 date: 2015-01-02 15:30:25
 permalink: 2015/01/02/Kafka深度解析
-sticky: 6
+sticky: 1
 keywords:
   - kafka
   - 大数据

@@ -5,7 +5,7 @@ keywords:
   - SQL
   - sql
   - sql优化
-  - 数据库
+  - sql distinct
   - PostgreSQL
   - postgres
   - count distinct

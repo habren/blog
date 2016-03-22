@@ -2,6 +2,7 @@
 title: Java系列（一）Annotation（注解）
 date: 2016-01-17 15:11:29
 permalink: 2016/01/17/Java1_注解Annotation
+sticky: 6
 keywords:
   - java
   - Java
@@ -15,8 +16,10 @@ keywords:
   - java 注解
   - java annotation
 tags:
+  - Design Pattern
   - Java
 categories:
+  - Design Pattern
   - Java
 description: 本文介绍了Java Annotation的概念及Java提供的四种Meta Annotation的功能，并结合实例详解了自定义Annotation的方法和注意事项
 ---
