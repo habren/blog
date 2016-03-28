@@ -28,7 +28,7 @@ description: 本文介绍了数据库分区表的使用场景，优势，原理�
 ---
 
 　　原创文章，转载请务必将下面这段话置于文章开头处。
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/12/13/SQL3_partition)　[http://www.jasongj.com/2015/12/13/SQL3_partition](http://www.jasongj.com/2015/12/13/SQL3_partition)
+　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/12/13/SQL3_partition/)　[http://www.jasongj.com/2015/12/13/SQL3_partition/](http://www.jasongj.com/2015/12/13/SQL3_partition/)
 
 
 # 典型使用场景
@@ -419,7 +419,8 @@ SELECT * FROM almart_2015_12_30;
 
 
 # SQL优化系列
-- [SQL优化（一） Merge Join vs. Hash Join vs. Nested Loop](http://www.jasongj.com/2015/03/07/Join1/)
-- [SQL优化（二） 快速计算Distinct Count](http://www.jasongj.com/2015/03/15/count_distinct/)
-- [SQL优化（三） PostgreSQL Table Partitioning](http://www.jasongj.com/2015/12/13/SQL3_partition/)
-- [SQL优化（四） Postgre Sql存储过程](http://www.jasongj.com/2015/12/27/SQL4_%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B_Store%20Procedure/)
+- [SQL优化（一） Merge Join vs. Hash Join vs. Nested Loop](//www.jasongj.com/2015/03/07/Join1/)
+- [SQL优化（二） 快速计算Distinct Count](//www.jasongj.com/2015/03/15/count_distinct/)
+- [SQL优化（三） PostgreSQL Table Partitioning](//www.jasongj.com/2015/12/13/SQL3_partition/)
+- [SQL优化（四） Postgre Sql存储过程](//www.jasongj.com/2015/12/27/SQL4_%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B_Store%20Procedure/)
+- [SQL优化（五） PostgreSQL （递归）CTE 通用表表达式](//www.jasongj.com/sql/cte/)
