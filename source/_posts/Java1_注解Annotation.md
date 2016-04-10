@@ -16,10 +16,8 @@ keywords:
   - java 注解
   - java annotation
 tags:
-  - Design Pattern
   - Java
 categories:
-  - Design Pattern
   - Java
 description: 本文介绍了Java Annotation的概念及Java提供的四种Meta Annotation的功能，并结合实例详解了自定义Annotation的方法和注意事项
 ---
