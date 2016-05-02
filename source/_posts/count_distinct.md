@@ -44,7 +44,7 @@ description: 本文介绍了distinct count的SQL优化方法，以及常用的�
 |---------------------------|
 | mac_bigint | bigint |  |
 | mac_macaddr | macaddr |  |
-| mac_text | text |  |
+| mac_text | text |   |
 
 　　并插入1000万条记录，并保证mac_bigint为mac_macaddr去掉冒号后的16进制转换而成的10进制bigint，而mac_text为mac_macaddr的文本形式，从而保证在这三个字段上查询的结果，并且复杂度相同。
 
