@@ -95,10 +95,11 @@ description: 本文在上篇文章 基础上，更加深入讲解了Kafka的HA�
 3. 通过partitionStateMachine触发OnlinePartitionStateChange。
 
 ## Controller Failover
-　　Controller也需要Failover。每个Broker都会在Controller Path (`/controller`)上注册一个Watch。当前Controller失败时，对应的Controller Path会自动消失（因为它是Ephemeral Node），此时该Watch被fire，所有“活”着的Broker都会去竞选成为新的Controller（创建新的Controller Path），但是只会有一个竞选成功（这点由Zookeeper保证）。竞选成功者即为新的Leader，竞选失败者则重新在新的Controller Path上注册Watch。因为[Zookeeper的Watch是一次性的，被fire一次之后即失效](http://zookeeper.apache.org/doc/trunk/zookeeperProgrammers.html#ch_zkWatches)，所以需要重新注册。
-　　Broker成功竞选为新Controller后会触发KafkaController.onControllerFailover方法，并在该方法中完成如下操作：
+Controller也需要Failover。每个Broker都会在Controller Path (`/controller`)上注册一个Watch。当前Controller失败时，对应的Controller Path会自动消失（因为它是Ephemeral Node），此时该Watch被fire，所有“活”着的Broker都会去竞选成为新的Controller（创建新的Controller Path），但是只会有一个竞选成功（这点由Zookeeper保证）。竞选成功者即为新的Leader，竞选失败者则重新在新的Controller Path上注册Watch。因为[Zookeeper的Watch是一次性的，被fire一次之后即失效](http://zookeeper.apache.org/doc/trunk/zookeeperProgrammers.html#ch_zkWatches)，所以需要重新注册。
+
+Broker成功竞选为新Controller后会触发KafkaController.onControllerFailover方法，并在该方法中完成如下操作：
 1. 读取并增加Controller Epoch。
-3. 在ReassignedPartitions Patch(`/admin/reassign_partitions`)上注册Watch。
+3. 在ReassignedPartitions Path(`/admin/reassign_partitions`)上注册Watch。
 4. 在PreferredReplicaElection Path(`/admin/preferred_replica_election`)上注册Watch。
 5. 通过partitionStateMachine在Broker Topics Patch(`/brokers/topics`)上注册Watch。
 6. 若`delete.topic.enable`设置为true（默认值是false），则partitionStateMachine在Delete Topic Patch(`/admin/delete_topics`)上注册Watch。

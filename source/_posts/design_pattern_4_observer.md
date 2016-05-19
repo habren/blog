@@ -183,3 +183,4 @@ public class Client1 {
 - [Java设计模式（四） 观察者模式 ](//www.jasongj.com/design_pattern/observer/)
 - [Java设计模式（五） 组合模式](//www.jasongj.com/design_pattern/composite/)
 - [Java设计模式（六） 代理模式 VS. 装饰模式](//www.jasongj.com/design_pattern/proxy_decorator/)
+- [Java设计模式（七） Spring AOP JDK动态代理 vs. cglib](//www.jasongj.com/design_pattern/dynamic_proxy_cglib/)

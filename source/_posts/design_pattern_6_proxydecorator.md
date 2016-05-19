@@ -18,7 +18,7 @@ categories:
   - Java
   - 设计模式
   - Design Pattern
-description: 代理模式与装饰模式在代码组织结构上非常相近，以至于很多读者很难区分它们。本文将结合实例对比代理模式和装饰模式的适用场景，实现方式，以及各自（未）遵循的OOP原则。
+description: 代理模式与装饰模式在代码组织结构上非常相近，以至于很多读者很难区分它们。本文将结合实例对比代理模式和装饰模式的适用场景，实现方式。
 ---
 
 　　原创文章，转载请务必将下面这段话置于文章开头处。
@@ -39,7 +39,7 @@ description: 代理模式与装饰模式在代码组织结构上非常相近，�
 装饰模式类图如下
 ![Decorator pattern class diagram](//www.jasongj.com/img/designpattern/proxydecorator/DecoratorPattern.png)
 
-从上面可以看到，代理模式和装饰模式的类图非常类似。下图结合具体的代码讲解两者的不同。
+从上图可以看到，代理模式和装饰模式的类图非常类似。下面结合具体的代码讲解两者的不同。
 
 
 
@@ -124,7 +124,7 @@ public class ProxySubject implements ISubject {
 }
 ```
 
-从上述代码中可以看到，被代理对象由代理对象在编译时确定，并且代理对象可能限制对对被代理对象的访问。
+从上述代码中可以看到，被代理对象由代理对象在编译时确定，并且代理对象可能限制对被代理对象的访问。
 
 代理模式使用方式如下
 ```java
@@ -249,3 +249,4 @@ public class DecoratorClient {
 - [Java设计模式（四） 观察者模式 ](//www.jasongj.com/design_pattern/observer/)
 - [Java设计模式（五） 组合模式](//www.jasongj.com/design_pattern/composite/)
 - [Java设计模式（六） 代理模式 VS. 装饰模式](//www.jasongj.com/design_pattern/proxy_decorator/)
+- [Java设计模式（七） Spring AOP JDK动态代理 vs. cglib](//www.jasongj.com/design_pattern/dynamic_proxy_cglib/)
