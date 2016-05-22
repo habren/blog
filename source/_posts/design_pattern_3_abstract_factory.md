@@ -128,3 +128,7 @@ public class Client {
 - [Java设计模式（五） 组合模式](//www.jasongj.com/design_pattern/composite/)
 - [Java设计模式（六） 代理模式 VS. 装饰模式](//www.jasongj.com/design_pattern/proxy_decorator/)
 - [Java设计模式（七） Spring AOP JDK动态代理 vs. cglib](//www.jasongj.com/design_pattern/dynamic_proxy_cglib/)
+- [Java设计模式（八） 适配器模式](//www.jasongj.com/design_pattern/adapter/)
+- [Java设计模式（九） 桥接模式](//www.jasongj.com/design_pattern/bridge/)
+- [Java设计模式（十） 你真的用对单例模式了吗？](//www.jasongj.com/design_pattern/singleton/)
+- [Java设计模式（十一） 享元模式](//www.jasongj.com/design_pattern/flyweight/)
