@@ -180,3 +180,4 @@ public class AdapterClient {
 - [Java设计模式（九） 桥接模式](//www.jasongj.com/design_pattern/bridge/)
 - [Java设计模式（十） 你真的用对单例模式了吗？](//www.jasongj.com/design_pattern/singleton/)
 - [Java设计模式（十一） 享元模式](//www.jasongj.com/design_pattern/flyweight/)
+- [Java设计模式（十二） 策略模式](//www.jasongj.com/design_pattern/strategy/)
