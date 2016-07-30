@@ -17,7 +17,6 @@ tags:
   - 设计模式
   - Design Pattern
 categories:
-  - Java
   - 设计模式
   - Design Pattern
 description: 本文介绍了组合模式的概念，UML类图，优缺点，实例讲解以及组合模式（未）遵循的OOP原则。

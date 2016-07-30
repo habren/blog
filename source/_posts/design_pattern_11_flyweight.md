@@ -15,7 +15,6 @@ tags:
   - 设计模式
   - Design Pattern
 categories:
-  - Java
   - 设计模式
   - Design Pattern
 mathjax: false

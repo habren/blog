@@ -17,7 +17,6 @@ tags:
   - 设计模式
   - Design Pattern
 categories:
-  - Java
   - 设计模式
   - Design Pattern
 description: 本文介绍了抽象工厂模式的概念，UML类图，优缺点，实现方式以及（未）遵循的OOP原则。同时结合J2EE中常用的DAO实例详解了抽象工厂模式的实现。

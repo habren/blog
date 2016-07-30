@@ -17,7 +17,6 @@ tags:
   - 设计模式
   - Design Pattern
 categories:
-  - Java
   - 设计模式
   - Design Pattern
 description: Spring的AOP有JDK动态代理和cglib两种实现方式。JDK动态代理要求被代理对象实现接口；cglib通过动态继承实现，因此不能代理被final修饰的类；JDK动态代理生成代理对象速度比cglib快；cglib生成的代理对象比JDK动态代理生成的代理对象执行效率高。
@@ -96,7 +95,7 @@ public class SubjectProxyHandler implements InvocationHandler {
 
 
 ## JDK动态代理使用方式
-代理行为定义好后，先实例化SubjectProxyHandler（在构架方法中指明被代理类），然后通过Proxy.newProxyInstance动态创建代理类的实例。
+代理行为定义好后，先实例化SubjectProxyHandler（在构造方法中指明被代理类），然后通过Proxy.newProxyInstance动态创建代理类的实例。
 ```java
 package com.jasongj.client;
 

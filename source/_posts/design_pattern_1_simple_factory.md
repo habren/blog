@@ -19,7 +19,6 @@ tags:
   - 设计模式
   - Design Pattern
 categories:
-  - Java
   - 设计模式
   - Design Pattern
 description: 本文介绍了简单工厂模式的概念，优缺点，实现方式，以及结合Annotation和反射的改良方案。同时介绍了简单工厂模式（未）遵循的OOP原则。最后给出了简单工厂模式在JDBC中的应用
@@ -368,5 +367,6 @@ public class JDBC {
 - [Java设计模式（八） 适配器模式](//www.jasongj.com/design_pattern/adapter/)
 - [Java设计模式（九） 桥接模式](//www.jasongj.com/design_pattern/bridge/)
 - [Java设计模式（十） 你真的用对单例模式了吗？](//www.jasongj.com/design_pattern/singleton/)
-- [Java设计模式（十一） 享元模式](//www.jasongj.com/design_pattern/flyweight/)dynamic_proxy_cglib/)
+- [Java设计模式（十一） 享元模式](//www.jasongj.com/design_pattern/flyweight/)
 - [Java设计模式（十二） 策略模式](//www.jasongj.com/design_pattern/strategy/)
+- [Java设计模式（十三） 别人再问你设计模式，叫他看这篇文章](//www.jasongj.com/design_pattern/summary/)

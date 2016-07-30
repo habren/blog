@@ -17,7 +17,6 @@ tags:
   - 设计模式
   - Design Pattern
 categories:
-  - Java
   - 设计模式
   - Design Pattern
 description: 本文介绍了观察者模式的概念，UML类图，优缺点，实例分析以及观察者模式（未）遵循的OOP原则。

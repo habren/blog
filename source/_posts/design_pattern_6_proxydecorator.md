@@ -15,7 +15,6 @@ tags:
   - 设计模式
   - Design Pattern
 categories:
-  - Java
   - 设计模式
   - Design Pattern
 description: 代理模式与装饰模式在代码组织结构上非常相近，以至于很多读者很难区分它们。本文将结合实例对比代理模式和装饰模式的适用场景，实现方式。

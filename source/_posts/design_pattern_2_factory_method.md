@@ -17,7 +17,6 @@ tags:
   - 设计模式
   - Design Pattern
 categories:
-  - Java
   - 设计模式
   - Design Pattern
 description: 本文介绍了工厂方法模式的概念，优缺点，实现方式，UML类图，并介绍了工厂方法（未）遵循的OOP原则
@@ -110,3 +109,4 @@ public class Client {
 - [Java设计模式（十） 你真的用对单例模式了吗？](//www.jasongj.com/design_pattern/singleton/)
 - [Java设计模式（十一） 享元模式](//www.jasongj.com/design_pattern/flyweight/)
 - [Java设计模式（十二） 策略模式](//www.jasongj.com/design_pattern/strategy/)
+- [Java设计模式（十三） 别人再问你设计模式，叫他看这篇文章](//www.jasongj.com/design_pattern/summary/)
