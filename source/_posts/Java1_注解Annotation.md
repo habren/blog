@@ -1,5 +1,5 @@
 ---
-title: Java系列（一）Annotation（注解）
+title: Java进阶（一）Annotation（注解）
 date: 2016-01-17 15:11:29
 permalink: 2016/01/17/Java1_注解Annotation
 sticky: 6
@@ -16,9 +16,9 @@ keywords:
   - java 注解
   - java annotation
 tags:
-  - Java
+  - java
 categories:
-  - Java
+  - java
 description: 本文介绍了Java Annotation的概念及Java提供的四种Meta Annotation的功能，并结合实例详解了自定义Annotation的方法和注意事项
 ---
 
@@ -189,4 +189,9 @@ Annotation的语法比较简单，除了@符号的使用外，他基本与Java�
 - Annotataion的方法定义是受限制的。其方法必须声明为无参数、无异常抛出的。这些方法同时也定义了Annotation的成员——方法名即为成员名，而方法返回类型即为成员类型。方法返回类型必须为Java基础类型、Class类型、枚举类型、Annotation类型或者相应的一维数组。方法后面可以使用default关键字和一个默认数值来声明成员的默认值，null不能作为成员默认值。成员一般不能是泛型，只有当其类型是Class时可以使用泛型，因为此方法能够用类型转换将各种类型转换为Class
 - Annotation和interface都可以定义常量、静态成员类型，也都可以被实现或者继承
 
-　　
+
+# Java进阶系列
+ - [Java进阶（一）Annotation（注解）](//www.jasongj.com/2016/01/17/Java1_注解Annotation/)
+ - [Java进阶（二）当我们说线程安全时，到底在说什么](//www.jasongj.com/java/thread_safe)
+ - [Java进阶（三）多线程开发关键技术](//www.jasongj.com/java/multi_thread)
+ - [Java进阶（四）线程间通信方式对比](//www.jasongj.com/java/thread_communication)
