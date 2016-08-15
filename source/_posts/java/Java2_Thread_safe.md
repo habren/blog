@@ -152,6 +152,14 @@ public void stop () {
 问：平时项目中使用锁和synchronized比较多，而很少使用volatile，难道就没有保证可见性？
 答：锁和synchronized即可以保证原子性，也可以保证可见性。都是通过保证同一时间只有一个线程执行目标代码段来实现的。
 
+<p id="synchronized_visibility">
+问：锁和synchronized为何能保证可见性？
+答：根据<a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/package-summary.html#MemoryVisibility" title="JDK 7的Java doc" target="_blank" rel="external nofollow">JDK 7的Java doc</a>中对`concurrent`包的说明，一个线程的写结果保证对另外线程的读操作可见，只要该写操作可以由`happen-before`原则推断出在读操作之前发生。
+</p>
+>The results of a write by one thread are guaranteed to be **visible** to a read by another thread only if the write operation happens-before the read operation. The synchronized and volatile constructs, as well as the Thread.start() and Thread.join() methods, can form happens-before relationships.
+
+
+
 问：既然锁和synchronized即可保证原子性也可保证可见性，为何还需要volatile？
 答：synchronized和锁需要通过操作系统来仲裁谁获得锁，开销比较高，而volatile开销小很多。因此在只需要保证可见性的条件下，使用volatile的性能要比使用锁和synchronized高得多。
 

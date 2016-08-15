@@ -18,7 +18,7 @@ categories:
   - 设计模式
   - Design Pattern
 mathjax: false
-description: 本文介绍了为何需要单例模式，单例模式的设计要点，饿汉和懒汉的区别，并通过实例介绍了实现单例模式的九种实现方式及其优缺点。
+description: 本文介绍了为何需要单例模式，单例模式的设计要点，饿汉和懒汉的区别，并通过实例介绍了实现单例模式的八种实现方式及其优缺点。
 ---
 
 　　原创文章，转载请务必将下面这段话置于文章开头处。
@@ -112,7 +112,7 @@ public class Singleton {
  - 缺点：虽然使用了`synchronized`，但本质上是线程不安全的。
 
 
-## 不正确双重检查（Double Check）下的懒汉 - 不推荐
+## 不正确双重检查（Double Check）下的懒汉 - 推荐
 ```java
 package com.jasongj.singleton4;
 
@@ -136,36 +136,9 @@ public class Singleton {
 }
 ```
 
- - 优点：使用了双重检查，很大程度上避免了线程不安全，同时也避免了不必要的锁开销
- - 缺点：依然存在创建多个实例的可能。因为每个线程都有自己的一份拷贝，并不能保证实例化后将INSTANCE的引用拷回主内存，不能保证对其它线程立即可见，所以仍然有可能造成多个实例被创建
-
-
-## 正确双重检查（Double Check）下的懒汉 - 推荐
-```java
-package com.jasongj.singleton5;
-
-public class Singleton {
-
-  private static volatile Singleton INSTANCE;
-
-  private Singleton() {};
-
-  public static Singleton getInstance() {
-    if (INSTANCE == null) {
-      synchronized (Singleton.class) {
-        if (INSTANCE == null) {
-          INSTANCE = new Singleton();
-        }
-      }
-    }
-    return INSTANCE;
-  }
-
-}
-```
-
- - 优点：使用了双重检查，同时使用`volatile`修饰`INSTANCE`，避免由于多线性同步和可见性问题造成的多实例
+ - 优点：使用了双重检查，很大程度上避免了线程不安全，同时也避免了不必要的锁开销。这里要注意，虽然未使用`volatile`关键字，但是这里的`synchronized`已经保证了`INSTANCE`写操作对其它线程读操作的可见性。具体原理请参考《[Java进阶（二）当我们说线程安全时，到底在说什么](http://www.jasongj.com/java/thread_safe/#synchronized_visibility)》
  - 缺点：NA
+
 
 ## 静态常量 饿汉 - 推荐
 ```java
