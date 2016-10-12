@@ -25,8 +25,8 @@ categories:
 description: 介绍Kafka背景，使用消息系统的优势，常用消息系统对比，Kafka架构介绍，Kafka实现语义分析，Replication及Leader Election机制剖析，Consumer Group Rebalance实现原理介绍，以及Benchmark测试。
 ---
 
-　　原创文章，转载请务必将下面这段话置于文章开头处。
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/01/02/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90)　[http://www.jasongj.com/2015/01/02/Kafka深度解析](http://www.jasongj.com/2015/01/02/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90)
+>原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
+>本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/01/02/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90)　[http://www.jasongj.com/2015/01/02/Kafka深度解析](http://www.jasongj.com/2015/01/02/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90)
 
 
 # 背景介绍

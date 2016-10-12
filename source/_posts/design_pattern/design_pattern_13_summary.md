@@ -24,8 +24,8 @@ mathjax: false
 description: 本文讲解了设计模式与OOP的三大特性及OOP七项原则间的关系，并讲解了使用设计模式的好处及为何需要使用设计模式。最后通过问答形式讲解了设计模式相关的常见问题
 ---
 
-　　原创文章，转载请务必将下面这段话置于文章开头处。
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/design_pattern/summary/)　[http://www.jasongj.com/design_pattern/summary/](http://www.jasongj.com/design_pattern/summary/)
+>原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
+>本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/design_pattern/summary/)　[http://www.jasongj.com/design_pattern/summary/](http://www.jasongj.com/design_pattern/summary/)
 
 
 # OOP三大基本特性

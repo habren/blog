@@ -21,8 +21,8 @@ mathjax: true
 description: 当一种事物可在多种维度变化（如两个维度，每个维度三种可能）时，如果为每一种可能创建一个子类，则每增加一个维度上的可能需要增加多个类，这会造成类爆炸（3*3=9）。若使用桥接模式，使用类聚合，而非继承，将可缓解类爆炸，并增强可扩展性。
 ---
 
-　　原创文章，转载请务必将下面这段话置于文章开头处。
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/design_pattern/bridge/)　[http://www.jasongj.com/design_pattern/bridge/](http://www.jasongj.com/design_pattern/bridge/)
+>原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
+>本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/design_pattern/bridge/)　[http://www.jasongj.com/design_pattern/bridge/](http://www.jasongj.com/design_pattern/bridge/)
 
 
 

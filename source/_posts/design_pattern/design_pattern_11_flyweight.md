@@ -21,8 +21,8 @@ mathjax: false
 description: 本文介绍了享元模式的适用场景，并结合实例详述了享元模式的实现方式。最后分析了享元模式的优缺点及已（未）遵循的OOP原则
 ---
 
-　　原创文章，转载请务必将下面这段话置于文章开头处。
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/design_pattern/flyweight/)　[http://www.jasongj.com/design_pattern/flyweight/](http://www.jasongj.com/design_pattern/flyweight/)
+>原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
+>本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/design_pattern/flyweight/)　[http://www.jasongj.com/design_pattern/flyweight/](http://www.jasongj.com/design_pattern/flyweight/)
 
 
 # 享元模式介绍

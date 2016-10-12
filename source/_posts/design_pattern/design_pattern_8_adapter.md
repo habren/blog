@@ -20,8 +20,8 @@ categories:
 description: 适配器模式可将一个类的接口转换成调用方希望的另一个接口。这种需求往往发生在后期维护阶段，因此有观点认为适配器模式只是前期系统接口设计缺乏的一种弥补。从实际工程来看，并不完全这样，有时不同产商的功能类似但接口很难完全一样，而为了系统使用方式的一致性，也会用到适配器模式。
 ---
 
-　　原创文章，转载请务必将下面这段话置于文章开头处。
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/design_pattern/adapter/)　[http://www.jasongj.com/design_pattern/adapter/](http://www.jasongj.com/design_pattern/adapter/)
+>原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
+>本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/design_pattern/adapter/)　[http://www.jasongj.com/design_pattern/adapter/](http://www.jasongj.com/design_pattern/adapter/)
 
 
 
@@ -147,7 +147,7 @@ public class AdapterClient {
 - 多个组件功能类似，但接口不统一且可能会经常切换时，可使用适配器模式，使得客户端可以以统一的接口使用它们
 
 # 适配器模式优缺点
-## 观察者模式优点
+## 适配器模式优点
  - 客户端可以以统一的方式使用ConcreteTarget和Adaptee
  - 适配器负责适配过程，而不需要修改待适配类，其它直接依赖于待适配类的调用方不受适配过程的影响
  - 可以为不同的目标接口实现不同的适配器，而不需要修改待适配类，符合开放-关闭原则

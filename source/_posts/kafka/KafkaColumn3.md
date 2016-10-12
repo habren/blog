@@ -25,8 +25,8 @@ categories:
 description: 本文在上篇文章 基础上，更加深入讲解了Kafka的HA机制，主要阐述了HA相关各种场景，如Broker failover，Controller failover，Topic创建/删除，Broker启动，Follower从Leader fetch数据等详细处理过程。同时介绍了Kafka提供的与Replication相关的工具，如重新分配Partition等。
 ------
 
-　　原创文章，转载请务必将下面这段话置于文章开头处。（已授权[InfoQ中文站发布](http://www.infoq.com/cn/articles/kafka-analysis-part-3)）
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/06/08/KafkaColumn3)　[http://www.jasongj.com/2015/06/08/KafkaColumn3](http://www.jasongj.com/2015/06/08/KafkaColumn3)
+>原创文章，转载请务必将下面这段话置于文章开头处。（已授权[InfoQ中文站发布](http://www.infoq.com/cn/articles/kafka-analysis-part-3)）
+>本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/06/08/KafkaColumn3)　[http://www.jasongj.com/2015/06/08/KafkaColumn3](http://www.jasongj.com/2015/06/08/KafkaColumn3)
 
 # 摘要
 　　本文在上篇文章基础上，更加深入讲解了Kafka的HA机制，主要阐述了HA相关各种场景，如Broker failover，Controller failover，Topic创建/删除，Broker启动，Follower从Leader fetch数据等详细处理过程。同时介绍了Kafka提供的与Replication相关的工具，如重新分配Partition等。

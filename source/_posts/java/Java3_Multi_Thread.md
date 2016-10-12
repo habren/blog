@@ -21,8 +21,8 @@ categories:
 description: 本文将介绍Java多线程开发必不可少的锁和同步机制，同时介绍sleep和wait等常用的暂停线程执行的方法，并详述synchronized的几种使用方式，以及Java中的重入锁（ReentrantLock）和读写锁（ReadWriteLock），之后结合实例分析了重入锁条件变量（Condition）的使用技巧，最后介绍了信号量（Semaphore）的适用场景和使用技巧。
 ---
 
-　　原创文章，转载请务必将下面这段话置于文章开头处。
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/java/multi_thread/)　[http://www.jasongj.com/java/multi_thread/](http://www.jasongj.com/java/multi_thread/)
+>原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
+>本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/java/multi_thread/)　[http://www.jasongj.com/java/multi_thread/](http://www.jasongj.com/java/multi_thread/)
 
 
 # sleep和wait到底什么区别

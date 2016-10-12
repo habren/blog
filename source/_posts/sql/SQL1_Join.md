@@ -29,8 +29,8 @@ categories:
 description: 本文介绍了Merge Join，Hash Join，Nested Loop这三种数据库Join方式的工作原理，并通过实验进一步说明了其适用范围。
 ---
 
-　　原创文章，转载请务必将下面这段话置于文章开头处。
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/03/07/Join1/)　[http://www.jasongj.com/2015/03/07/Join1/](http://www.jasongj.com/2015/03/07/Join1)
+>原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
+>本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/03/07/Join1/)　[http://www.jasongj.com/2015/03/07/Join1/](http://www.jasongj.com/2015/03/07/Join1)
 
 
 # Nested Loop，Hash Join，Merge Join介绍

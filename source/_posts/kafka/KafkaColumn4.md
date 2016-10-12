@@ -27,8 +27,8 @@ categories:
 description: 本文主要介绍了Kafka High Level Consumer，Consumer Group，Consumer Rebalance，Low Level Consumer实现的语义，以及适用场景。以及未来版本中对High Level Consumer的重新设计--使用Consumer Coordinator解决Split Brain和Herd等问题。
 ------
 
-　　原创文章，转载请务必将下面这段话置于文章开头处。（已授权[InfoQ中文站发布](http://www.infoq.com/cn/articles/kafka-analysis-part-4)）
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/08/09/KafkaColumn4)　[http://www.jasongj.com/2015/08/09/KafkaColumn4](http://www.jasongj.com/2015/08/09/KafkaColumn4)
+>原创文章，转载请务必将下面这段话置于文章开头处。（已授权[InfoQ中文站发布](http://www.infoq.com/cn/articles/kafka-analysis-part-4)）
+>本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/08/09/KafkaColumn4)　[http://www.jasongj.com/2015/08/09/KafkaColumn4](http://www.jasongj.com/2015/08/09/KafkaColumn4)
 
 
 # 摘要

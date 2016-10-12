@@ -21,8 +21,8 @@ mathjax: false
 description: 本文结合实例详述了策略模式的实现方式，并介绍了如何结合简单工厂模式及Annotation优化策略模式。最后分析了策略模式的优缺点及已（未）遵循的OOP原则
 ---
 
-　　原创文章，转载请务必将下面这段话置于文章开头处。
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/design_pattern/strategy/)　[http://www.jasongj.com/design_pattern/strategy/](http://www.jasongj.com/design_pattern/strategy/)
+>原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
+>本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/design_pattern/strategy/)　[http://www.jasongj.com/design_pattern/strategy/](http://www.jasongj.com/design_pattern/strategy/)
 
 
 # 策略模式介绍

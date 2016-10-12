@@ -22,8 +22,8 @@ categories:
 description: 在UML 2.*的13种图形中，类图是使用频率最高的UML图之一，它表示了类与类之间的关系，帮助开发人员理解系统。它是系统分析和设计阶段的重要产物，也是系统编码和测试的重要模型依据。本文详细介绍了类间的依赖关系，关联关系（聚合、组合等），实现关系以及继承关系的UML表示形式及其在代码中的实现方式。
 ---
 
-　　原创文章，转载请务必将下面这段话置于文章开头处。
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/uml/class_diagram/)　[http://www.jasongj.com/uml/class_diagram/](http://www.jasongj.com/uml/class_diagram/)
+>原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
+>本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/uml/class_diagram/)　[http://www.jasongj.com/uml/class_diagram/](http://www.jasongj.com/uml/class_diagram/)
 
 # UML类图
 ## UML类图介绍

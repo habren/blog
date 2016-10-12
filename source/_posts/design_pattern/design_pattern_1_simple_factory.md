@@ -24,8 +24,8 @@ categories:
 description: 本文介绍了简单工厂模式的概念，优缺点，实现方式，以及结合Annotation和反射的改良方案。同时介绍了简单工厂模式（未）遵循的OOP原则。最后给出了简单工厂模式在JDBC中的应用
 ---
 
-　　原创文章，转载请务必将下面这段话置于文章开头处。
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/design_pattern/simple_factory)　[http://www.jasongj.com/design_pattern/simple_factory](http://www.jasongj.com/design_pattern/simple_factory)
+>原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
+>本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/design_pattern/simple_factory)　[http://www.jasongj.com/design_pattern/simple_factory](http://www.jasongj.com/design_pattern/simple_factory)
 
 
 # 简单工厂模式使用案例

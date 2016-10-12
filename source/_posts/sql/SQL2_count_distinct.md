@@ -26,8 +26,8 @@ categories:
 description: 本文介绍了distinct count的SQL优化方法，以及常用的高效近似算法及其在PostgreSQL上的实现。
 ---
 
-　　原创文章，转载请务必将下面这段话置于文章开头处。
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/03/15/count_distinct/)　[http://www.jasongj.com/2015/03/15/count_distinct/](http://www.jasongj.com/2015/03/15/count_distinct)
+>原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
+>本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/03/15/count_distinct/)　[http://www.jasongj.com/2015/03/15/count_distinct/](http://www.jasongj.com/2015/03/15/count_distinct)
 
 
 # UV vs. PV

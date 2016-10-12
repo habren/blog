@@ -20,8 +20,8 @@ categories:
 description: 分布式事务与本地事务一样，包含原子性（Atomicity）、一致性（Consistency）、隔离性（Isolation）和持久性（Durability）。两阶段提交是保证分布式事务中原子性的重要方法。本文重点介绍了两阶段提交的原理，PostgreSQL中两阶段提交接口，以及Java中两阶段提交接口规范JTA的使用方式。
 ---
 
-　　原创文章，转载请务必将下面这段话置于文章开头处。
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/big_data/two_phase_commit/)　[http://www.jasongj.com/big_data/two_phase_commit/](http://www.jasongj.com/big_data/two_phase_commit/)
+>原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
+>本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/big_data/two_phase_commit/)　[http://www.jasongj.com/big_data/two_phase_commit/](http://www.jasongj.com/big_data/two_phase_commit/)
 
 
 # 分布式事务

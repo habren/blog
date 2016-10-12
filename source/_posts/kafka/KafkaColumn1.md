@@ -24,8 +24,8 @@ categories:
   - 分布式
 description: 本文介绍了Kafka的创建背景，设计目标，使用消息系统的优势以及目前流行的消息系统对比。并介绍了Kafka的架构，Producer消息路由，Consumer Group以及由其实现的不同消息分发方式，Topic & Partition，最后介绍了Kafka Consumer为何使用pull模式以及Kafka提供的三种delivery guarantee。
 ------
-　　原创文章，转载请务必将下面这段话置于文章开头处。（已授权[InfoQ中文站发布](http://www.infoq.com/cn/articles/kafka-analysis-part-1)）
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/03/10/KafkaColumn1)　[http://www.jasongj.com/2015/03/10/KafkaColumn1](http://www.jasongj.com/2015/03/10/KafkaColumn1/)
+>原创文章，转载请务必将下面这段话置于文章开头处。（已授权[InfoQ中文站发布](http://www.infoq.com/cn/articles/kafka-analysis-part-1)）
+>本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/03/10/KafkaColumn1)　[http://www.jasongj.com/2015/03/10/KafkaColumn1](http://www.jasongj.com/2015/03/10/KafkaColumn1/)
 
 # 摘要
 　　Kafka是由LinkedIn开发并开源的分布式消息系统，因其分布式及高吞吐率而被广泛使用，现已与Cloudera Hadoop，Apache Storm，Apache Spark集成。本文介绍了Kafka的创建背景，设计目标，使用消息系统的优势以及目前流行的消息系统对比。并介绍了Kafka的架构，Producer消息路由，Consumer Group以及由其实现的不同消息分发方式，Topic & Partition，最后介绍了Kafka Consumer为何使用pull模式以及Kafka提供的三种delivery guarantee。

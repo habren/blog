@@ -22,8 +22,8 @@ categories:
 description: 本文介绍了观察者模式的概念，UML类图，优缺点，实例分析以及观察者模式（未）遵循的OOP原则。
 ---
 
-　　原创文章，转载请务必将下面这段话置于文章开头处。
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/design_pattern/observer/)　[http://www.jasongj.com/design_pattern/observer/](http://www.jasongj.com/design_pattern/observer/)
+>原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
+>本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/design_pattern/observer/)　[http://www.jasongj.com/design_pattern/observer/](http://www.jasongj.com/design_pattern/observer/)
 
 
 

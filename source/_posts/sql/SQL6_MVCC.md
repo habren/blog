@@ -25,8 +25,8 @@ categories:
 description: 数据库事务隔离性可通过锁机制或者MVCC实现，PostgreSQL默认使用MVCC。本文结合实例介绍了PostgreSQL的MVCC实现机制，并介绍了PostgreSQL如何通过MVCC保证事务的原子性和隔离性，最后介绍了PostgreSQL如何通过VACUUM机制克服MVCC带来的副作用。
 ---
 
-　　原创文章，转载请务必将下面这段话置于文章开头处。
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/sql/mvcc/)　[http://www.jasongj.com/sql/mvcc/](http://www.jasongj.com/sql/mvcc/)
+>原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
+>本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/sql/mvcc/)　[http://www.jasongj.com/sql/mvcc/](http://www.jasongj.com/sql/mvcc/)
 
 # PostgreSQL针对ACID的实现机制
 ## 数据库ACID

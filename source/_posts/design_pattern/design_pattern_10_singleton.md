@@ -21,8 +21,8 @@ mathjax: false
 description: 本文介绍了为何需要单例模式，单例模式的设计要点，饿汉和懒汉的区别，并通过实例介绍了实现单例模式的八种实现方式及其优缺点。
 ---
 
-　　原创文章，转载请务必将下面这段话置于文章开头处。
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/design_pattern/singleton/)　[http://www.jasongj.com/design_pattern/singleton/](http://www.jasongj.com/design_pattern/singleton/)
+>原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
+>本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/design_pattern/singleton/)　[http://www.jasongj.com/design_pattern/singleton/](http://www.jasongj.com/design_pattern/singleton/)
 
 
 # 为何需要单例模式

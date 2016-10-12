@@ -21,8 +21,8 @@ categories:
 description: 本文将介绍常用的线程间通信工具CountDownLatch、CyclicBarrier和Phaser的用法，并结合实例介绍它们各自的适用场景及相同点和不同点。
 ---
 
-　　原创文章，转载请务必将下面这段话置于文章开头处。
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/java/thread_communication/)　[http://www.jasongj.com/java/thread_communication/](http://www.jasongj.com/java/thread_communication/)
+>原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
+>本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/java/thread_communication/)　[http://www.jasongj.com/java/thread_communication/](http://www.jasongj.com/java/thread_communication/)
 
 
 # CountDownLatch

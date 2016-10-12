@@ -25,8 +25,8 @@ categories:
 description: 本文结合实例介绍了CTE（Common Table Expressions，通用表达式）的用法，优缺点，并详细阐述了递归CTE的执行步骤及使用方法。同时给出了使用WITH RECURSIVE计算图的最短路径方案。
 ---
 
-　　原创文章，转载请务必将下面这段话置于文章开头处。
-　　本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/sql/cte/)　[http://www.jasongj.com/sql/cte/](http://www.jasongj.com/sql/cte/)
+>原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
+>本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/sql/cte/)　[http://www.jasongj.com/sql/cte/](http://www.jasongj.com/sql/cte/)
 
 
 # CTE or WITH
