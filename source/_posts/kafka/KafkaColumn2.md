@@ -55,7 +55,7 @@ description: Kafka从0.8版本开始提供High Availability机制，从而提高
 　　Kafka分配Replica的算法如下：
  1. 将所有Broker（假设共n个Broker）和待分配的Partition排序
  2. 将第i个Partition分配到第（i mod n）个Broker上
- 3. 将第i个Partition的第j个Replica分配到第（(i + j) mode n）个Broker上
+ 3. 将第i个Partition的第j个Replica分配到第（(i + j) mod n）个Broker上
 
 
 ## Data Replication

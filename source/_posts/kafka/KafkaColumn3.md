@@ -127,6 +127,7 @@ Broker成功竞选为新Controller后会触发KafkaController.onControllerFailov
 　　
 ***注意***：最后一步才将Zookeeper中的AR更新，因为这是唯一一个持久存储AR的地方，如果Controller在这一步之前crash，新的Controller仍然能够继续完成该过程。
 　　以下是Partition重新分配的案例，OAR = ｛1，2，3｝，RAR = ｛4，5，6｝，Partition重新分配过程中Zookeeper中的AR和Leader/ISR路径如下
+
 | AR | leader/isr | Step |
 |---------------------------|
 | {1,2,3} | 1/{1,2,3} | (initial state) |
