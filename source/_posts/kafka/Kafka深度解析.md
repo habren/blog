@@ -148,10 +148,11 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
             }
         }
     }
-　
-　　如果将上例中的class作为partition.class，并通过如下代码发送20条消息（key分别为0，1，2，3）至topic2（包含4个partition）。
-　　
+```
 
+　　如果将上例中的class作为partitioner.class，并通过如下代码发送20条消息（key分别为0，1，2，3）至topic2（包含4个partition）。
+　　
+```java
     public void sendMessage() throws InterruptedException{
     　　for(int i = 1; i <= 5; i++){
     　　      List messageList = new ArrayList<KeyedMessage<String, String>>();
@@ -163,6 +164,7 @@ Kafka是Apache下的一个子项目，是一个高性能跨语言分布式发布
     　　producer.close();
     }
 ```
+
 　　则key相同的消息会被发送并存储到同一个partition里，而且key的序号正好和partition序号相同。（partition序号从0开始，本例中的key也正好从0开始）。如下图所示。
 　　![kafka partition key](http://www.jasongj.com/img/KafkaAnalysis/partition_key.png)
 　　对于传统的message queue而言，一般会删除已经被消费的消息，而Kafka集群会保留所有的消息，无论其被消费与否。当然，因为磁盘限制，不可能永久保留所有数据（实际上也没必要），因此Kafka提供两种策略去删除旧数据。一是基于时间，二是基于partition文件大小。例如可以通过配置`$KAFKA_HOME/config/server.properties`，让Kafka删除一周前的数据，也可通过配置让Kafka在partition文件超过1GB时删除旧数据，如下所示。
