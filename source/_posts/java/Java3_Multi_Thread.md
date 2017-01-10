@@ -154,7 +154,18 @@ Thu Jun 16 19:46:15 CST 2016 Thread2 ended
 
 由于thread 1和thread 2的run方法实现都在同步块中，无论哪个线程先拿到锁，执行sleep时并不释放锁，因此其它线程无法执行。直到前面的线程sleep结束并退出同步块（释放锁），另一个线程才得到锁并执行。
 
-注意：sleep方法并不需要持有任何形式的锁，也就不需要包裹在synchronized中。
+注意：sleep方法并不需要持有任何形式的锁，也就不需要包裹在synchronized中。本文所有示例均基于`Java HotSpot(TM) 64-Bit Server VM`
+
+
+调用sleep方法的线程，在jstack中显示的状态为`sleeping`。
+```
+java.lang.Thread.State: TIMED_WAITING (sleeping)
+```
+
+调用wait方法的线程，在jstack中显示的状态为`on object monitor`
+```
+java.lang.Thread.State: WAITING (on object monitor)
+```
 
 
 # synchronized几种用法
