@@ -154,7 +154,9 @@ Thu Jun 16 19:46:15 CST 2016 Thread2 ended
 
 由于thread 1和thread 2的run方法实现都在同步块中，无论哪个线程先拿到锁，执行sleep时并不释放锁，因此其它线程无法执行。直到前面的线程sleep结束并退出同步块（释放锁），另一个线程才得到锁并执行。
 
-注意：sleep方法并不需要持有任何形式的锁，也就不需要包裹在synchronized中。本文所有示例均基于`Java HotSpot(TM) 64-Bit Server VM`
+注意：sleep方法并不需要持有任何形式的锁，也就不需要包裹在synchronized中。  
+
+本文所有示例均基于`Java HotSpot(TM) 64-Bit Server VM`  
 
 
 调用sleep方法的线程，在jstack中显示的状态为`sleeping`。
@@ -185,6 +187,19 @@ synchronized用于修饰代码块时，进入同步代码块需要获得synchron
 
 释放Java内置锁的唯一方式是synchronized方法或者代码块执行结束。若某一线程在synchronized方法或代码块内发生死锁，则对应的内置锁无法释放，其它线程也无法获取该内置锁（即进入跟该内置锁相关的synchronized方法或者代码块）。
 
+使用jstack dump线程栈时，可查看到相关线程通过synchronized获取到或等待的对象，但`Locked ownable synchronizers`仍然显示为`None`。下例中，线程`thead-test-b`已获取到类型为`java.lang.Double`的对象的内置锁（monitor），且该对象的内存地址为`0x000000076ab95cb8`
+```
+"thread-test-b" #11 prio=5 os_prio=31 tid=0x00007fab0190b800 nid=0x5903 runnable [0x0000700010249000]
+   java.lang.Thread.State: RUNNABLE
+        at com.jasongj.demo.TestJstack.lambda$1(TestJstack.java:27)
+        - locked <0x000000076ab95cb8> (a java.lang.Double)
+        at com.jasongj.demo.TestJstack$$Lambda$2/1406718218.run(Unknown Source)
+        at java.lang.Thread.run(Thread.java:745)
+
+   Locked ownable synchronizers:
+        - None
+```
+
 
 # Java中的锁
 ## 重入锁
@@ -208,6 +223,20 @@ try{
 重入锁可定义为公平锁或非公平锁，默认实现为非公平锁。
  - 公平锁是指多个线程获取锁被阻塞的情况下，锁变为可用时，最新申请锁的线程获得锁。可通过在重入锁（RenentrantLock）的构造方法中传入true构建公平锁，如*Lock lock = new RenentrantLock(true)*
  - 非公平锁是指多个线程等待锁的情况下，锁变为可用状态时，哪个线程获得锁是随机的。synchonized相当于非公平锁。可通过在重入锁的构造方法中传入false或者使用无参构造方法构建非公平锁。
+
+
+
+使用jstack dump线程栈时，可查看到获取到或正在等待的锁对象，获取到该锁的线程会在`Locked ownable synchronizers`处显示该锁的对象类型及内存地址。在下例中，从`Locked ownable synchronizers`部分可看到，线程`thread-test-e`获取到公平重入锁，且该锁对象的内存地址为`0x000000076ae3d708`
+```
+"thread-test-e" #14 prio=5 os_prio=31 tid=0x00007fab02001000 nid=0x5f03 runnable [0x0000700010552000]
+   java.lang.Thread.State: RUNNABLE
+        at com.jasongj.demo.TestJstack.lambda$4(TestJstack.java:64)
+        at com.jasongj.demo.TestJstack$$Lambda$5/1324119927.run(Unknown Source)
+        at java.lang.Thread.run(Thread.java:745)
+
+   Locked ownable synchronizers:
+        - <0x000000076ae3d708> (a java.util.concurrent.locks.ReentrantLock$FairSync)
+```
 
 
 ## 读写锁
