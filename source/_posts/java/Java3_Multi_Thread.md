@@ -228,14 +228,34 @@ try{
 
 使用jstack dump线程栈时，可查看到获取到或正在等待的锁对象，获取到该锁的线程会在`Locked ownable synchronizers`处显示该锁的对象类型及内存地址。在下例中，从`Locked ownable synchronizers`部分可看到，线程`thread-test-e`获取到公平重入锁，且该锁对象的内存地址为`0x000000076ae3d708`
 ```
-"thread-test-e" #14 prio=5 os_prio=31 tid=0x00007fab02001000 nid=0x5f03 runnable [0x0000700010552000]
+"thread-test-e" #17 prio=5 os_prio=31 tid=0x00007fefaa0b6800 nid=0x6403 runnable [0x0000700002939000]
    java.lang.Thread.State: RUNNABLE
         at com.jasongj.demo.TestJstack.lambda$4(TestJstack.java:64)
-        at com.jasongj.demo.TestJstack$$Lambda$5/1324119927.run(Unknown Source)
+        at com.jasongj.demo.TestJstack$$Lambda$5/466002798.run(Unknown Source)
         at java.lang.Thread.run(Thread.java:745)
 
    Locked ownable synchronizers:
-        - <0x000000076ae3d708> (a java.util.concurrent.locks.ReentrantLock$FairSync)
+        - <0x000000076af86810> (a java.util.concurrent.locks.ReentrantLock$FairSync)
+```  
+  
+而线程`thread-test-f`由于未获取到锁，而处于`WAITING(parking)`状态，且它等待的锁正是上文线程`thread-test-e`获取的锁（内存地址`0x000000076ae3d708`）
+```
+"thread-test-f" #18 prio=5 os_prio=31 tid=0x00007fefaa9b2800 nid=0x6603 waiting on condition [0x0000700002a3c000]
+   java.lang.Thread.State: WAITING (parking)
+        at sun.misc.Unsafe.park(Native Method)
+        - parking to wait for  <0x000000076af86810> (a java.util.concurrent.locks.ReentrantLock$FairSync)
+        at java.util.concurrent.locks.LockSupport.park(LockSupport.java:175)
+        at java.util.concurrent.locks.AbstractQueuedSynchronizer.parkAndCheckInterrupt(AbstractQueuedSynchronizer.java:836)
+        at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquireQueued(AbstractQueuedSynchronizer.java:870)
+        at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquire(AbstractQueuedSynchronizer.java:1199)
+        at java.util.concurrent.locks.ReentrantLock$FairSync.lock(ReentrantLock.java:224)
+        at java.util.concurrent.locks.ReentrantLock.lock(ReentrantLock.java:285)
+        at com.jasongj.demo.TestJstack.lambda$5(TestJstack.java:69)
+        at com.jasongj.demo.TestJstack$$Lambda$6/33524623.run(Unknown Source)
+        at java.lang.Thread.run(Thread.java:745)
+
+   Locked ownable synchronizers:
+        - None
 ```
 
 
