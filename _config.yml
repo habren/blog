@@ -7,7 +7,7 @@ title: Jason's Blog
 subtitle: 分享交流大数据领域技术，包括但不限于Storm、Spark、Hadoop等流行分布式计算系统，Kafka、MetaQ等分布式消息系统，MongoDB、Cassandra等NoSQL，PostgreSQL、MySQL等RDBMS以及其它前沿技术
 description: 分享交流大数据领域技术，包括但不限于Storm、Spark、Hadoop等流行分布式计算系统，Kafka、MetaQ等分布式消息系统，MongoDB、Cassandra等NoSQL，PostgreSQL、MySQL等RDBMS及其它前沿技术。微信公众号【大数据架构】
 author: 郭俊 Jason
-email: gj1989lh@163.com
+email: jason.guo.vip@gmail.com
 
 ## Sidebar profile image, only for next theme
 #avatar: //www.jasongj.com/img/WeChat_QR.png
@@ -178,7 +178,7 @@ since: 2015
 social:
 #  GitHub: https://github.com/habren
   Linkedin: https://www.linkedin.com/in/jasongj
-  E-Mail: mailto:gj1989lh@163.com
+  E-Mail: mailto:jason.guo.vip@gmail.com
   Weibo: http://weibo.com/habren
 
 ## Comments, for next
