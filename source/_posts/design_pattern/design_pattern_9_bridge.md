@@ -211,7 +211,7 @@ public class BridgeClient {
 }
 ```
 
-# 适配器模式与OOP原则
+# 桥接模式与OOP原则
 ## 已遵循的原则
  - 依赖倒置原则
  - 迪米特法则
