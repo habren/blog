@@ -75,7 +75,7 @@ Total time : 1072ms
 可以看到，主线程等待所有3个线程都执行结束后才开始执行。
 
 ## CountDownLatch主要接口分析
-CountDownLatch工作原理相对简单，可以简单看成一个倒计时器，在构造方法中指定初始值，每次调用*countDown()*方法时讲计数器减1，而*await()*会等待计数器变为0。CountDownLatch关键接口如下
+CountDownLatch工作原理相对简单，可以简单看成一个倒计数器，在构造方法中指定初始值，每次调用*countDown()*方法时将计数器减1，而*await()*会等待计数器变为0。CountDownLatch关键接口如下
  - ***countDown()*** 如果当前计数器的值大于1，则将其减1；若当前值为1，则将其置为0并唤醒所有通过await等待的线程；若当前值为0，则什么也不做直接返回。
  - ***await()*** 等待计数器的值为0，若计数器的值为0则该方法返回；若等待期间该线程被中断，则抛出**InterruptedException**并清除该线程的中断状态。
  - ***await(long timeout, TimeUnit unit)*** 在指定的时间内等待计数器的值为0，若在指定时间内计数器的值变为0，则该方法返回true；若指定时间内计数器的值仍未变为0，则返回false；若指定时间内计数器的值变为0之前当前线程被中断，则抛出**InterruptedException**并清除该线程的中断状态。
@@ -83,7 +83,7 @@ CountDownLatch工作原理相对简单，可以简单看成一个倒计时器，
 
 # CyclicBarrier
 ## CyclicBarrier适用场景
-在《[当我们说线程安全时，到底在说什么](//www.jasongj.com/java/thread_safe)》一文中讲过内存屏障，它能保证屏障之前的代码一定在屏障之后的代码之前被执行。CyclicBarrier可以译为循环屏障，也有类似的功能。CyclicBarrier可以在构造时指定需要在屏障前执行await的个数，所有对await的调用都会等待，只到调用await的次数达到预定指，所有等待都会立即被唤醒。
+在《[当我们说线程安全时，到底在说什么](//www.jasongj.com/java/thread_safe)》一文中讲过内存屏障，它能保证屏障之前的代码一定在屏障之后的代码之前被执行。CyclicBarrier可以译为循环屏障，也有类似的功能。CyclicBarrier可以在构造时指定需要在屏障前执行await的个数，所有对await的调用都会等待，直到调用await的次数达到预定指，所有等待都会立即被唤醒。
 
 从使用场景上来说，CyclicBarrier是让多个线程互相等待某一事件的发生，然后同时被唤醒。而上文讲的CountDownLatch是让某一线程等待多个线程的状态，然后该线程被唤醒。
 
