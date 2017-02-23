@@ -71,6 +71,7 @@ public class SubjectProxyHandler implements InvocationHandler {
     preAction();
     Object result = method.invoke(target, args);
     postAction();
+    LOG.info("Proxy class name {}", proxy.getClass().getName());
     return result;
   }
 

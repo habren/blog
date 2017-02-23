@@ -112,7 +112,7 @@ public class Singleton {
  - 缺点：虽然使用了`synchronized`，但本质上是线程不安全的。
 
 
-## 不正确双重检查（Double Check）下的懒汉 - 推荐
+## 双重检查（Double Check）下的懒汉 - 推荐
 ```java
 package com.jasongj.singleton4;
 
