@@ -17,10 +17,13 @@ keywords:
   - 郭俊 Jason
   - 大数据架构
 tags:
-  - 线性回归
+  - machine learning
   - 机器学习
+  - AI
 categories:
-  - Machine Learning
+  - machine learning
+  - 机器学习
+  - AI
 description: 本文简要介绍了线性回归的原理，适用场景，并结合实例讲解如何使用R语言解决线性回归问题
 mathjax: true
 ------
@@ -34,7 +37,7 @@ mathjax: true
 # 线性回归简介
     
 　　如下图所示，如果把自变量（也叫independent variable）和因变量（也叫dependent variable）画在二维坐标上，则每条记录对应一个点。线性回规最常见的应用场景则是用一条直线去拟和已知的点，并对给定的x值预测其y值。而我们要做的就是找出一条合适的曲线，也就是找出合适的斜率及纵截矩。
-![一维线性回规](http://www.jasongj.com/img/ml1/one_variable_lr.png)
+![一维线性回规](http://www.jasongj.com/img/ml/linearregression/one_variable_lr.png)
 
 ## SSE  & RMSE
 　　上图中的SSE指sum of squared error，也即预测值与实际值之差的平方和，可由此判断该模型的误差。但使用SSE表征模型的误差有些弊端，比如它依赖于点的个数，且不好定其单位。所以我们有另外一个值去称量模型的误差。RMSE（Root-Mean-Square Error）。$$RMSE=\sqrt{\frac{SSE}{N}}$$
@@ -89,7 +92,7 @@ mathjax: true
 $$model1 <- lm(Temp ~ MEI + CO_2 + CH_4 + N_2O + CFC.11 + CFC.12 + TSI + Aerosols, temp)$$
 
 summary(model1)
-![adjusted r](http://www.jasongj.com/img/ml1/model1.png)
+![adjusted r](http://www.jasongj.com/img/ml/linearregression/model1.png)
 
 ***逐一去掉Feature***
 　　在model1中去掉任一个Feature，并记下相应的Adjusted $R^2$如下
@@ -124,7 +127,7 @@ $$Temp \sim MEI + CO_2 + N_2O + CFC.11 + CFC.12 + TSI + Aerosols$$
 $$Temp \sim MEI + CO_2 + N_2O + CFC.11 + CFC.12 + TSI + Aerosols$$
 
    由`summary(model2)`可算出每个Feature的coefficient如下 。
-![Feature coefficient](http://www.jasongj.com/img/ml1/model2.png)
+![Feature coefficient](http://www.jasongj.com/img/ml/linearregression/model2.png)
 
 # 线性回归介绍
 　　
