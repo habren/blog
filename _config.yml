@@ -182,10 +182,10 @@ social:
   Weibo: http://weibo.com/habren
 
 ## Comments, for next
-duoshuo_shortname: habren
+#duoshuo_shortname: habren
 
 ## Hotest articles
-duoshuo_hotartical: false
+#duoshuo_hotartical: false
 
 ## Analytics, for next
 baidu_analytics: 7dfdf667ba885e2b04d1c1cc561490f0
