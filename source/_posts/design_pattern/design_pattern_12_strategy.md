@@ -1,6 +1,7 @@
 ---
 title: Java设计模式（十二） 策略模式
 date: 2016-05-30 07:46:09
+updated: 2017-02-17 20:31:23
 permalink: design_pattern/strategy
 keywords:
   - java 策略模式

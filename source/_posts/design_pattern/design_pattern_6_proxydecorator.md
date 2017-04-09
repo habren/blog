@@ -1,6 +1,7 @@
 ---
 title: Java设计模式（六） 代理模式 VS. 装饰模式
 date: 2016-04-29 20:42:46
+updated: 2017-02-17 20:31:23
 permalink: design_pattern/proxy_decorator
 keywords:
   - java 代理模式

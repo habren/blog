@@ -1,6 +1,7 @@
 ---
 title: Java设计模式（七） Spring AOP  JDK动态代理 VS. cglib
 date: 2016-05-02 20:42:46
+updated: 2017-02-17 20:31:23
 permalink: design_pattern/dynamic_proxy_cglib
 keywords:
   - jdk 动态代理

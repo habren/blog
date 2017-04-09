@@ -1,6 +1,7 @@
 ---
 title: Java设计模式（五） 组合模式
 date: 2016-04-24 07:09:46
+updated: 2017-02-17 20:31:23
 permalink: design_pattern/composite
 keywords:
   - java

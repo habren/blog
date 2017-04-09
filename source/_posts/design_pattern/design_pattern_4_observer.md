@@ -1,6 +1,7 @@
 ---
 title: Java设计模式（四） 观察者模式
 date: 2016-04-13 20:13:46
+updated: 2017-02-17 20:31:23
 permalink: design_pattern/observer
 keywords:
   - java

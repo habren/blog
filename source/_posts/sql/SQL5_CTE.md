@@ -1,5 +1,6 @@
 title: SQL优化（五） PostgreSQL （递归）CTE 通用表表达式
 date: 2016-03-18 20:49:04
+updated: 2017-03-15 21:17:39
 permalink: sql/cte
 keywords:
   - sql

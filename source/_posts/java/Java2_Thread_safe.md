@@ -2,6 +2,7 @@
 title: Java进阶（二）当我们说线程安全时，到底在说什么
 page_title: 什么是线程安全 怎么实现线程安全 volatile synchronized lock 锁 原子性 可见性 有序性
 date: 2016-06-13 07:11:29
+updated: 2017-02-15 20:31:23
 permalink: java/thread_safe
 keywords:
   - java

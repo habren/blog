@@ -1,6 +1,7 @@
 ---
 title: Java设计模式（二） 工厂方法模式
 date: 2016-04-02 08:00:01
+updated: 2017-02-18 20:31:23
 permalink: design_pattern/factory_method
 keywords:
   - java

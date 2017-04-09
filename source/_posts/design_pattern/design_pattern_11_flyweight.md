@@ -1,6 +1,7 @@
 ---
 title: Java设计模式（十一） 享元模式
 date: 2016-05-23 07:34:46
+updated: 2017-02-17 20:31:23
 permalink: design_pattern/flyweight
 keywords:
   - java 享元模式

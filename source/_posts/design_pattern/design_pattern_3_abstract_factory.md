@@ -1,6 +1,7 @@
 ---
 title: Java设计模式（三） 抽象工厂模式
 date: 2016-04-09 20:39:46
+updated: 2017-02-17 20:31:23
 permalink: design_pattern/abstract_factory
 keywords:
   - java

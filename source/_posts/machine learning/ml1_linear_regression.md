@@ -1,5 +1,6 @@
 title: 机器学习（一） 从一个R语言案例学线性回归
 date: 2015-03-27 03:41:18
+updated: 2017-04-02 20:53:27
 permalink: 2015/03/27/ml1_linear_regression
 sticky: 8
 keywords:

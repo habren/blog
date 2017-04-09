@@ -1,6 +1,7 @@
 title: SQL优化（六） MVCC PostgreSQL实现事务和多版本并发控制的精华
 page_title: MVCC PostgreSQL 事务模型 多版本并发控制 隔离级别 原子性
 date: 2016-06-06 07:09:04
+updated: 2017-03-15 21:17:39
 permalink: sql/mvcc
 keywords:
   - sql

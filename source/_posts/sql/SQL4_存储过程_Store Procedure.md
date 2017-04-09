@@ -1,5 +1,6 @@
 title: SQL优化（四） PostgreSQL存储过程
 date: 2015-12-27 14:59:45
+updated: 2017-03-15 21:17:39
 permalink: 2015/12/27/SQL4_存储过程_Store Procedure
 keywords:
   - SQL

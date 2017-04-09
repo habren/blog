@@ -1,5 +1,6 @@
 title: Kafka设计解析（四）- Kafka Consumer设计解析
 date: 2015-08-09 20:36:27
+updated: 2017-03-15 21:17:39
 permalink: 2015/08/09/KafkaColumn4
 mathjax: true
 keywords:

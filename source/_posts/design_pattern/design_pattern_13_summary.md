@@ -2,6 +2,7 @@
 title: Java设计模式（十三） 别人再问你设计模式，叫他看这篇文章
 page_title: Java 设计模式 终结篇 OOP三大特征 OOD七项原则 设计模式十万个为什么
 date: 2016-06-02 07:26:09
+updated: 2017-02-17 20:31:23
 permalink: design_pattern/summary
 keywords:
   - java 设计模式

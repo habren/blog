@@ -1,6 +1,7 @@
 ---
 title: Java设计模式（八） 适配器模式
 date: 2016-05-09 07:04:46
+updated: 2017-02-17 20:31:23
 permalink: design_pattern/adapter
 keywords:
   - java 适配器模式

@@ -1,5 +1,6 @@
 title: Kafka设计解析（二）- Kafka High Availability （上）
 date: 2015-04-24 22:21:18
+updated: 2017-03-15 21:17:39
 permalink: 2015/04/24/KafkaColumn2
 keywords:
   - kafka

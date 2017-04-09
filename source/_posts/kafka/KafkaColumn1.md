@@ -1,5 +1,6 @@
 title: Kafka设计解析（一）- Kafka背景及架构介绍
 date: 2015-03-10 14:00:00
+updated: 2017-03-29 21:17:39
 permalink: 2015/03/10/KafkaColumn1
 sticky: 10
 keywords:

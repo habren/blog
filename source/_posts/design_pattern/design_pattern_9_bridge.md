@@ -1,6 +1,7 @@
 ---
 title: Java设计模式（九） 桥接模式
 date: 2016-05-12 07:34:46
+updated: 2017-02-17 20:31:23
 permalink: design_pattern/bridge
 keywords:
   - java 桥接模式

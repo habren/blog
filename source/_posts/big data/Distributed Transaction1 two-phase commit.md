@@ -2,6 +2,7 @@
 title: 分布式事务（一）两阶段提交及JTA
 page_title: 两阶段提交 two-phase commit 分布式事务 JTA
 date: 2016-08-01 06:55:29
+updated: 2017-02-18 19:34:21
 permalink: big_data/two_phase_commit
 keywords:
   - 分布式事务

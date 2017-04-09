@@ -1,5 +1,6 @@
 title: Kafka深度解析
 date: 2015-01-02 15:30:25
+updated: 2017-03-15 21:17:39
 permalink: 2015/01/02/Kafka深度解析
 sticky: 1
 keywords:

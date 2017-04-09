@@ -1,6 +1,7 @@
 ---
 title: Java设计模式（一） 简单工厂模式不简单
 date: 2016-03-08 20:49:04
+updated: 2017-02-17 20:31:23
 permalink: design_pattern/simple_factory
 sticky: 7
 keywords:
