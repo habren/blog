@@ -139,13 +139,11 @@ public class IOServer {
       while(true) {
         Socket socket = serverSocket.accept();
         InputStream inputstream = socket.getInputStream();
-        LOGGER.info("Received message {}", IOUtils.toString(new InputStreamReader(inputstream)));
+        LOGGER.info("Received message {}", IOUtils.toString(inputstream));
+        IOUtils.closeQuietly(inputstream);
       }
     } catch(IOException ex) {
-      try {
-        serverSocket.close();
-      } catch (IOException e) {
-      }
+      IOUtils.closeQuietly(serverSocket);
       LOGGER.error("Read message failed", ex);
     }
   }
@@ -157,11 +155,9 @@ public class IOServer {
 ![阻塞I/O 多线程](//www.jasongj.com/img/java/reactor/IO_multithread.png)
 ```java
 public class IOServerMultiThread {
-
   private static final Logger LOGGER = LoggerFactory.getLogger(IOServerMultiThread.class);
-
   public static void main(String[] args) {
-    ServerSocket serverSocket = null;
+  ServerSocket serverSocket = null;
     try {
       serverSocket = new ServerSocket();
       serverSocket.bind(new InetSocketAddress(2345));
@@ -175,17 +171,15 @@ public class IOServerMultiThread {
         new Thread( () -> {
           try{
             InputStream inputstream = socket.getInputStream();
-            LOGGER.info("Received message {}", IOUtils.toString(new InputStreamReader(inputstream)));
+            LOGGER.info("Received message {}", IOUtils.toString(inputstream));
+            IOUtils.closeQuietly(inputstream);
           } catch (IOException ex) {
             LOGGER.error("Read message failed", ex);
           }
         }).start();
       }
     } catch(IOException ex) {
-      try {
-        serverSocket.close();
-      } catch (IOException e) {
-      }
+      IOUtils.closeQuietly(serverSocket);
       LOGGER.error("Accept connection failed", ex);
     }
   }
@@ -401,8 +395,9 @@ public class NIOServer {
           SocketChannel socketChannel = acceptServerSocketChannel.accept();
           socketChannel.configureBlocking(false);
           LOGGER.info("Accept request from {}", socketChannel.getRemoteAddress());
-          Processor processor = processors[(int) ((index++) / coreNum)];
+          Processor processor = processors[(int) ((index++) % coreNum)];
           processor.addChannel(socketChannel);
+          processor.wakeup();
         }
       }
     }
@@ -429,10 +424,14 @@ public class Processor {
     socketChannel.register(this.selector, SelectionKey.OP_READ);
   }
 
+  public void wakeup() {
+    this.selector.wakeup();
+  }
+
   public void start() {
     service.submit(() -> {
       while (true) {
-        if (selector.selectNow() <= 0) {
+        if (selector.select(500) <= 0) {
           continue;
         }
         Set<SelectionKey> keys = selector.selectedKeys();
