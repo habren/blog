@@ -1,7 +1,7 @@
 ---
 title: Kafka设计解析（六）- Kafka高性能架构之道
 page_title: Kafka高性能架构之道
-date: 2017-02-05 18:43:13
+date: 2017-04-17 09:53:13
 permalink: kafka/high_throughput
 keywords:
   - kafka
