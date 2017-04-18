@@ -13,6 +13,7 @@ keywords:
   - 大数据架构
   - kafka 性能
   - kafka 吞吐
+  - 技术世界
   - 零拷贝
 tags:
   - Kafka
@@ -26,7 +27,7 @@ description: 本文从宏观架构层面和微观实现层面分析了Kafka如�
 ---
 
 >原创文章，转载请务必将下面这段话置于文章开头处。
->本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/kafka/high_throughput/)　[http://www.jasongj.com/kafka/high_throughput/](http://www.jasongj.com/kafka/high_throughput/)
+>本文转发自[**技术世界**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/kafka/high_throughput/)　[http://www.jasongj.com/kafka/high_throughput/](http://www.jasongj.com/kafka/high_throughput/)
 
 
 # 摘要
@@ -184,7 +185,7 @@ Socket.send(buffer)
 ![BIO 四次拷贝 四次上下文切换](//www.jasongj.com/img/KafkaColumn6/BIO.png) 
   
 ### sendfile和transferTo实现零拷贝
-而Linux 2.4+内核通过`sendfile`系统调用，提供了零拷贝。数据通过DMA拷贝到内核态Buffer后，直接通过DMA拷贝到NIC Buffer，无需CPU拷贝。这也是零拷贝这一说法的来源。除了减少数据拷贝外，因为整个读文件-网络发送由一个`sendfile`调用完成，整个过程只有两次上下文切换，因此大大提高了性能。零拷贝过程如下图所示。
+Linux 2.4+内核通过`sendfile`系统调用，提供了零拷贝。数据通过DMA拷贝到内核态Buffer后，直接通过DMA拷贝到NIC Buffer，无需CPU拷贝。这也是零拷贝这一说法的来源。除了减少数据拷贝外，因为整个读文件-网络发送由一个`sendfile`调用完成，整个过程只有两次上下文切换，因此大大提高了性能。零拷贝过程如下图所示。
   
 ![BIO 零拷贝 两次上下文切换](//www.jasongj.com/img/KafkaColumn6/NIO.png) 
   

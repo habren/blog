@@ -10,7 +10,7 @@ keywords:
   - PostgreSQL MVCC
   - 多版本并发控制
   - 事务 隔离级别
-  - Jason's Blog
+  - 技术世界
   - 郭俊 Jason
   - 大数据架构
 tags:
@@ -27,7 +27,7 @@ description: 数据库事务隔离性可通过锁机制或者MVCC实现，Postgr
 ---
 
 >原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
->本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/sql/mvcc/)　[http://www.jasongj.com/sql/mvcc/](http://www.jasongj.com/sql/mvcc/)
+>本文转发自[**技术世界**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/sql/mvcc/)　[http://www.jasongj.com/sql/mvcc/](http://www.jasongj.com/sql/mvcc/)
 
 # PostgreSQL针对ACID的实现机制
 ## 数据库ACID

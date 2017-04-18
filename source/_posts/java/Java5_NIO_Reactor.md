@@ -10,7 +10,7 @@ keywords:
   - NIO
   - Reactor
   - I/O模型
-  - Jason's Blog
+  - 技术世界
   - 郭俊 Jason
   - 大数据架构
 tags:
@@ -21,7 +21,7 @@ description: 本文介绍了Java中的四种I/O模型，同步阻塞，同步非
 ---
 
 >原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
->本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/java/nio_reactor/)　[http://www.jasongj.com/java/nio_reactor/](http://www.jasongj.com/java/nio_reactor/)
+>本文转发自[**技术世界**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/java/nio_reactor/)　[http://www.jasongj.com/java/nio_reactor/](http://www.jasongj.com/java/nio_reactor/)
 
 
 # Java I/O模型

@@ -13,6 +13,7 @@ keywords:
   - spark 优化
   - 大数据架构
   - 数据倾斜
+  - 技术世界
   - data skew
   - spark sql
 tags:
@@ -27,7 +28,7 @@ description: 本文结合实例详细阐明了Spark数据倾斜的几种场景�
 ---
 
 >原创文章，转载请务必将下面这段话置于文章开头处。
->本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/spark/skew)　[http://www.jasongj.com/spark/skew/](http://www.jasongj.com/spark/skew)
+>本文转发自[**技术世界**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/spark/skew)　[http://www.jasongj.com/spark/skew/](http://www.jasongj.com/spark/skew)
 
 
 # 摘要

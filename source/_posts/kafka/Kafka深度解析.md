@@ -8,7 +8,7 @@ keywords:
   - 大数据
   - 集群
   - kafka 架构
-  - Jason's Blog
+  - 技术世界
   - 郭俊 Jason
   - 大数据架构
   - Kafka HA
@@ -27,7 +27,7 @@ description: 介绍Kafka背景，使用消息系统的优势，常用消息系�
 ---
 
 >原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
->本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/01/02/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90)　[http://www.jasongj.com/2015/01/02/Kafka深度解析](http://www.jasongj.com/2015/01/02/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90)
+>本文转发自[**技术世界**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/01/02/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90)　[http://www.jasongj.com/2015/01/02/Kafka深度解析](http://www.jasongj.com/2015/01/02/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90)
 
 
 # 背景介绍

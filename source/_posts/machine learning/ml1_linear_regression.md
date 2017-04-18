@@ -14,7 +14,7 @@ keywords:
   - 前向选择
   - 后向选择
   - 正规方程
-  - Jason's Blog
+  - 技术世界
   - 郭俊 Jason
   - 大数据架构
 tags:
@@ -30,7 +30,7 @@ mathjax: true
 ------
 
 >原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
->本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/03/27/ml1_linear_regression)　[http://www.jasongj.com/2015/03/27/ml1_linear_regression](http://www.jasongj.com/2015/03/27/ml1_linear_regression)
+>本文转发自[**技术世界**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/03/27/ml1_linear_regression)　[http://www.jasongj.com/2015/03/27/ml1_linear_regression](http://www.jasongj.com/2015/03/27/ml1_linear_regression)
 
 
 ***写在前面的话*** 　　按照正常的顺序，本文应该先讲一些线性回归的基本概念，比如什么叫线性回归，线性回规的常用解法等。但既然本文名为《从一个R语言案例学会线性回归》，那就更重视如何使用R语言去解决线性回归问题，因此本文会先讲案例。

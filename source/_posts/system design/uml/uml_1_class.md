@@ -9,7 +9,7 @@ keywords:
   - 类图
   - 系统设计
   - 架构设计
-  - Jason's Blog
+  - 技术世界
   - 郭俊 Jason
   - 大数据架构
 tags:
@@ -24,7 +24,7 @@ description: 在UML 2.*的13种图形中，类图是使用频率最高的UML图�
 ---
 
 >原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
->本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/uml/class_diagram/)　[http://www.jasongj.com/uml/class_diagram/](http://www.jasongj.com/uml/class_diagram/)
+>本文转发自[**技术世界**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/uml/class_diagram/)　[http://www.jasongj.com/uml/class_diagram/](http://www.jasongj.com/uml/class_diagram/)
 
 # UML类图
 ## UML类图介绍

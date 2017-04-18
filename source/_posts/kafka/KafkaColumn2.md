@@ -9,7 +9,7 @@ keywords:
   - 消息系统
   - 消息总线
   - kafka 架构
-  - Jason's Blog
+  - 技术世界
   - 郭俊 Jason
   - 大数据架构
   - kafka ha
@@ -28,7 +28,7 @@ description: Kafka从0.8版本开始提供High Availability机制，从而提高
 
 
 >原创文章，转载请务必将下面这段话置于文章开头处。（已授权[InfoQ中文站发布](http://www.infoq.com/cn/articles/kafka-analysis-part-2)）
->本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/04/24/KafkaColumn2)　[http://www.jasongj.com/2015/04/24/KafkaColumn2](http://www.jasongj.com/2015/04/24/KafkaColumn2)
+>本文转发自[**技术世界**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/04/24/KafkaColumn2)　[http://www.jasongj.com/2015/04/24/KafkaColumn2](http://www.jasongj.com/2015/04/24/KafkaColumn2)
 
 
 # 摘要

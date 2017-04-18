@@ -11,7 +11,7 @@ keywords:
   - 存储过程
   - UDF
   - PostgreSQL
-  - Jason's Blog
+  - 技术世界
   - 郭俊 Jason
   - 大数据架构
 tags:
@@ -28,7 +28,7 @@ description: 本文介绍了存储过程的概念，优势，并结合实例讲�
 ---
 
 >原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
->本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/12/27/SQL4_存储过程_Store Procedure)　[http://www.jasongj.com/2015/12/27/SQL4_存储过程_Store Procedure/](http://www.jasongj.com/2015/12/27/SQL4_存储过程_Store Procedure)
+>本文转发自[**技术世界**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/12/27/SQL4_存储过程_Store Procedure)　[http://www.jasongj.com/2015/12/27/SQL4_存储过程_Store Procedure/](http://www.jasongj.com/2015/12/27/SQL4_存储过程_Store Procedure)
 
 
 

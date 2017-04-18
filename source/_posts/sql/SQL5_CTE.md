@@ -10,7 +10,7 @@ keywords:
   - CTE
   - 通用表表达式
   - common table expressions
-  - Jason's Blog
+  - 技术世界
   - 郭俊 Jason
   - 大数据架构
 tags:
@@ -27,7 +27,7 @@ description: 本文结合实例介绍了CTE（Common Table Expressions，通用�
 ---
 
 >原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
->本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/sql/cte/)　[http://www.jasongj.com/sql/cte/](http://www.jasongj.com/sql/cte/)
+>本文转发自[**技术世界**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/sql/cte/)　[http://www.jasongj.com/sql/cte/](http://www.jasongj.com/sql/cte/)
 
 
 # CTE or WITH

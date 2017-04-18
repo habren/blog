@@ -10,7 +10,7 @@ keywords:
   - AOP cglib
   - AOP 动态代理
   - java 设计模式
-  - Jason's Blog
+  - 技术世界
   - 郭俊 Jason
   - 大数据架构
 tags:
@@ -24,7 +24,7 @@ description: Spring的AOP有JDK动态代理和cglib两种实现方式。JDK动�
 ---
 
 >原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
->本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/design_pattern/dynamic_proxy_cglib/)　[http://www.jasongj.com/design_pattern/dynamic_proxy_cglib/](http://www.jasongj.com/design_pattern/dynamic_proxy_cglib/)
+>本文转发自[**技术世界**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/design_pattern/dynamic_proxy_cglib/)　[http://www.jasongj.com/design_pattern/dynamic_proxy_cglib/](http://www.jasongj.com/design_pattern/dynamic_proxy_cglib/)
 
 # 静态代理 VS. 动态代理
 静态代理，是指程序运行前就已经存在了代理类的字节码文件，代理类和被代理类的关系在运行前就已经确定。

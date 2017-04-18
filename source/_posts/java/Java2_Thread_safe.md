@@ -16,7 +16,7 @@ keywords:
   - 锁
   - java 线程安全
   - java 同步
-  - Jason's Blog
+  - 技术世界
   - 郭俊 Jason
   - 大数据架构
 tags:
@@ -27,7 +27,7 @@ description: 提到线程安全，可能大家的第一反应是要确保接口�
 ---
 
 >原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
->本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/java/thread_safe/)　[http://www.jasongj.com/java/thread_safe/](http://www.jasongj.com/java/thread_safe/)
+>本文转发自[**技术世界**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/java/thread_safe/)　[http://www.jasongj.com/java/thread_safe/](http://www.jasongj.com/java/thread_safe/)
 
 
 

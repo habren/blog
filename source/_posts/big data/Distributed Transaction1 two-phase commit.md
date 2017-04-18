@@ -8,7 +8,7 @@ keywords:
   - 分布式事务
   - 两阶段提交
   - two-phase commit
-  - Jason's Blog
+  - 技术世界
   - 郭俊 Jason
   - 大数据架构
 tags:
@@ -22,7 +22,7 @@ description: 分布式事务与本地事务一样，包含原子性（Atomicity�
 ---
 
 >原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
->本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/big_data/two_phase_commit/)　[http://www.jasongj.com/big_data/two_phase_commit/](http://www.jasongj.com/big_data/two_phase_commit/)
+>本文转发自[**技术世界**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/big_data/two_phase_commit/)　[http://www.jasongj.com/big_data/two_phase_commit/](http://www.jasongj.com/big_data/two_phase_commit/)
 
 
 # 分布式事务

@@ -14,6 +14,7 @@ keywords:
   - Ensemble Learning
   - 分类
   - 郭俊 Jason
+  - 技术世界
   - 大数据架构
 tags:
   - machine learning
@@ -27,7 +28,7 @@ description: 本文详述了如何通过数据预览，探索式数据分析，�
 ---
 
 > 原创文章，转载请务必将下面这段话置于文章开头处。
-> 本文转发自[**Jason's Blog**](http//www.jasongj.com)，[原文链接](http://www.jasongj.com/ml/classification/) [http://www.jasongj.com/ml/classification/](http://www.jasongj.com/ml/classification/)
+> 本文转发自[**技术世界**](http//www.jasongj.com)，[原文链接](http://www.jasongj.com/ml/classification/) [http://www.jasongj.com/ml/classification/](http://www.jasongj.com/ml/classification/)
 
 摘要
 ====

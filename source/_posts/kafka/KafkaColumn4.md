@@ -10,7 +10,7 @@ keywords:
   - 消息系统
   - 消息总线
   - Kafka 架构
-  - Jason's Blog
+  - 技术世界
   - 郭俊 Jason
   - 大数据架构
   - kafka consumer
@@ -29,7 +29,7 @@ description: 本文主要介绍了Kafka High Level Consumer，Consumer Group，C
 ------
 
 >原创文章，转载请务必将下面这段话置于文章开头处。（已授权[InfoQ中文站发布](http://www.infoq.com/cn/articles/kafka-analysis-part-4)）
->本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/08/09/KafkaColumn4)　[http://www.jasongj.com/2015/08/09/KafkaColumn4](http://www.jasongj.com/2015/08/09/KafkaColumn4)
+>本文转发自[**技术世界**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/2015/08/09/KafkaColumn4)　[http://www.jasongj.com/2015/08/09/KafkaColumn4](http://www.jasongj.com/2015/08/09/KafkaColumn4)
 
 
 # 摘要

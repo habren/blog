@@ -8,7 +8,7 @@ keywords:
   - java bridge pattern
   - java 设计模式
   - 设计模式
-  - Jason's Blog
+  - 技术世界
   - 郭俊 Jason
   - 大数据架构
 tags:
@@ -23,7 +23,7 @@ description: 当一种事物可在多种维度变化（如两个维度，每个�
 ---
 
 >原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
->本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/design_pattern/bridge/)　[http://www.jasongj.com/design_pattern/bridge/](http://www.jasongj.com/design_pattern/bridge/)
+>本文转发自[**技术世界**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/design_pattern/bridge/)　[http://www.jasongj.com/design_pattern/bridge/](http://www.jasongj.com/design_pattern/bridge/)
 
 
 
