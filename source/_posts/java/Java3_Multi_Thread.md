@@ -12,7 +12,7 @@ keywords:
   - await signal signalAll
   - 信号量 Semaphore
   - java 多线程
-  - Jason's Blog
+  - 技术世界
   - 郭俊 Jason
   - 大数据架构
 tags:
@@ -23,7 +23,7 @@ description: 本文将介绍Java多线程开发必不可少的锁和同步机制
 ---
 
 >原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。
->本文转发自[**Jason's Blog**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/java/multi_thread/)　[http://www.jasongj.com/java/multi_thread/](http://www.jasongj.com/java/multi_thread/)
+>本文转发自[**技术世界**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/java/multi_thread/)　[http://www.jasongj.com/java/multi_thread/](http://www.jasongj.com/java/multi_thread/)
 
 
 # sleep和wait到底什么区别
@@ -240,7 +240,7 @@ try{
 ```  
   
 而线程`thread-test-f`由于未获取到锁，而处于`WAITING(parking)`状态，且它等待的锁正是上文线程`thread-test-e`获取的锁（内存地址`0x000000076ae3d708`）
-```
+```java
 "thread-test-f" #18 prio=5 os_prio=31 tid=0x00007fefaa9b2800 nid=0x6603 waiting on condition [0x0000700002a3c000]
    java.lang.Thread.State: WAITING (parking)
         at sun.misc.Unsafe.park(Native Method)
@@ -254,12 +254,10 @@ try{
         at com.jasongj.demo.TestJstack.lambda$5(TestJstack.java:69)
         at com.jasongj.demo.TestJstack$$Lambda$6/33524623.run(Unknown Source)
         at java.lang.Thread.run(Thread.java:745)
-
    Locked ownable synchronizers:
         - None
 ```
-
-
+  
 ## 读写锁
 如上文《[Java进阶（二）当我们说线程安全时，到底在说什么](//www.jasongj.com/java/thread_safe)》所述，锁可以保证原子性和可见性。而原子性更多是针对写操作而言。对于读多写少的场景，一个读操作无须阻塞其它读操作，只需要保证读和写或者写与写不同时发生即可。此时，如果使用重入锁（即排它锁），对性能影响较大。Java中的读写锁（ReadWriteLock）就是为这种读多写少的场景而创造的。
 
@@ -270,7 +268,7 @@ try{
 读写锁的锁定规则如下：
  - 获得读锁后，其它线程可获得读锁而不能获取写锁
  - 获得写锁后，其它线程既不能获得读锁也不能获得写锁
-
+  
 ```java
 package com.test.thread;
 
