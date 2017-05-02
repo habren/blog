@@ -3,7 +3,7 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Jason's Blog
+title: 技术世界
 subtitle: 分享交流大数据领域技术，包括但不限于Storm、Spark、Hadoop等流行分布式计算系统，Kafka、MetaQ等分布式消息系统，MongoDB、Cassandra等NoSQL，PostgreSQL、MySQL等RDBMS以及其它前沿技术
 description: 分享交流大数据领域技术，包括但不限于Storm、Spark、Hadoop等流行分布式计算系统，Kafka、MetaQ等分布式消息系统，MongoDB、Cassandra等NoSQL，PostgreSQL、MySQL等RDBMS及其它前沿技术。微信公众号【大数据架构】
 author: 郭俊 Jason
@@ -190,7 +190,7 @@ social:
 
 ## Analytics, for next
 baidu_analytics: 7dfdf667ba885e2b04d1c1cc561490f0
-google_analytics: UA-58959834-1
+google_analytics: UA-97716656-1
 
 ## Google Webmaster tools, for next
 google_site_verification: _lpnaoq9f4n68-jMrHuEIsB1kJO_6WMxvONibOMBdxM
