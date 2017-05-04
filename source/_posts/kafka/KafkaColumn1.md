@@ -104,12 +104,12 @@ description: 本文介绍了Kafka的创建背景，设计目标，使用消息�
 　　每个Consumer属于一个特定的Consumer Group（可为每个Consumer指定group name，若不指定group name则属于默认的group）。
 
 ## Kafka拓扑结构
-![kafka architecture 架构](http://www.jasongj.com/img/KafkaColumn1/KafkaArchitecture.png)
+![kafka architecture 架构](http://www.jasongj.com/img/kafka/KafkaColumn1/KafkaArchitecture.png)
 　　如上图所示，一个典型的Kafka集群中包含若干Producer（可以是web前端产生的Page View，或者是服务器日志，系统CPU、Memory等），若干broker（Kafka支持水平扩展，一般broker数量越多，集群吞吐率越高），若干Consumer Group，以及一个[Zookeeper](http://zookeeper.apache.org/)集群。Kafka通过Zookeeper管理集群配置，选举leader，以及在Consumer Group发生变化时进行rebalance。Producer使用push模式将消息发布到broker，Consumer使用pull模式从broker订阅并消费消息。
 　　
 ## Topic & Partition
 　　Topic在逻辑上可以被认为是一个queue，每条消费都必须指定它的Topic，可以简单理解为必须指明把这条消息放进哪个queue里。为了使得Kafka的吞吐率可以线性提高，物理上把Topic分成一个或多个Partition，每个Partition在物理上对应一个文件夹，该文件夹下存储这个Partition的所有消息和索引文件。若创建topic1和topic2两个topic，且分别有13个和19个分区，则整个集群上会相应会生成共32个文件夹（本文所用集群共8个节点，此处topic1和topic2 replication-factor均为1），如下图所示。
-　　![kafka topic partition](http://www.jasongj.com/img/KafkaColumn1/topic-partition.png)
+　　![kafka topic partition](http://www.jasongj.com/img/kafka/KafkaColumn1/topic-partition.png)
 　　
 　　每个日志文件都是一个`log entry`序列，每个`log entry`包含一个4字节整型数值（值为N+5），1个字节的"magic value"，4个字节的CRC校验码，其后跟N个字节的消息体。每条消息都有一个当前Partition下唯一的64字节的offset，它指明了这条消息的起始位置。磁盘上存储的消息格式如下：
 　　message length    ：   4 bytes (value: 1+4+n)
@@ -117,10 +117,10 @@ description: 本文介绍了Kafka的创建背景，设计目标，使用消息�
 　　crc               ：   4 bytes
 　　payload           ：   n bytes
 　　这个`log entry`并非由一个文件构成，而是分成多个segment，每个segment以该segment第一条消息的offset命名并以“.kafka”为后缀。另外会有一个索引文件，它标明了每个segment下包含的`log entry`的offset范围，如下图所示。
-　　![kafka partition event index](http://www.jasongj.com/img/KafkaColumn1/partition_segment.png)
+　　![kafka partition event index](http://www.jasongj.com/img/kafka/KafkaColumn1/partition_segment.png)
 　　
 　　因为每条消息都被append到该Partition中，属于顺序写磁盘，因此效率非常高（经验证，顺序写磁盘效率比随机写内存还要高，这是Kafka高吞吐率的一个很重要的保证）。
-　　![kafka 顺序写磁盘](http://www.jasongj.com/img/KafkaColumn1/partition.png)
+　　![kafka 顺序写磁盘](http://www.jasongj.com/img/kafka/KafkaColumn1/partition.png)
 　　
 　　对于传统的message queue而言，一般会删除已经被消费的消息，而Kafka集群会保留所有的消息，无论其被消费与否。当然，因为磁盘限制，不可能永久保留所有数据（实际上也没必要），因此Kafka提供两种策略删除旧数据。一是基于时间，二是基于Partition文件大小。例如可以通过配置`$KAFKA_HOME/config/server.properties`，让Kafka删除一周前的数据，也可在Partition文件超过1GB时删除旧数据，配置如下所示。
 ```bash
@@ -176,18 +176,18 @@ description: 本文介绍了Kafka的创建背景，设计目标，使用消息�
 ```
 
 　　则key相同的消息会被发送并存储到同一个partition里，而且key的序号正好和Partition序号相同。（Partition序号从0开始，本例中的key也从0开始）。下图所示是通过Java程序调用Consumer后打印出的消息列表。
-　　![kafka consumer rebalance](http://www.jasongj.com/img/KafkaColumn1/partition_key.png)
+　　![kafka consumer rebalance](http://www.jasongj.com/img/kafka/KafkaColumn1/partition_key.png)
 　　
 ## Consumer Group
 　　（本节所有描述都是基于Consumer hight level API而非low level API）。
 　　使用Consumer high level API时，同一Topic的一条消息只能被同一个Consumer Group内的一个Consumer消费，但多个Consumer Group可同时消费这一消息。
-　　![kafka consumer group](http://www.jasongj.com/img/KafkaColumn1/consumer_group.png)
+　　![kafka consumer group](http://www.jasongj.com/img/kafka/KafkaColumn1/consumer_group.png)
 　　这是Kafka用来实现一个Topic消息的广播（发给所有的Consumer）和单播（发给某一个Consumer）的手段。一个Topic可以对应多个Consumer Group。如果需要实现广播，只要每个Consumer有一个独立的Group就可以了。要实现单播只要所有的Consumer在同一个Group里。用Consumer Group还可以将Consumer进行自由的分组而不需要多次发送消息到不同的Topic。
 　　实际上，Kafka的设计理念之一就是同时提供离线处理和实时处理。根据这一特性，可以使用Storm这种实时流处理系统对消息进行实时在线处理，同时使用Hadoop这种批处理系统进行离线处理，还可以同时将数据实时备份到另一个数据中心，只需要保证这三个操作所使用的Consumer属于不同的Consumer Group即可。下图是Kafka在Linkedin的一种简化部署示意图。
-　　![kafka sample deployment in linkedin](http://www.jasongj.com/img/KafkaColumn1/kafka_in_linkedin.png)
+　　![kafka sample deployment in linkedin](http://www.jasongj.com/img/kafka/KafkaColumn1/kafka_in_linkedin.png)
 　　
 　　下面这个例子更清晰地展示了Kafka Consumer Group的特性。首先创建一个Topic (名为topic1，包含3个Partition)，然后创建一个属于group1的Consumer实例，并创建三个属于group2的Consumer实例，最后通过Producer向topic1发送key分别为1，2，3的消息。结果发现属于group1的Consumer收到了所有的这三条消息，同时group2中的3个Consumer分别收到了key为1，2，3的消息。如下图所示。
-　　![kafka consumer group](http://www.jasongj.com/img/KafkaColumn1/consumer_group_test.png)
+　　![kafka consumer group](http://www.jasongj.com/img/kafka/KafkaColumn1/consumer_group_test.png)
 　　
 ## Push vs. Pull　　
 　　作为一个消息系统，Kafka遵循了传统的方式，选择由Producer向broker push消息并由Consumer从broker pull消息。一些logging-centric system，比如Facebook的[Scribe](https://github.com/facebookarchive/scribe)和Cloudera的[Flume](http://flume.apache.org/)，采用push模式。事实上，push模式和pull模式各有优劣。

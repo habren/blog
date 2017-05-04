@@ -42,13 +42,13 @@ description: 本文在上篇文章 基础上，更加深入讲解了Kafka的HA�
 　　3.3 将新的Leader，ISR和新的`leader_epoch`及`controller_epoch`写入`/brokers/topics/[topic]/partitions/[partition]/state`。注意，该操作只有Controller版本在3.1至3.3的过程中无变化时才会执行，否则跳转到3.1。
  4. 直接通过RPC向set_p相关的Broker发送LeaderAndISRRequest命令。Controller可以在一个RPC操作中发送多个命令从而提高效率。
 　　Broker failover顺序图如下所示。
-![broker failover sequence diagram ](http://www.jasongj.com/img/KafkaColumn2/kafka_broker_failover.png)
+![broker failover sequence diagram ](http://www.jasongj.com/img/kafka/KafkaColumn2/kafka_broker_failover.png)
 
 　　LeaderAndIsrRequest结构如下
-![LeaderAndIsrRequest](http://www.jasongj.com/img/KafkaColumn3/LeaderAndIsrRequest.png)
+![LeaderAndIsrRequest](http://www.jasongj.com/img/kafka/KafkaColumn3/LeaderAndIsrRequest.png)
 
 　　LeaderAndIsrResponse结构如下
-![LeaderAndIsrResponse](http://www.jasongj.com/img/KafkaColumn3/LeaderAndIsrResponse.png)
+![LeaderAndIsrResponse](http://www.jasongj.com/img/kafka/KafkaColumn3/LeaderAndIsrResponse.png)
 
 
 ## 创建/删除Topic
@@ -59,12 +59,12 @@ description: 本文在上篇文章 基础上，更加深入讲解了Kafka的HA�
 　　3.2 将新的Leader和ISR写入`/brokers/topics/[topic]/partitions/[partition]`
  4. 直接通过RPC向相关的Broker发送LeaderAndISRRequest。
 　　创建Topic顺序图如下所示。
-![create topic sequence diagram](http://www.jasongj.com/img/KafkaColumn2/kafka_create_topic.png)
+![create topic sequence diagram](http://www.jasongj.com/img/kafka/KafkaColumn2/kafka_create_topic.png)
 
 ## Broker响应请求流程
 　　Broker通过`kafka.network.SocketServer`及相关模块接受各种请求并作出响应。整个网络通信模块基于Java NIO开发，并采用Reactor模式，其中包含1个Acceptor负责接受客户请求，N个Processor负责读写数据，M个Handler处理业务逻辑。
 　　Acceptor的主要职责是监听并接受客户端（请求发起方，包括但不限于Producer，Consumer，Controller，Admin Tool）的连接请求，并建立和客户端的数据传输通道，然后为该客户端指定一个Processor，至此它对该客户端该次请求的任务就结束了，它可以去响应下一个客户端的连接请求了。其核心代码如下。
-![Kafka SocketServer Acceptor_run](http://www.jasongj.com/img/KafkaColumn3/Acceptor_run.png)
+![Kafka SocketServer Acceptor_run](http://www.jasongj.com/img/kafka/KafkaColumn3/Acceptor_run.png)
 　　
 　　Processor主要负责从客户端读取数据并将响应返回给客户端，它本身并不处理具体的业务逻辑，并且其内部维护了一个队列来保存分配给它的所有SocketChannel。Processor的run方法会循环从队列中取出新的SocketChannel并将其`SelectionKey.OP_READ`注册到selector上，然后循环处理已就绪的读（请求）和写（响应）。Processor读取完数据后，将其封装成Request对象并将其交给RequestChannel。
 　　RequestChannel是Processor和KafkaRequestHandler交换数据的地方，它包含一个队列requestQueue用来存放Processor加入的Request，KafkaRequestHandler会从里面取出Request来处理；同时它还包含一个respondQueue，用来存放KafkaRequestHandler处理完Request后返还给客户端的Response。
@@ -86,12 +86,12 @@ description: 本文在上篇文章 基础上，更加深入讲解了Kafka的HA�
 7. 关闭所有Idle状态的Fetcher。
 
 　　LeaderAndIsrRequest处理过程如下图所示
-![LeaderAndIsrRequest Flow Chart](http://www.jasongj.com/img/KafkaColumn3/LeaderAndIsrRequest_Flow_Chart.png)
+![LeaderAndIsrRequest Flow Chart](http://www.jasongj.com/img/kafka/KafkaColumn3/LeaderAndIsrRequest_Flow_Chart.png)
 
 ## Broker启动过程
 　　Broker启动后首先根据其ID在Zookeeper的`/brokers/ids`zonde下创建临时子节点（[Ephemeral node](http://zookeeper.apache.org/doc/trunk/zookeeperOver.html#Nodes+and+ephemeral+nodes)），创建成功后Controller的ReplicaStateMachine注册其上的Broker Change Watch会被fire，从而通过回调KafkaController.onBrokerStartup方法完成以下步骤：
 1. 向所有新启动的Broker发送UpdateMetadataRequest，其定义如下。
-![UpdateMetadataRequest](http://www.jasongj.com/img/KafkaColumn3/UpdateMetadataRequest.png)
+![UpdateMetadataRequest](http://www.jasongj.com/img/kafka/KafkaColumn3/UpdateMetadataRequest.png)
 2. 将新启动的Broker上的所有Replica设置为OnlineReplica状态，同时这些Broker会为这些Partition启动high watermark线程。
 3. 通过partitionStateMachine触发OnlinePartitionStateChange。
 
@@ -140,7 +140,7 @@ Broker成功竞选为新Controller后会触发KafkaController.onControllerFailov
 
 ## Follower从Leader Fetch数据
 　　Follower通过向Leader发送FetchRequest获取消息，FetchRequest结构如下
-![FetchRequest](http://www.jasongj.com/img/KafkaColumn3/FetchRequest.png)
+![FetchRequest](http://www.jasongj.com/img/kafka/KafkaColumn3/FetchRequest.png)
 　　从FetchRequest的结构可以看出，每个Fetch请求都要指定最大等待时间和最小获取字节数，以及由TopicAndPartition和PartitionFetchInfo构成的Map。实际上，Follower从Leader数据和Consumer从Broker Fetch数据，都是通过FetchRequest请求完成，所以在FetchRequest结构中，其中一个字段是clientID，并且其默认值是ConsumerConfig.DefaultClientId。
 　　
 　　Leader收到Fetch请求后，Kafka通过KafkaApis.handleFetchRequest响应该请求，响应过程如下：
@@ -155,7 +155,7 @@ Broker成功竞选为新Controller后会触发KafkaController.onControllerFailov
 5. 若不满足以上4个条件，FetchRequest将不会立即返回，并将该请求封装成DelayedFetch。检查该DeplayedFetch是否满足，若满足则返回请求，否则将该请求加入Watch列表
 
 　　Leader通过以FetchResponse的形式将消息返回给Follower，FetchResponse结构如下
-![FetchResponse](http://www.jasongj.com/img/KafkaColumn3/FetchResponse.png)
+![FetchResponse](http://www.jasongj.com/img/kafka/KafkaColumn3/FetchResponse.png)
 
 
 #Replication工具
@@ -200,19 +200,19 @@ Broker成功竞选为新Controller后会触发KafkaController.onControllerFailov
 　　在包含8个Broker的Kafka集群上，创建1个名为topic1，replication-factor为3，Partition数为8的Topic，使用`$KAFKA_HOME/bin/kafka-topics.sh --describe --topic topic1 --zookeeper localhost:2181`命令查看其Partition/Replica分布。
 
 　　查询结果如下图所示，从图中可以看到，Kafka将所有Replica均匀分布到了整个集群，并且Leader也均匀分布。
-![preferred_topic_test_1](http://www.jasongj.com/img/KafkaColumn3/preferred_topic_test_1.png)
+![preferred_topic_test_1](http://www.jasongj.com/img/kafka/KafkaColumn3/preferred_topic_test_1.png)
 
 　　手动停止部分Broker，topic1的Partition/Replica分布如下图所示。从图中可以看到，由于Broker 1/2/4都被停止，Partition 0的Leader由原来的1变为3，Partition 1的Leader由原来的2变为5，Partition 2的Leader由原来的3变为6，Partition 3的Leader由原来的4变为7。
-![preferred_topic_test_2](http://www.jasongj.com/img/KafkaColumn3/preferred_topic_test_2.png)　　
+![preferred_topic_test_2](http://www.jasongj.com/img/kafka/KafkaColumn3/preferred_topic_test_2.png)　　
 　　
 　　再重新启动ID为1的Broker，topic1的Partition/Replica分布如下。可以看到，虽然Broker 1已经启动（Partition 0和Partition5的ISR中有1），但是1并不是任何一个Parititon的Leader，而Broker 5/6/7都是2个Partition的Leader，即Leader的分布不均衡——一个Broker最多是2个Partition的Leader，而最少是0个Partition的Leader。
-![preferred_topic_test_3](http://www.jasongj.com/img/KafkaColumn3/preferred_topic_test_3.png)
+![preferred_topic_test_3](http://www.jasongj.com/img/kafka/KafkaColumn3/preferred_topic_test_3.png)
 　　
 　　运行该工具后，topic1的Partition/Replica分布如下图所示。由图可见，除了Partition 1和Partition 3由于Broker 2和Broker 4还未启动，所以其Leader不是其Preferred Repliac外，其它所有Partition的Leader都是其Preferred Replica。同时，与运行该工具前相比，Leader的分配更均匀——一个Broker最多是2个Parittion的Leader，最少是1个Partition的Leader。
-![preferred_topic_test_4](http://www.jasongj.com/img/KafkaColumn3/preferred_topic_test_4.png)
+![preferred_topic_test_4](http://www.jasongj.com/img/kafka/KafkaColumn3/preferred_topic_test_4.png)
 　　
 　　启动Broker 2和Broker 4，Leader分布与上一步相比并未变化，如下图所示。
-![preferred_topic_test_5](http://www.jasongj.com/img/KafkaColumn3/preferred_topic_test_5.png)
+![preferred_topic_test_5](http://www.jasongj.com/img/kafka/KafkaColumn3/preferred_topic_test_5.png)
 
 　　再次运行该工具，所有Partition的Leader都由其Preferred Replica承担，Leader分布更均匀——每个Broker承担1个Partition的Leader角色。
 　　
@@ -253,7 +253,7 @@ $KAFKA_HOME/bin/kafka-reassign-partitions.sh
 ```
 
 　　结果如下图所示
-![reassign_1](http://www.jasongj.com/img/KafkaColumn3/reassign_1.png)
+![reassign_1](http://www.jasongj.com/img/kafka/KafkaColumn3/reassign_1.png)
 　　
 2.　使用execute模式，执行reassign plan
 　　将上一步生成的reassignment plan存入`/tmp/reassign-plan.json`文件中，并执行
@@ -263,10 +263,10 @@ $KAFKA_HOME/bin/kafka-reassign-partitions.sh
 	--reassignment-json-file /tmp/reassign-plan.json --execute
 ```
 
-![reassign_2](http://www.jasongj.com/img/KafkaColumn3/reassign_2.png)
+![reassign_2](http://www.jasongj.com/img/kafka/KafkaColumn3/reassign_2.png)
 
 　　此时，Zookeeper上`/admin/reassign_partitions`节点被创建，且其值与`/tmp/reassign-plan.json`文件的内容一致。
-![reassign_3](http://www.jasongj.com/img/KafkaColumn3/reassign_3.png)
+![reassign_3](http://www.jasongj.com/img/kafka/KafkaColumn3/reassign_3.png)
 
 3.　使用verify模式，验证reassign是否完成。执行verify命令
 ```bash
@@ -276,7 +276,7 @@ $KAFKA_HOME/bin/kafka-reassign-partitions.sh
 ```
 
 　　结果如下所示，从图中可看出topic1的所有Partititon都重新分配成功。
-![reassign_4](http://www.jasongj.com/img/KafkaColumn3/reassign_4.png)
+![reassign_4](http://www.jasongj.com/img/kafka/KafkaColumn3/reassign_4.png)
 
 　　接下来用Topic Tool再次验证。 
 ```bash
@@ -284,7 +284,7 @@ $KAFKA_HOME/bin/kafka-reassign-partitions.sh
 ```
 
 　　结果如下图所示，从图中可看出topic1的所有Partition都被重新分配到Broker 4/5/6/7，且每个Partition的AR与reassign plan一致。
-![reassign_5](http://www.jasongj.com/img/KafkaColumn3/reassign_5.png)
+![reassign_5](http://www.jasongj.com/img/kafka/KafkaColumn3/reassign_5.png)
 
 
 　　需要说明的是，在使用execute之前，并不一定要使用generate模式自动生成reassign plan，使用generate模式只是为了方便。事实上，某些场景下，generate模式生成的reassign plan并不一定能满足需求，此时用户可以自己设置reassign plan。

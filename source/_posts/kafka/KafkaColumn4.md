@@ -41,7 +41,7 @@ description: 本文主要介绍了Kafka High Level Consumer，Consumer Group，C
 ## Consumer Group
 　　High Level Consumer将从某个Partition读取的最后一条消息的offset存于Zookeeper中([Kafka从0.8.2版本](https://archive.apache.org/dist/kafka/0.8.2.0/RELEASE_NOTES.html)开始同时支持将offset存于Zookeeper中与[将offset存于专用的Kafka Topic中](https://issues.apache.org/jira/browse/KAFKA-1012))。这个offset基于客户程序提供给Kafka的名字来保存，这个名字被称为Consumer Group。Consumer Group是整个Kafka集群全局的，而非某个Topic的。每一个High Level Consumer实例都属于一个Consumer Group，若不指定则属于默认的Group。
 　　Zookeeper中Consumer相关节点如下图所示
-![Consumer Zookeeper Structure](http://www.jasongj.com/img/KafkaColumn4/KafkaColumn4-consumers.png)
+![Consumer Zookeeper Structure](http://www.jasongj.com/img/kafka/KafkaColumn4/KafkaColumn4-consumers.png)
 　　
 　　很多传统的Message Queue都会在消息被消费完后将消息删除，一方面避免重复消费，另一方面可以保证Queue的长度比较短，提高效率。而如上文所述，Kafka并不删除已消费的消息，为了实现传统Message Queue消息只被消费一次的语义，Kafka保证每条消息在同一个Consumer Group里只会被某一个Consumer消费。与传统Message Queue不同的是，Kafka还允许不同Consumer Group同时消费同一条消息，这一特性可以为消息的多元化处理提供支持。
 ![kafka consumer group](http://www.jasongj.com/img/kafka/KafkaAnalysis/consumer_group.png)
@@ -206,7 +206,7 @@ description: 本文主要介绍了Kafka High Level Consumer，Consumer Group，C
 ```
 
 ***Consumer状态机***
-　　![Consumer状态图](http://www.jasongj.com/img/KafkaColumn4/consumer_state_diagram.png)
+　　![Consumer状态图](http://www.jasongj.com/img/kafka/KafkaColumn4/consumer_state_diagram.png)
 　　Down：Consumer停止工作
 　　Start up & discover coordinator：Consumer检测其所在Group的Coordinator。一旦它检测到Coordinator，即向其发送JoinGroupRequest。
 　　Part of a group：该状态下，Consumer已经是该Group的成员，并周期性发送HeartbeatRequest。如HeartbeatResponse包含IllegalGeneration错误码，则转换到Stopped Consumption状态。若连接丢失，HeartbeatResponse包含NotCoordinatorForGroup错误码，则转换到Rediscover coordinator状态。
@@ -228,7 +228,7 @@ description: 本文主要介绍了Kafka High Level Consumer，Consumer Group，C
 ![kafka coordinator rebalance](http://www.jasongj.com/img/kafka/KafkaAnalysis/coordinator.png)
 
 ***Coordinator状态机***
-　　![Coordinator状态图](http://www.jasongj.com/img/KafkaColumn4/coordinator_state_diagram.png)
+　　![Coordinator状态图](http://www.jasongj.com/img/kafka/KafkaColumn4/coordinator_state_diagram.png)
 　　Down：Coordinator不再担任之前负责的Consumer Group的Coordinator
 　　Catch up：该状态下，Coordinator竞选成功，但还未能做好服务相应请求的准备。
 　　Ready：该状态下，新竞选出来的Coordinator已经完成从Zookeeper中加载它所负责管理的所有Group的metadata，并可开始接收相应的请求。

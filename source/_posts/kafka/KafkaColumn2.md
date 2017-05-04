@@ -72,7 +72,7 @@ description: Kafka从0.8版本开始提供High Availability机制，从而提高
     为了提高性能，每个Follower在接收到数据后就立马向Leader发送ACK，而非等到数据写入Log中。因此，对于已经commit的消息，Kafka只能保证它被存于多个Replica的内存中，而不能保证它们被持久化到磁盘中，也就不能完全保证异常发生后该条消息一定能被Consumer消费。但考虑到这种场景非常少见，可以认为这种方式在性能和数据持久化上做了一个比较好的平衡。在将来的版本中，Kafka会考虑提供更高的持久性。
     Consumer读消息也是从Leader读取，只有被commit过的消息（offset低于HW的消息）才会暴露给Consumer。
     Kafka Replication的数据流如下图所示
-![Kafka Replication Data Flow](http://www.jasongj.com/img/KafkaColumn2/Replication.png)    
+![Kafka Replication Data Flow](http://www.jasongj.com/img/kafka/KafkaColumn2/Replication.png)    
     
 ### ACK前需要保证有多少个备份
 　　和大部分分布式系统一样，Kafka处理失败需要明确定义一个Broker是否“活着”。对于Kafka而言，Kafka存活包含两个条件，一是它必须维护与Zookeeper的session(这个通过Zookeeper的Heartbeat机制来实现)。二是Follower必须能够及时将Leader的消息复制过来，不能“落后太多”。
@@ -107,7 +107,7 @@ description: Kafka从0.8版本开始提供High Availability机制，从而提高
 ## HA相关Zookeeper结构
 　　（本节所示Zookeeper结构中，实线框代表路径名是固定的，而虚线框代表路径名与业务相关）
 　　**admin** （该目录下znode只有在有相关操作时才会存在，操作结束时会将其删除）
-![Kafka Zookeeper Admin Structure](http://www.jasongj.com/img/KafkaColumn2/kafka_zookeeper_admin.png)
+![Kafka Zookeeper Admin Structure](http://www.jasongj.com/img/kafka/KafkaColumn2/kafka_zookeeper_admin.png)
 
 　　`/admin/preferred_replica_election`数据结构
 ```json
@@ -232,7 +232,7 @@ description: Kafka从0.8版本开始提供High Availability机制，从而提高
 ```
 
 　　**brokers**
-![Kafka Zookeeper brokers structure](http://www.jasongj.com/img/KafkaColumn2/kafka_zookeeper_brokers.png)
+![Kafka Zookeeper brokers structure](http://www.jasongj.com/img/kafka/KafkaColumn2/kafka_zookeeper_brokers.png)
 
 　　broker（即`/brokers/ids/[brokerId]`）存储“活着”的Broker信息。数据结构如下
 ```json
@@ -342,7 +342,7 @@ description: Kafka从0.8版本开始提供High Availability机制，从而提高
 　　　3.3 将新的Leader，ISR和新的`leader_epoch`及`controller_epoch`写入`/brokers/topics/[topic]/partitions/[partition]/state`。注意，该操作只有其version在3.1至3.3的过程中无变化时才会执行，否则跳转到3.1
  4. 直接通过RPC向set_p相关的Broker发送LeaderAndISRRequest命令。Controller可以在一个RPC操作中发送多个命令从而提高效率。
 　　Broker failover顺序图如下所示。
-![broker failover sequence diagram ](http://www.jasongj.com/img/KafkaColumn2/kafka_broker_failover.png)
+![broker failover sequence diagram ](http://www.jasongj.com/img/kafka/KafkaColumn2/kafka_broker_failover.png)
 
 
 # 下篇预告
