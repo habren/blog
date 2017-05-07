@@ -76,23 +76,23 @@ Hash Join是做大数据集连接时的常用方式，优化器使用两个表�
 ```
 
 #### **Query 1 Test 1：** 查询优化器自动选择Nested Loop，耗时784.845 ms
-![Nested loop](http://www.jasongj.com/img/Join/Nest_Nest_Explain.png)
+![Nested loop](http://www.jasongj.com/img/sql/Join/Nest_Nest_Explain.png)
 
 　　如下图所示，执行器将小表mse_test_test作为外表（驱动表），对于其中的每条记录，通过大表（nbar_test）上的索引匹配相应记录。
 
- ![Nested loop](http://www.jasongj.com/img/Join/Nest_Nest.png)
+ ![Nested loop](http://www.jasongj.com/img/sql/Join/Nest_Nest.png)
  
 #### **Query 1 Test 2：**强制使用Hash Join，耗时1731.836ms
-![Nested loop join](http://www.jasongj.com/img/Join/Nest_Hash_Explain.png)
+![Nested loop join](http://www.jasongj.com/img/sql/Join/Nest_Hash_Explain.png)
 
 　　如下图所示，执行器选择一张表将其映射成散列表，再遍历另外一张表并从散列表中匹配相应记录。
-![Hash join](http://www.jasongj.com/img/Join/Nest_Hash.png)
+![Hash join](http://www.jasongj.com/img/sql/Join/Nest_Hash.png)
 
 #### **Query 1 Test 3：**强制使用Merge Join，耗时4956.768 ms
-![Merge join plan](http://www.jasongj.com/img/Join/Nest_Merge_Explain.png) 
+![Merge join plan](http://www.jasongj.com/img/sql/Join/Nest_Merge_Explain.png) 
 
 　　如下图所示，执行器先分别对mse_test_test和nbar_test按client_key排序。其中mse_test_test使用快速排序，而nbar_test使用external merge排序，之后对二者进行Merge Join。
-![Merge join](http://www.jasongj.com/img/Join/Nest_Merge.png)
+![Merge join](http://www.jasongj.com/img/sql/Join/Nest_Merge.png)
 
 #### **Query 1 总结 1 ：**
 通过对比`Query 1 Test 1`，`Query 1 Test 2`，`Query 1 Test 3`可以看出Nested Loop适用于结果集很小（一般要求小于一万条），并且内表在Join字段上建有索引（这点非常非常非常重要）。
@@ -100,10 +100,10 @@ Hash Join是做大数据集连接时的常用方式，优化器使用两个表�
  - **在大表上创建聚簇索引**
 
 #### **Query 1 Test 4：**强制使用Merge Join，耗时1660.228 ms
-![Merge join](http://www.jasongj.com/img/Join/Nest_Merge_Cluster_Explain.png)
+![Merge join](http://www.jasongj.com/img/sql/Join/Nest_Merge_Cluster_Explain.png)
 
 　　如下图所示，执行器通过聚簇索引对大表（nbar_test）排序，直接通过快排对无索引的小表（mse_test_test）排序，之后对二才进行Merge Join。
-![Merge join](http://www.jasongj.com/img/Join/Nest_Merge_Cluster.png)
+![Merge join](http://www.jasongj.com/img/sql/Join/Nest_Merge_Cluster.png)
 
 #### **Query 1 总结 2：**
 通过对比`Query 1 Test 3`和`Query 1 Test 4`可以看出，Merge Join的主要开销是排序开销，如果能通过建立聚簇索引（如果Query必须显示排序），可以极大提高Merge Join的性能。从这两个实验可以看出，创建聚簇索引后，查询时间从4956.768 ms缩减到了1815.238 ms。
@@ -111,10 +111,10 @@ Hash Join是做大数据集连接时的常用方式，优化器使用两个表�
  - **在两表上同时创建聚簇索引**
 
 #### **Query 1 Test 5：**强制使用Merge Join，耗时2575.498 ms。
-![Merge join with cluster index](http://www.jasongj.com/img/Join/Nest_Merge_Cluster_Cluster_Explain.png)
+![Merge join with cluster index](http://www.jasongj.com/img/sql/Join/Nest_Merge_Cluster_Cluster_Explain.png)
 
 　　如下图所示，执行器通过聚簇索引对大表（nbar_test）和小表（mse_test_test）排序，之后才进行Merge Join。
-![Merge join](http://www.jasongj.com/img/Join/Nest_Merge_Cluster_Cluster.png)
+![Merge join](http://www.jasongj.com/img/sql/Join/Nest_Merge_Cluster_Cluster.png)
 
 #### **Query 1 总结 3：**
 对比`Query 1 Test 4`和`Query 1 Test 5`，可以看出二者唯一的不同在于对小表（mse_test_test）的访问方式不同，前者使用快排，后者因为聚簇索引的存在而使用Index Only Scan，在表数据量比较小的情况下前者比后者效率更高。由此可看出如果通过索引排序再查找相应的记录比直接在原记录上排序效率还低，则直接在原记录上排序后Merge Join效率更高。
@@ -122,10 +122,10 @@ Hash Join是做大数据集连接时的常用方式，优化器使用两个表�
  - **删除nbar_test上的索引**
 #### **Query 1 Test 6：**强制使用Hash Join，耗时1815.238 ms
 时间与`Query 1 Test 2`几乎相等。
-![Hash join without index](http://www.jasongj.com/img/Join/Nest_Hash_Explain_No_Index.png) 
+![Hash join without index](http://www.jasongj.com/img/sql/Join/Nest_Hash_Explain_No_Index.png) 
 
     如下图所示，与`Query 1 Test 2`相同，执行器选择一张表将其映射成散列表，再遍历另外一张表并从散列表中匹配相应记录。
-![Hash join](http://www.jasongj.com/img/Join/Nest_Hash_No_Index.png)
+![Hash join](http://www.jasongj.com/img/sql/Join/Nest_Hash_No_Index.png)
 
 #### **Query 1 总结 4 ：** 
 通过对比`Query 1 Test 2`，`Query 1 Test 6`可以看出Hash Join不要求表在Join字段上建立索引。
@@ -148,7 +148,7 @@ mse_test约100万条记录，nbar_test约165万条记录
 
 #### **Query 2 Test 1：**强制使用Hash Join，失败
 本次实验通过设置`enable_hashjoin=true`，`enable_nestloop=false`，`enable_mergejoin=false`来试图强制使用Hash Join，但是失败了。
-![Nested loop](http://www.jasongj.com/img/Join/Query2_Test1_Explain.png)
+![Nested loop](http://www.jasongj.com/img/sql/Join/Query2_Test1_Explain.png)
 
 
 # SQL优化系列

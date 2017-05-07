@@ -428,7 +428,7 @@ SELECT * FROM execute(3);
 ## PostgreSQL中的UDF与存储过程
 
 　　本文中并未区分PostgreSQL中的UDF和存储过程。实际上PostgreSQL创建存储与创建UDF的方式一样，并没有专用于创建存储过程的语法，如CREATE PRECEDURE。在PostgreSQL官方文档中也暂未找到这二者的区别。倒是从一些资料中找对了它们的对比，如下表如示，仅供参考。
-![UDF VS. Stored Precedure](http://www.jasongj.com/img/SQL4/pg_udf_stored_precedure.png)
+![UDF VS. Stored Precedure](http://www.jasongj.com/img/sql/SQL4/pg_udf_stored_precedure.png)
 
 
 ## 多态SQL函数
