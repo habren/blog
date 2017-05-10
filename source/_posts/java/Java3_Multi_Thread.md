@@ -237,9 +237,9 @@ try{
 
    Locked ownable synchronizers:
         - <0x000000076af86810> (a java.util.concurrent.locks.ReentrantLock$FairSync)
-```  
+```
   
-而线程`thread-test-f`由于未获取到锁，而处于`WAITING(parking)`状态，且它等待的锁正是上文线程`thread-test-e`获取的锁（内存地址`0x000000076ae3d708`）
+而线程`thread-test-f`由于未获取到锁，而处于`WAITING(parking)`状态，且它等待的锁正是上文线程`thread-test-e`获取的锁（内存地址`0x000000076af86810`）
 ```java
 "thread-test-f" #18 prio=5 os_prio=31 tid=0x00007fefaa9b2800 nid=0x6603 waiting on condition [0x0000700002a3c000]
    java.lang.Thread.State: WAITING (parking)
@@ -453,3 +453,5 @@ Sun Jun 19 15:59:13 CST 2016  Thread 1 is waken up
  - [Java进阶（二）当我们说线程安全时，到底在说什么](//www.jasongj.com/java/thread_safe)
  - [Java进阶（三）多线程开发关键技术](//www.jasongj.com/java/multi_thread)
  - [Java进阶（四）线程间通信方式对比](//www.jasongj.com/java/thread_communication)
+ - [Java进阶（五）NIO和Reactor模式进阶](//www.jasongj.com/java/nio_reactor/)
+ - [Java进阶（六）从ConcurrentHashMap的演进看Java多线程核心技术](http://www.jasongj.com/java/concurrenthashmap/)
