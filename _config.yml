@@ -180,7 +180,7 @@ social:
 #  GitHub: https://github.com/habren
   Linkedin: https://www.linkedin.com/in/jasongj
   E-Mail: mailto:jason.guo.vip@gmail.com
-  Weibo: http://weibo.com/habren
+#  Weibo: http://weibo.com/habren
 
 ## Comments, for next
 #duoshuo_shortname: habren
@@ -201,7 +201,8 @@ google_site_verification: _lpnaoq9f4n68-jMrHuEIsB1kJO_6WMxvONibOMBdxM
 ## Friend links, for next
 links_title: Links
 links:
-  发表在InfoQ上的文章: http://www.infoq.com/cn/author/%E9%83%AD%E4%BF%8A
+  发表在InfoQ上的文章: http://www.infoq.com/cn/profile/%E9%83%AD%E4%BF%8A
+  作者在InfoQ上的专栏: http://www.infoq.com/cn/profile/%E9%83%AD%E4%BF%8A%EF%BC%88Jason%EF%BC%89
 
 ## Share, for next
 baidushare: false
