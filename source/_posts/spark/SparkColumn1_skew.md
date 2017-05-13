@@ -55,7 +55,7 @@ Stage的数据来源主要分为如下两类
 ## 尽量避免数据源的数据倾斜
 以Spark Stream通过DirectStream方式读取Kafka数据为例。由于Kafka的每一个Partition对应Spark的一个Task（Partition），所以Kafka内相关Topic的各Partition之间数据是否平衡，直接决定Spark处理该数据时是否会产生数据倾斜。
   
-如《[Kafka设计解析（一）- Kafka背景及架构介绍](//www.jasongj.com/2015/03/10/KafkaColumn1/#Producer消息路由)》一文所述，Kafka某一Topic内消息在不同Partition之间的分布，主要由Producer端所使用的Partition实现类决定。如果使用随机Partitioner，则每条消息会随机发送到一个Partition中，从而从概率上来讲，各Partition间的数据会达到平衡。此时源Stage（直接读取Kafka数据的Stage）不会产生数据倾斜。
+如《[Kafka设计解析（一）- Kafka背景及架构介绍](http://www.jasongj.com/2015/03/10/KafkaColumn1/#Producer消息路由)》一文所述，Kafka某一Topic内消息在不同Partition之间的分布，主要由Producer端所使用的Partition实现类决定。如果使用随机Partitioner，则每条消息会随机发送到一个Partition中，从而从概率上来讲，各Partition间的数据会达到平衡。此时源Stage（直接读取Kafka数据的Stage）不会产生数据倾斜。
 
 但很多时候，业务场景可能会要求将具备同一特征的数据顺序消费，此时就需要将具有相同特征的数据放于同一个Partition中。一个典型的场景是，需要将同一个用户相关的PV信息置于同一个Partition中。此时，如果产生了数据倾斜，则需要通过其它方式处理。
     
@@ -65,12 +65,12 @@ Stage的数据来源主要分为如下两类
 Spark在做Shuffle时，默认使用HashPartitioner（非Hash Shuffle）对数据进行分区。如果并行度设置的不合适，可能造成大量不相同的Key对应的数据被分配到了同一个Task上，造成该Task所处理的数据远大于其它Task，从而造成数据倾斜。
   
 如果调整Shuffle时的并行度，使得原本被分配到同一Task的不同Key发配到不同Task上处理，则可降低原Task所需处理的数据量，从而缓解数据倾斜问题造成的短板效应。
-![spark change parallelism](//www.jasongj.com/img/spark/spark1_skew/changeparallelism.png)
+![spark change parallelism](http://www.jasongj.com/img/spark/spark1_skew/changeparallelism.png)
 
 
 
 ### 案例
-现有一张测试表，名为student_external，内有10.5亿条数据，每条数据有一个唯一的id值。现从中取出id取值为9亿到10.5亿的共1.5条数据，并通过一些处理，使得id为9亿到9.4亿间的所有数据对12取模后余数为8（即在Shuffle并行度为12时该数据集全部被HashPartition分配到第8个Task），其它数据集对其id除以100取整，从而使得id大于9.4亿的数据在Shuffle时可被均匀分配到所有Task中，而id小于9.4亿的数据全部分配到同一个Task中。处理过程如下
+现有一张测试表，名为student_external，内有10.5亿条数据，每条数据有一个唯一的id值。现从中取出id取值为9亿到10.5亿的共1.5亿条数据，并通过一些处理，使得id为9亿到9.4亿间的所有数据对12取模后余数为8（即在Shuffle并行度为12时该数据集全部被HashPartition分配到第8个Task），其它数据集对其id除以100取整，从而使得id大于9.4亿的数据在Shuffle时可被均匀分配到所有Task中，而id小于9.4亿的数据全部分配到同一个Task中。处理过程如下
 
 ```sql
 INSERT OVERWRITE TABLE test
@@ -117,17 +117,17 @@ spark-submit --queue ambari --num-executors 4 --executor-cores 12 --executor-mem
 ```
 
 GroupBy Stage的Task状态如下图所示，Task 8处理的记录数为4500万，远大于（9倍于）其它11个Task处理的500万记录。而Task 8所耗费的时间为38秒，远高于其它11个Task的平均时间（16秒）。整个Stage的时间也为38秒，该时间主要由最慢的Task 8决定。
-![data skew](//www.jasongj.com/img/spark/spark1_skew/differentkeyskew12.png)
+![data skew](http://www.jasongj.com/img/spark/spark1_skew/differentkeyskew12.png)
   
 在这种情况下，可以通过调整Shuffle并行度，使得原来被分配到同一个Task（即该例中的Task 8）的不同Key分配到不同Task，从而降低Task 8所需处理的数据量，缓解数据倾斜。
   
 通过`groupByKey(48)`将Shuffle并行度调整为48，重新提交到Spark。新的Job的GroupBy Stage所有Task状态如下图所示。
-![add parallelism](//www.jasongj.com/img/spark/spark1_skew/differentkeyskew48.png)
+![add parallelism](http://www.jasongj.com/img/spark/spark1_skew/differentkeyskew48.png)
   
 从上图可知，记录数最多的Task 20处理的记录数约为1125万，相比于并行度为12时Task 8的4500万，降低了75%左右，而其耗时从原来Task 8的38秒降到了24秒。
   
 在这种场景下，调整并行度，并不意味着一定要增加并行度，也可能是减小并行度。如果通过`groupByKey(11)`将Shuffle并行度调整为11，重新提交到Spark。新Job的GroupBy Stage的所有Task状态如下图所示。
-![reduce parallelism](//www.jasongj.com/img/spark/spark1_skew/differentkeyskew11.png)
+![reduce parallelism](http://www.jasongj.com/img/spark/spark1_skew/differentkeyskew11.png)
   
 从上图可见，处理记录数最多的Task 6所处理的记录数约为1045万，耗时为23秒。处理记录数最少的Task 1处理的记录数约为545万，耗时12秒。
   
@@ -173,7 +173,7 @@ GroupBy Stage的Task状态如下图所示，Task 8处理的记录数为4500万�
 ```
   
 由下图可见，使用自定义Partition后，耗时最长的Task 6处理约1000万条数据，用时15秒。并且各Task所处理的数据集大小相当。
-![customizec partitioner](//www.jasongj.com/img/spark/spark1_skew/customizedpartition.png)
+![customizec partitioner](http://www.jasongj.com/img/spark/spark1_skew/customizedpartition.png)
   
 
 ### 总结
@@ -192,7 +192,7 @@ GroupBy Stage的Task状态如下图所示，Task 8处理的记录数为4500万�
 ## 将Reduce side Join转变为Map side Join
 ### 原理
 通过Spark的Broadcast机制，将Reduce侧Join转化为Map侧Join，避免Shuffle从而完全消除Shuffle带来的数据倾斜。
-![spark map join](//www.jasongj.com/img/spark/spark1_skew/mapjoin.png)
+![spark map join](http://www.jasongj.com/img/spark/spark1_skew/mapjoin.png)
    
 ### 案例
 通过如下SQL创建一张具有倾斜Key且总记录数为1.5亿的大表test。
@@ -224,10 +224,10 @@ ON test.id = test_new.id;
 ```
   
 该SQL对应的DAG如下图所示。从该图可见，该执行过程总共分为三个Stage，前两个用于从Hive中读取数据，同时二者进行Shuffle，通过最后一个Stage进行Join并将结果写入表test_join中。
-![reduce join DAG](//www.jasongj.com/img/spark/spark1_skew/reducejoindag.png)
+![reduce join DAG](http://www.jasongj.com/img/spark/spark1_skew/reducejoindag.png)
   
 从下图可见，Join Stage各Task处理的数据倾斜严重，处理数据量最大的Task耗时7.1分钟，远高于其它无数据倾斜的Task约2秒的耗时。
-![reduce join DAG](//www.jasongj.com/img/spark/spark1_skew/reducejoinlaststage.png)
+![reduce join DAG](http://www.jasongj.com/img/spark/spark1_skew/reducejoinlaststage.png)
   
 接下来，尝试通过Broadcast实现Map侧Join。实现Map侧Join的方法，并非直接通过`CACHE TABLE test_new`将小表test_new进行cache。现通过如下SQL进行Join。
 ```sql
@@ -240,10 +240,10 @@ ON test.id = test_new.id;
 ```
 
 通过如下DAG图可见，该操作仍分为三个Stage，且仍然有Shuffle存在，唯一不同的是，小表的读取不再直接扫描Hive表，而是扫描内存中缓存的表。
-![reduce join DAG](//www.jasongj.com/img/spark/spark1_skew/reducejoincachedag.png)
+![reduce join DAG](http://www.jasongj.com/img/spark/spark1_skew/reducejoincachedag.png)
   
 并且数据倾斜仍然存在。如下图所示，最慢的Task耗时为7.1分钟，远高于其它Task的约2秒。
-![reduce join DAG](//www.jasongj.com/img/spark/spark1_skew/reducejoincachelaststage.png)
+![reduce join DAG](http://www.jasongj.com/img/spark/spark1_skew/reducejoincachelaststage.png)
   
 正确的使用Broadcast实现Map侧Join的方式是，通过`SET spark.sql.autoBroadcastJoinThreshold=104857600;`将Broadcast的阈值设置得足够大。
 
@@ -258,10 +258,10 @@ ON test.id = test_new.id;
 ```
 
 通过如下DAG图可见，该方案只包含一个Stage。
-![reduce join DAG](//www.jasongj.com/img/spark/spark1_skew/mapjoindag.png)
+![reduce join DAG](http://www.jasongj.com/img/spark/spark1_skew/mapjoindag.png)
   
 并且从下图可见，各Task耗时相当，无明显数据倾斜现象。并且总耗时为1.5分钟，远低于Reduce侧Join的7.3分钟。
-![reduce join DAG](//www.jasongj.com/img/spark/spark1_skew/mapjoinlaststage.png)
+![reduce join DAG](http://www.jasongj.com/img/spark/spark1_skew/mapjoinlaststage.png)
   
 ### 总结
 ***适用场景***
@@ -279,7 +279,7 @@ ON test.id = test_new.id;
 ## 为skew的key增加随机前/后缀
 ### 原理
 为数据量特别大的Key增加随机前/后缀，使得原来Key相同的数据变为Key不相同的数据，从而使倾斜的数据集分散到不同的Task中，彻底解决数据倾斜问题。Join另一则的数据中，与倾斜Key对应的部分数据，与随机前缀集作笛卡尔乘积，从而保证无论数据倾斜侧倾斜Key如何加前缀，都能与之正常Join。
-![spark random prefix](//www.jasongj.com/img/spark/spark1_skew/randomprefix.png)
+![spark random prefix](http://www.jasongj.com/img/spark/spark1_skew/randomprefix.png)
   
 ### 案例
 通过如下SQL，将id为9亿到9.08亿共800万条数据的id转为9500048或者9500096，其它数据的id除以100取整。从而该数据集中，id为9500048和9500096的数据各400万，其它id对应的数据记录数均为100条。这些数据存于名为test的表中。
@@ -336,10 +336,10 @@ public class SparkDataSkew{
 ```
   
 从下图可看出，整个Join耗时1分54秒，其中Join Stage耗时1.7分钟。
-![few skewed key join](//www.jasongj.com/img/spark/spark1_skew/fewskewkeyjoinallstage.png)
+![few skewed key join](http://www.jasongj.com/img/spark/spark1_skew/fewskewkeyjoinallstage.png)
   
 通过分析Join Stage的所有Task可知，在其它Task所处理记录数为192.71万的同时Task 32的处理的记录数为992.72万，故它耗时为1.7分钟，远高于其它Task的约10秒。这与上文准备数据集时，将id为9500048为9500096对应的数据量设置非常大，其它id对应的数据集非常均匀相符合。
-![few skewed key join](//www.jasongj.com/img/spark/spark1_skew/fewskewkeyjoinlaststage.png)
+![few skewed key join](http://www.jasongj.com/img/spark/spark1_skew/fewskewkeyjoinlaststage.png)
   
 现通过如下操作，实现倾斜Key的分散处理
  - 将leftRDD中倾斜的key（即9500048与9500096）对应的数据单独过滤出来，且加上1到24的随机前缀，并将前缀与原数据用逗号分隔（以方便之后去掉前缀）形成单独的leftSkewRDD
@@ -415,14 +415,14 @@ public class SparkDataSkew{
         
 ```
 从下图可看出，整个Join耗时58秒，其中Join Stage耗时33秒。
-![few skewed key join](//www.jasongj.com/img/spark/spark1_skew/fewskewkeyrandomjoinallstage.png)
+![few skewed key join](http://www.jasongj.com/img/spark/spark1_skew/fewskewkeyrandomjoinallstage.png)
   
 通过分析Join Stage的所有Task可知
  - 由于Join分倾斜数据集Join和非倾斜数据集Join，而各Join的并行度均为48，故总的并行度为96
  - 由于提交任务时，设置的Executor个数为4，每个Executor的core数为12，故可用Core数为48，所以前48个Task同时启动（其Launch时间相同），后48个Task的启动时间各不相同（等待前面的Task结束才开始）
  - 由于倾斜Key被加上随机前缀，原本相同的Key变为不同的Key，被分散到不同的Task处理，故在所有Task中，未发现所处理数据集明显高于其它Task的情况
   
-![few skewed key join](//www.jasongj.com/img/spark/spark1_skew/fewskewkeyjoinrandomlaststage.png)
+![few skewed key join](http://www.jasongj.com/img/spark/spark1_skew/fewskewkeyjoinrandomlaststage.png)
   
 实际上，由于倾斜Key与非倾斜Key的操作完全独立，可并行进行。而本实验受限于可用总核数为48，可同时运行的总Task数为48，故而该方案只是将总耗时减少一半（效率提升一倍）。如果资源充足，可并发执行Task数增多，该方案的优势将更为明显。在实际项目中，该方案往往可提升数倍至10倍的效率。
   
@@ -443,7 +443,7 @@ public class SparkDataSkew{
 ## 大表随机添加N种随机前缀，小表扩大N倍
 ### 原理
 如果出现数据倾斜的Key比较多，上一种方法将这些大量的倾斜Key分拆出来，意义不大。此时更适合直接对存在数据倾斜的数据集全部加上随机前缀，然后对另外一个不存在严重数据倾斜的数据集整体与随机前缀集作笛卡尔乘积（即将数据量扩大N倍）。
-![spark random prefix](//www.jasongj.com/img/spark/spark1_skew/randomprefixandenlargesmalltable.png)
+![spark random prefix](http://www.jasongj.com/img/spark/spark1_skew/randomprefixandenlargesmalltable.png)
   
 ### 案例
 这里给出示例代码，读者可参考上文中分拆出少数倾斜Key添加随机前缀的方法，自行测试。

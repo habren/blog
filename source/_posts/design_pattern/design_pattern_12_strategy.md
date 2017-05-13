@@ -34,7 +34,7 @@ description: 本文结合实例详述了策略模式的实现方式，并介绍�
 
 ## 策略模式类图
 策略模式类图如下
-![Strategy Pattern Class Diagram](//www.jasongj.com/img/designpattern/strategy/Strategy.png)
+![Strategy Pattern Class Diagram](http://www.jasongj.com/img/designpattern/strategy/Strategy.png)
 
 
 ## 策略模式角色划分
@@ -140,7 +140,7 @@ public class SimpleClient {
 ## 使用Annotation和简单工厂模式增强策略模式
 上面的实现中，客户端需要显示决定具体使用何种策略，并且一旦需要换用其它策略，需要修改客户端的代码。解决这个问题，一个比较好的方式是使用简单工厂，使得客户端都不需要知道策略类的实例化过程，甚至都不需要具体哪种策略被使用。
 
-如《[Java设计模式（一） 简单工厂模式不简单](//www.jasongj.com/design_pattern/simple_factory/)》所述，简单工厂的实现方式比较多，可以结合《[Java系列（一）Annotation（注解）](//www.jasongj.com/2016/01/17/Java1_注解Annotation)》中介绍的Annotation方法。
+如《[Java设计模式（一） 简单工厂模式不简单](http://www.jasongj.com/design_pattern/simple_factory/)》所述，简单工厂的实现方式比较多，可以结合《[Java系列（一）Annotation（注解）](http://www.jasongj.com/2016/01/17/Java1_注解Annotation)》中介绍的Annotation方法。
 
 使用Annotation和简单工厂模式的Context类如下
 ```java
@@ -238,7 +238,7 @@ public class SimpleFactoryClient {
 
 ## 策略模式缺点
  - 传统的策略模式实现方式中，客户端必须知道所有的具体策略类，并须自行显示决定使用哪一个策略类。但通过本文介绍的通过和Annotation和简单工厂模式结合，可以有效避免该问题
- - 如果使用不当，策略模式可能创建很多具体策略类的实例，但可以通过使用上文《[Java设计模式（十一） 享元模式](//www.jasongj.com/design_pattern/flyweight/)》介绍的享元模式有效减少对象的数量。
+ - 如果使用不当，策略模式可能创建很多具体策略类的实例，但可以通过使用上文《[Java设计模式（十一） 享元模式](http://www.jasongj.com/design_pattern/flyweight/)》介绍的享元模式有效减少对象的数量。
 
 # 策略模式已（未）遵循的OOP原则
 ## 已遵循的OOP原则
@@ -255,15 +255,15 @@ public class SimpleFactoryClient {
 
 
 # Java设计模式系列
-- [Java设计模式（一） 简单工厂模式不简单](//www.jasongj.com/design_pattern/simple_factory/)
-- [Java设计模式（二） 工厂方法模式](//www.jasongj.com/design_pattern/factory_method/)
-- [Java设计模式（三） 抽象工厂模式](//www.jasongj.com/design_pattern/abstract_factory/)
-- [Java设计模式（四） 观察者模式](//www.jasongj.com/design_pattern/observer/)
-- [Java设计模式（五） 组合模式](//www.jasongj.com/design_pattern/composite/)
-- [Java设计模式（六） 代理模式 VS. 装饰模式](//www.jasongj.com/design_pattern/proxy_decorator/)
-- [Java设计模式（七） Spring AOP JDK动态代理 vs. cglib](//www.jasongj.com/design_pattern/dynamic_proxy_cglib/)
-- [Java设计模式（八） 适配器模式](//www.jasongj.com/design_pattern/adapter/)
-- [Java设计模式（九） 桥接模式](//www.jasongj.com/design_pattern/bridge/)
-- [Java设计模式（十） 你真的用对单例模式了吗？](//www.jasongj.com/design_pattern/singleton/)
-- [Java设计模式（十一） 享元模式](//www.jasongj.com/design_pattern/flyweight/)
-- [Java设计模式（十二） 策略模式](//www.jasongj.com/design_pattern/strategy/)
+- [Java设计模式（一） 简单工厂模式不简单](http://www.jasongj.com/design_pattern/simple_factory/)
+- [Java设计模式（二） 工厂方法模式](http://www.jasongj.com/design_pattern/factory_method/)
+- [Java设计模式（三） 抽象工厂模式](http://www.jasongj.com/design_pattern/abstract_factory/)
+- [Java设计模式（四） 观察者模式](http://www.jasongj.com/design_pattern/observer/)
+- [Java设计模式（五） 组合模式](http://www.jasongj.com/design_pattern/composite/)
+- [Java设计模式（六） 代理模式 VS. 装饰模式](http://www.jasongj.com/design_pattern/proxy_decorator/)
+- [Java设计模式（七） Spring AOP JDK动态代理 vs. cglib](http://www.jasongj.com/design_pattern/dynamic_proxy_cglib/)
+- [Java设计模式（八） 适配器模式](http://www.jasongj.com/design_pattern/adapter/)
+- [Java设计模式（九） 桥接模式](http://www.jasongj.com/design_pattern/bridge/)
+- [Java设计模式（十） 你真的用对单例模式了吗？](http://www.jasongj.com/design_pattern/singleton/)
+- [Java设计模式（十一） 享元模式](http://www.jasongj.com/design_pattern/flyweight/)
+- [Java设计模式（十二） 策略模式](http://www.jasongj.com/design_pattern/strategy/)

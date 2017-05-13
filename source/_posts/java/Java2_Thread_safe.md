@@ -175,9 +175,9 @@ public void stop () {
 
 
 # Java进阶系列
- - [Java进阶（一）Annotation（注解）](//www.jasongj.com/2016/01/17/Java1_注解Annotation/)
- - [Java进阶（二）当我们说线程安全时，到底在说什么](//www.jasongj.com/java/thread_safe)
- - [Java进阶（三）多线程开发关键技术](//www.jasongj.com/java/multi_thread)
- - [Java进阶（四）线程间通信方式对比](//www.jasongj.com/java/thread_communication)
- - [Java进阶（五）NIO和Reactor模式进阶](//www.jasongj.com/java/nio_reactor/)
+ - [Java进阶（一）Annotation（注解）](http://www.jasongj.com/2016/01/17/Java1_注解Annotation/)
+ - [Java进阶（二）当我们说线程安全时，到底在说什么](http://www.jasongj.com/java/thread_safe)
+ - [Java进阶（三）多线程开发关键技术](http://www.jasongj.com/java/multi_thread)
+ - [Java进阶（四）线程间通信方式对比](http://www.jasongj.com/java/thread_communication)
+ - [Java进阶（五）NIO和Reactor模式进阶](http://www.jasongj.com/java/nio_reactor/)
  - [Java进阶（六）从ConcurrentHashMap的演进看Java多线程核心技术](http://www.jasongj.com/java/concurrenthashmap/)

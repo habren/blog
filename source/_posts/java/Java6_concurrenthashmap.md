@@ -87,12 +87,12 @@ void transfer(Entry[] newTable, boolean rehash) {
   
 ### 单线程rehash
 单线程情况下，rehash无问题。下图演示了单线程条件下的rehash过程
-![HashMap rehash single thread](//www.jasongj.com/img/java/concurrenthashmap/single_thread_rehash.png)
+![HashMap rehash single thread](http://www.jasongj.com/img/java/concurrenthashmap/single_thread_rehash.png)
   
 ### 多线程并发下的rehash
 这里假设有两个线程同时执行了put操作并引发了rehash，执行了transfer方法，并假设线程一进入transfer方法并执行完next = e.next后，因为线程调度所分配时间片用完而“暂停”，此时线程二完成了transfer方法的执行。此时状态如下。
   
-![HashMap rehash multi thread step 1](//www.jasongj.com/img/java/concurrenthashmap/multi_thread_rehash_1.png)
+![HashMap rehash multi thread step 1](http://www.jasongj.com/img/java/concurrenthashmap/multi_thread_rehash_1.png)
   
 接着线程1被唤醒，继续执行第一轮循环的剩余部分
 ```java
@@ -101,13 +101,13 @@ newTable[1] = e = key(5)
 e = next = key(9)
 ```
 结果如下图所示
-![HashMap rehash multi thread step 2](//www.jasongj.com/img/java/concurrenthashmap/multi_thread_rehash_2.png)
+![HashMap rehash multi thread step 2](http://www.jasongj.com/img/java/concurrenthashmap/multi_thread_rehash_2.png)
   
 接着执行下一轮循环，结果状态图如下所示
-![HashMap rehash multi thread step 3](//www.jasongj.com/img/java/concurrenthashmap/multi_thread_rehash_3.png)
+![HashMap rehash multi thread step 3](http://www.jasongj.com/img/java/concurrenthashmap/multi_thread_rehash_3.png)
 
 继续下一轮循环，结果状态图如下所示
-![HashMap rehash multi thread step 4](//www.jasongj.com/img/java/concurrenthashmap/multi_thread_rehash_4.png)
+![HashMap rehash multi thread step 4](http://www.jasongj.com/img/java/concurrenthashmap/multi_thread_rehash_4.png)
   
 此时循环链表形成，并且key(11)无法加入到线程1的新数组。在下一次访问该链表时会出现死循环。
   
@@ -139,7 +139,7 @@ HashIterator() {
   
 ## 数据结构
 Java 7中的ConcurrentHashMap的底层数据结构仍然是数组和链表。与HashMap不同的是，ConcurrentHashMap最外层不是一个大的数组，而是一个Segment的数组。每个Segment包含一个与HashMap数据结构差不多的链表数组。整体数据结构如下图所示。
-![JAVA 7 ConcurrentHashMap](//www.jasongj.com/img/java/concurrenthashmap/concurrenthashmap_java7.png)
+![JAVA 7 ConcurrentHashMap](http://www.jasongj.com/img/java/concurrenthashmap/concurrenthashmap_java7.png)
 
   
 ## 寻址方式
@@ -250,7 +250,7 @@ ConcurrentHashMap与HashMap相比，有以下不同点
 ## 数据结构
 Java 7为实现并行访问，引入了Segment这一结构，实现了分段锁，理论上最大并发度与Segment个数相等。Java 8为进一步提高并发性，摒弃了分段锁的方案，而是直接使用一个大的数组。同时为了提高哈希碰撞下的寻址性能，Java 8在链表长度超过一定阈值（8）时将链表（寻址时间复杂度为O(N)）转换为红黑树（寻址时间复杂度为O(long(N))）。其数据结构如下图所示
 <div align="center">
-<img width="50%" src="//www.jasongj.com/img/java/concurrenthashmap/concurrenthashmap_java8.png" alt="JAVA 8 ConcurrentHashMap">
+<img width="50%" src="http://www.jasongj.com/img/java/concurrenthashmap/concurrenthashmap_java8.png" alt="JAVA 8 ConcurrentHashMap">
 </div>
 
 ## 寻址方式
@@ -262,7 +262,7 @@ static final int spread(int h) {
 ```
   
 ## 同步方式
-对于put操作，如果Key对应的数组元素为null，则通过[CAS操作](//www.jasongj.com/java/thread_safe/#CAS（compare-and-swap）)将其设置为当前值。如果Key对应的数组元素（也即链表表头或者树的根元素）不为null，则对该元素使用synchronized关键字申请锁，然后进行操作。如果该put操作使得当前链表长度超过一定阈值，则将该链表转换为树，从而提高寻址效率。
+对于put操作，如果Key对应的数组元素为null，则通过[CAS操作](http://www.jasongj.com/java/thread_safe/#CAS（compare-and-swap）)将其设置为当前值。如果Key对应的数组元素（也即链表表头或者树的根元素）不为null，则对该元素使用synchronized关键字申请锁，然后进行操作。如果该put操作使得当前链表长度超过一定阈值，则将该链表转换为树，从而提高寻址效率。
   
 对于读操作，由于数组被volatile关键字修饰，因此不用担心数组的可见性问题。同时每个元素是一个Node实例（Java 7中每个元素是一个HashEntry），它的Key值和hash值都由final修饰，不可变更，无须关心它们被修改后的可见性问题。而其Value及对下一个元素的引用由volatile修饰，可见性也有保障。
 ```java

@@ -31,7 +31,7 @@ description: 分布式事务与本地事务一样，包含原子性（Atomicity�
 
 
 ## 分布式事务实现机制
-如同作者在《[SQL优化（六） MVCC PostgreSQL实现事务和多版本并发控制的精华](//www.jasongj.com/sql/mvcc/)》一文中所讲，事务包含原子性（Atomicity）、一致性（Consistency）、隔离性（Isolation）和持久性（Durability）。
+如同作者在《[SQL优化（六） MVCC PostgreSQL实现事务和多版本并发控制的精华](http://www.jasongj.com/sql/mvcc/)》一文中所讲，事务包含原子性（Atomicity）、一致性（Consistency）、隔离性（Isolation）和持久性（Durability）。
 
 PostgreSQL针对ACID的实现技术如下表所示。
 
@@ -77,7 +77,7 @@ XA规范中，事务管理器主要通过以下的接口对资源管理器进行
  - ``提交阶段`` 又称执行阶段。协调者如果在上一阶段收到所有参与者回复的`Prepared`，则在此阶段向所有参与者发送`commit`指令，所有参与者立即执行`commit`操作；否则协调者向所有参与者发送`rollback`指令，参与者立即执行`rollback`操作。
 
 两阶段提交中，协调者和参与方的交互过程如下图所示。
-![Two-phase commit](//www.jasongj.com/img/bigdata/two_phase_commit.png)
+![Two-phase commit](http://www.jasongj.com/img/bigdata/two_phase_commit.png)
 
 ## 两阶段提交前提条件
  - 网络通信是可信的。虽然网络并不可靠，但两阶段提交的主要目标并不是解决诸如拜占庭问题的网络问题。同时两阶段提交的主要网络通信危险期（In-doubt Time）在事务提交阶段，而该阶段非常短。

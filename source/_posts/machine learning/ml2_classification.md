@@ -28,7 +28,7 @@ description: 本文详述了如何通过数据预览，探索式数据分析，�
 ---
 
 > 原创文章，转载请务必将下面这段话置于文章开头处。
-> 本文转发自[**技术世界**](http//www.jasongj.com)，[原文链接](http://www.jasongj.com/ml/classification/) [http://www.jasongj.com/ml/classification/](http://www.jasongj.com/ml/classification/)
+> 本文转发自[**技术世界**](http://www.jasongj.com)，[原文链接](http://www.jasongj.com/ml/classification/) [http://www.jasongj.com/ml/classification/](http://www.jasongj.com/ml/classification/)
 
 摘要
 ====
@@ -147,7 +147,7 @@ ggplot(data = data[1:nrow(train),], mapping = aes(x = Pclass, y = ..count.., fil
   theme(plot.title = element_text(hjust = 0.5), legend.position="bottom")
 ```
 
-![](//www.jasongj.com/img/ml/classification/Survived%20vs.%20Pclass-1.png)
+![](http://www.jasongj.com/img/ml/classification/Survived%20vs.%20Pclass-1.png)
 
 从上图可见，Pclass=1的乘客大部分幸存，Pclass=2的乘客接近一半幸存，而Pclass=3的乘客只有不到25%幸存。
 
@@ -198,7 +198,7 @@ ggplot(data = data[1:nrow(train),], mapping = aes(x = Title, y = ..count.., fill
   theme(plot.title = element_text(hjust = 0.5), legend.position="bottom")
 ```
 
-![](//www.jasongj.com/img/ml/classification/Survived%20vs.%20Title-1.png)
+![](http://www.jasongj.com/img/ml/classification/Survived%20vs.%20Title-1.png)
 
 从上图可看出，Title为Mr的乘客幸存比例非常小，而Title为Mrs和Miss的乘客幸存比例非常大。这里使用WOE和IV来定量计算Title这一变量对于最终的预测是否有用。从计算结果可见，IV为1.520702，且"Highly Predictive"。因此，可暂将Title作为预测模型中的一个特征变量。
 
@@ -243,7 +243,7 @@ ggplot(data = data[1:nrow(train),], mapping = aes(x = Sex, y = ..count.., fill=S
   theme(plot.title = element_text(hjust = 0.5), legend.position="bottom")
 ```
 
-![](//www.jasongj.com/img/ml/classification/Survived%20vs.%20Sex-1.png)
+![](http://www.jasongj.com/img/ml/classification/Survived%20vs.%20Sex-1.png)
 
 通过计算WOE和IV可知，Sex的IV为1.34且"Highly Predictive"，可暂将Sex作为特征变量。
 
@@ -275,7 +275,7 @@ ggplot(data = data[(!is.na(data$Age)) & row(data[, 'Age']) <= 891, ], aes(x = Ag
 
     ## Warning: Ignoring unknown aesthetics: label
 
-![](//www.jasongj.com/img/ml/classification/Survived%20vs.%20Age-1.png)
+![](http://www.jasongj.com/img/ml/classification/Survived%20vs.%20Age-1.png)
 
 ### 配偶及兄弟姐妹数适中的乘客更易幸存
 
@@ -289,7 +289,7 @@ ggplot(data = data[1:nrow(train),], mapping = aes(x = SibSp, y = ..count.., fill
   theme(plot.title = element_text(hjust = 0.5), legend.position="bottom")
 ```
 
-![](//www.jasongj.com/img/ml/classification/Survived%20vs.%20SibSp-1.png)
+![](http://www.jasongj.com/img/ml/classification/Survived%20vs.%20SibSp-1.png)
 
 从上图可见，SibSp为0的乘客，幸存率低于1/3；SibSp为1或2的乘客，幸存率高于50%；SibSp大于等于3的乘客，幸存率非常低。可通过计算WOE与IV定量计算SibSp对预测的贡献。IV为0.1448994，且"Highly Predictive"。
 
@@ -326,7 +326,7 @@ ggplot(data = data[1:nrow(train),], mapping = aes(x = Parch, y = ..count.., fill
   theme(plot.title = element_text(hjust = 0.5), legend.position="bottom")
 ```
 
-![](//www.jasongj.com/img/ml/classification/Survived%20vs.%20Parch-1.png)
+![](http://www.jasongj.com/img/ml/classification/Survived%20vs.%20Parch-1.png)
 
 从上图可见，Parch为0的乘客，幸存率低于1/3；Parch为1到3的乘客，幸存率高于50%；Parch大于等于4的乘客，幸存率非常低。可通过计算WOE与IV定量计算Parch对预测的贡献。IV为0.1166611，且"Highly Predictive"。
 
@@ -366,7 +366,7 @@ ggplot(data = data[1:nrow(train),], mapping = aes(x = FamilySize, y = ..count..,
   theme(plot.title = element_text(hjust = 0.5), legend.position="bottom")
 ```
 
-![](//www.jasongj.com/img/ml/classification/Survived%20vs.%20FamilySize-1.png)
+![](http://www.jasongj.com/img/ml/classification/Survived%20vs.%20FamilySize-1.png)
 
 计算FamilySize的WOE和IV可知，IV为0.3497672，且“Highly Predictive”。由SibSp与Parch派生出来的新变量FamilySize的IV高于SibSp与Parch的IV，因此，可将这个派生变量FamilySize作为特征变量。
 
@@ -415,7 +415,7 @@ ggplot(data = data[1:nrow(train),], mapping = aes(x = TicketCount, y = ..count..
   theme(plot.title = element_text(hjust = 0.5), legend.position="bottom")
 ```
 
-![](//www.jasongj.com/img/ml/classification/Survived%20vs.%20TicketCount-1.png)
+![](http://www.jasongj.com/img/ml/classification/Survived%20vs.%20TicketCount-1.png)
 
 由上图可见，未与他人同票号的乘客，只有130/(130+351)=27%幸存，而与他人同票号的乘客有212/(212+198)=51.7%幸存。计算TicketCount的WOE与IV如下。其IV为0.2751882，且"Highly Predictive"
 
@@ -445,7 +445,7 @@ ggplot(data = data[(!is.na(data$Fare)) & row(data[, 'Fare']) <= 891, ], aes(x = 
   labs(title = "How Fare impact survivor", x = "Fare", y = "Count", fill = "Survived")
 ```
   
-![](//www.jasongj.com/img/ml/classification/Survived%20vs.%20Fare-1.png)
+![](http://www.jasongj.com/img/ml/classification/Survived%20vs.%20Fare-1.png)
 
 ### 不同仓位的乘客幸存率不同
 
@@ -461,7 +461,7 @@ ggplot(data[1:nrow(train), ], mapping = aes(x = as.factor(sapply(data$Cabin[1:nr
   theme(plot.title = element_text(hjust = 0.5), legend.position="bottom")
 ```
 
-![](//www.jasongj.com/img/ml/classification/Survived%20vs.%20Cabin-1.png)
+![](http://www.jasongj.com/img/ml/classification/Survived%20vs.%20Cabin-1.png)
 
 由上图可见，仓位号首字母为B，C，D，E，F的乘客幸存率均高于50%，而其它仓位的乘客幸存率均远低于50%。仓位变量的WOE及IV计算如下。由此可见，Cabin的IV为0.1866526，且“Highly Predictive”
 
@@ -502,7 +502,7 @@ ggplot(data[1:nrow(train), ], mapping = aes(x = Embarked, y = ..count.., fill = 
   theme(plot.title = element_text(hjust = 0.5), legend.position="bottom")
 ```
 
-![](//www.jasongj.com/img/ml/classification/Survived%20vs.%20Embarked-1.png)
+![](http://www.jasongj.com/img/ml/classification/Survived%20vs.%20Embarked-1.png)
 
 从上图可见，Embarked为S的乘客幸存率仅为217/(217+427)=33.7%，而Embarked为C或为NA的乘客幸存率均高于50%。初步判断Embarked可用于预测乘客是否幸存。Embarked的WOE和IV计算如下。
 
@@ -587,7 +587,7 @@ ggplot(data[!is.na(data$Embarked),], aes(x=Embarked, y=Fare, fill=factor(Pclass)
   scale_y_continuous(labels=dollar_format()) + theme_few()
 ```
 
-![Fare median value of each Embarked and Pclass](//www.jasongj.com/img/ml/classification/Fare%20median%20value%20of%20each%20Embarked%20and%20Pclass-1.png)
+![Fare median value of each Embarked and Pclass](http://www.jasongj.com/img/ml/classification/Fare%20median%20value%20of%20each%20Embarked%20and%20Pclass-1.png)
 
 因此可以将缺失的Embarked值设置为'C'。
 
@@ -734,7 +734,7 @@ write.csv(submit, file = "cit5.csv", row.names = FALSE)
 ```
 
 该模型预测结果在Kaggle的得分仍为0.82775，排第114名，前114/6292=1.8% 
-![Kaggle rank first 2%](//www.jasongj.com/img/ml/classification/kaggle_rank.png)
+![Kaggle rank first 2%](http://www.jasongj.com/img/ml/classification/kaggle_rank.png)
 
 # 总结
 本文详述了如何通过数据预览，探索式数据分析，缺失数据填补，删除关联特征以及派生新特征等方法，在Kaggle的Titanic幸存预测这一分类问题竞赛中获得前2%排名的具体方法。  

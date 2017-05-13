@@ -33,7 +33,7 @@ description: 适配器模式可将一个类的接口转换成调用方希望的�
 
 ## 适配器模式类图
 适配器模式类图如下
-![Adapter pattern class diagram](//www.jasongj.com/img/designpattern/adapter/Adapter.png)
+![Adapter pattern class diagram](http://www.jasongj.com/img/designpattern/adapter/Adapter.png)
 
 ## 适配器模式角色划分
 - 目标接口，如上图中的ITarget
@@ -169,15 +169,15 @@ public class AdapterClient {
 
 
 # Java设计模式系列
-- [Java设计模式（一） 简单工厂模式不简单](//www.jasongj.com/design_pattern/simple_factory/)
-- [Java设计模式（二） 工厂方法模式](//www.jasongj.com/design_pattern/factory_method/)
-- [Java设计模式（三） 抽象工厂模式](//www.jasongj.com/design_pattern/abstract_factory/)
-- [Java设计模式（四） 观察者模式 ](//www.jasongj.com/design_pattern/observer/)
-- [Java设计模式（五） 组合模式](//www.jasongj.com/design_pattern/composite/)
-- [Java设计模式（六） 代理模式 VS. 装饰模式](//www.jasongj.com/design_pattern/proxy_decorator/)
-- [Java设计模式（七） Spring AOP JDK动态代理 vs. cglib](//www.jasongj.com/design_pattern/dynamic_proxy_cglib/)
-- [Java设计模式（八） 适配器模式](//www.jasongj.com/design_pattern/adapter/)
-- [Java设计模式（九） 桥接模式](//www.jasongj.com/design_pattern/bridge/)
-- [Java设计模式（十） 你真的用对单例模式了吗？](//www.jasongj.com/design_pattern/singleton/)
-- [Java设计模式（十一） 享元模式](//www.jasongj.com/design_pattern/flyweight/)
-- [Java设计模式（十二） 策略模式](//www.jasongj.com/design_pattern/strategy/)
+- [Java设计模式（一） 简单工厂模式不简单](http://www.jasongj.com/design_pattern/simple_factory/)
+- [Java设计模式（二） 工厂方法模式](http://www.jasongj.com/design_pattern/factory_method/)
+- [Java设计模式（三） 抽象工厂模式](http://www.jasongj.com/design_pattern/abstract_factory/)
+- [Java设计模式（四） 观察者模式 ](http://www.jasongj.com/design_pattern/observer/)
+- [Java设计模式（五） 组合模式](http://www.jasongj.com/design_pattern/composite/)
+- [Java设计模式（六） 代理模式 VS. 装饰模式](http://www.jasongj.com/design_pattern/proxy_decorator/)
+- [Java设计模式（七） Spring AOP JDK动态代理 vs. cglib](http://www.jasongj.com/design_pattern/dynamic_proxy_cglib/)
+- [Java设计模式（八） 适配器模式](http://www.jasongj.com/design_pattern/adapter/)
+- [Java设计模式（九） 桥接模式](http://www.jasongj.com/design_pattern/bridge/)
+- [Java设计模式（十） 你真的用对单例模式了吗？](http://www.jasongj.com/design_pattern/singleton/)
+- [Java设计模式（十一） 享元模式](http://www.jasongj.com/design_pattern/flyweight/)
+- [Java设计模式（十二） 策略模式](http://www.jasongj.com/design_pattern/strategy/)

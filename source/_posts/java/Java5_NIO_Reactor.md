@@ -152,7 +152,7 @@ public class IOServer {
 
 ## 为每个请求创建一个线程
 上例使用单线程逐个处理所有请求，同一时间只能处理一个请求，等待I/O的过程浪费大量CPU资源，同时无法充分使用多CPU的优势。下面是使用多线程对阻塞I/O模型的改进。一个连接建立成功后，创建一个单独的线程处理其I/O操作。
-![阻塞I/O 多线程](//www.jasongj.com/img/java/reactor/IO_multithread.png)
+![阻塞I/O 多线程](http://www.jasongj.com/img/java/reactor/IO_multithread.png)
 ```java
 public class IOServerMultiThread {
   private static final Logger LOGGER = LoggerFactory.getLogger(IOServerMultiThread.class);
@@ -229,7 +229,7 @@ public class IOServerThreadPool {
 # Reactor模式
 ## 精典Reactor模式
 精典的Reactor模式示意图如下所示。
-![精典Reactor](//www.jasongj.com/img/java/reactor/classic_reactor.png)
+![精典Reactor](http://www.jasongj.com/img/java/reactor/classic_reactor.png)
 
 在Reactor模式中，包含如下角色
  - ***Reactor*** 将I/O事件发派给对应的Handler
@@ -288,7 +288,7 @@ public class NIOServer {
 
 ## 多工作线程Reactor模式
 经典Reactor模式中，尽管一个线程可同时监控多个请求（Channel），但是所有读/写请求以及对新连接请求的处理都在同一个线程中处理，无法充分利用多CPU的优势，同时读/写操作也会阻塞对新连接请求的处理。因此可以引入多线程，并行处理多个读/写操作，如下图所示。
-![多线程Reactor](//www.jasongj.com/img/java/reactor/multithread_reactor.png)
+![多线程Reactor](http://www.jasongj.com/img/java/reactor/multithread_reactor.png)
 
 多线程Reactor模式示例代码如下所示。
 ```java
@@ -364,7 +364,7 @@ Netty中使用的Reactor模式，引入了多Reactor，也即一个主Reactor负
 并且每个子Reactor分别属于一个独立的线程，每个成功连接后的Channel的所有操作由同一个线程处理。这样保证了同一请求的所有状态和上下文在同一个线程中，避免了不必要的上下文切换，同时也方便了监控请求响应状态。
 
 多Reactor模式示意图如下所示。
-![多Reactor](//www.jasongj.com/img/java/reactor/multi_reactor.png)
+![多Reactor](http://www.jasongj.com/img/java/reactor/multi_reactor.png)
 
 多Reactor示例代码如下所示。
 ```java
@@ -466,9 +466,9 @@ public class Processor {
 
 
 # Java进阶系列
- - [Java进阶（一）Annotation（注解）](//www.jasongj.com/2016/01/17/Java1_注解Annotation/)
- - [Java进阶（二）当我们说线程安全时，到底在说什么](//www.jasongj.com/java/thread_safe)
- - [Java进阶（三）多线程开发关键技术](//www.jasongj.com/java/multi_thread)
- - [Java进阶（四）线程间通信方式对比](//www.jasongj.com/java/thread_communication)
- - [Java进阶（五）NIO和Reactor模式进阶](//www.jasongj.com/java/nio_reactor/)
+ - [Java进阶（一）Annotation（注解）](http://www.jasongj.com/2016/01/17/Java1_注解Annotation/)
+ - [Java进阶（二）当我们说线程安全时，到底在说什么](http://www.jasongj.com/java/thread_safe)
+ - [Java进阶（三）多线程开发关键技术](http://www.jasongj.com/java/multi_thread)
+ - [Java进阶（四）线程间通信方式对比](http://www.jasongj.com/java/thread_communication)
+ - [Java进阶（五）NIO和Reactor模式进阶](http://www.jasongj.com/java/nio_reactor/)
  - [Java进阶（六）从ConcurrentHashMap的演进看Java多线程核心技术](http://www.jasongj.com/java/concurrenthashmap/)

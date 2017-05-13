@@ -34,10 +34,10 @@ description: 代理模式与装饰模式在代码组织结构上非常相近，�
 
 # 类图
 代理模式类图如下
-![Proxy pattern class diagram](//www.jasongj.com/img/designpattern/proxydecorator/ProxyPattern.png)
+![Proxy pattern class diagram](http://www.jasongj.com/img/designpattern/proxydecorator/ProxyPattern.png)
 
 装饰模式类图如下
-![Decorator pattern class diagram](//www.jasongj.com/img/designpattern/proxydecorator/DecoratorPattern.png)
+![Decorator pattern class diagram](http://www.jasongj.com/img/designpattern/proxydecorator/DecoratorPattern.png)
 
 从上图可以看到，代理模式和装饰模式的类图非常类似。下面结合具体的代码讲解两者的不同。
 
@@ -243,15 +243,15 @@ public class DecoratorClient {
 
 
 # Java设计模式系列
-- [Java设计模式（一） 简单工厂模式不简单](//www.jasongj.com/design_pattern/simple_factory/)
-- [Java设计模式（二） 工厂方法模式](//www.jasongj.com/design_pattern/factory_method/)
-- [Java设计模式（三） 抽象工厂模式](//www.jasongj.com/design_pattern/abstract_factory/)
-- [Java设计模式（四） 观察者模式 ](//www.jasongj.com/design_pattern/observer/)
-- [Java设计模式（五） 组合模式](//www.jasongj.com/design_pattern/composite/)
-- [Java设计模式（六） 代理模式 VS. 装饰模式](//www.jasongj.com/design_pattern/proxy_decorator/)
-- [Java设计模式（七） Spring AOP JDK动态代理 vs. cglib](//www.jasongj.com/design_pattern/dynamic_proxy_cglib/)
-- [Java设计模式（八） 适配器模式](//www.jasongj.com/design_pattern/adapter/)
-- [Java设计模式（九） 桥接模式](//www.jasongj.com/design_pattern/bridge/)
-- [Java设计模式（十） 你真的用对单例模式了吗？](//www.jasongj.com/design_pattern/singleton/)
-- [Java设计模式（十一） 享元模式](//www.jasongj.com/design_pattern/flyweight/)
-- [Java设计模式（十二） 策略模式](//www.jasongj.com/design_pattern/strategy/)
+- [Java设计模式（一） 简单工厂模式不简单](http://www.jasongj.com/design_pattern/simple_factory/)
+- [Java设计模式（二） 工厂方法模式](http://www.jasongj.com/design_pattern/factory_method/)
+- [Java设计模式（三） 抽象工厂模式](http://www.jasongj.com/design_pattern/abstract_factory/)
+- [Java设计模式（四） 观察者模式 ](http://www.jasongj.com/design_pattern/observer/)
+- [Java设计模式（五） 组合模式](http://www.jasongj.com/design_pattern/composite/)
+- [Java设计模式（六） 代理模式 VS. 装饰模式](http://www.jasongj.com/design_pattern/proxy_decorator/)
+- [Java设计模式（七） Spring AOP JDK动态代理 vs. cglib](http://www.jasongj.com/design_pattern/dynamic_proxy_cglib/)
+- [Java设计模式（八） 适配器模式](http://www.jasongj.com/design_pattern/adapter/)
+- [Java设计模式（九） 桥接模式](http://www.jasongj.com/design_pattern/bridge/)
+- [Java设计模式（十） 你真的用对单例模式了吗？](http://www.jasongj.com/design_pattern/singleton/)
+- [Java设计模式（十一） 享元模式](http://www.jasongj.com/design_pattern/flyweight/)
+- [Java设计模式（十二） 策略模式](http://www.jasongj.com/design_pattern/strategy/)

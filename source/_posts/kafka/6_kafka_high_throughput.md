@@ -31,7 +31,7 @@ description: 本文从宏观架构层面和微观实现层面分析了Kafka如�
 
 
 # 摘要
-上一篇文章《[Kafka设计解析（五）- Kafka性能测试方法及Benchmark报告](//www.jasongj.com/2015/12/31/KafkaColumn5_kafka_benchmark/)》从测试角度说明了Kafka的性能。本文从宏观架构层面和具体实现层面分析了Kafka如何实现高性能。
+上一篇文章《[Kafka设计解析（五）- Kafka性能测试方法及Benchmark报告](http://www.jasongj.com/2015/12/31/KafkaColumn5_kafka_benchmark/)》从测试角度说明了Kafka的性能。本文从宏观架构层面和具体实现层面分析了Kafka如何实现高性能。
 
 # 宏观架构层面
 
@@ -55,7 +55,7 @@ Kafka是一个Pub-Sub的消息系统，无论是发布还是订阅，都须指�
 如果Consumer的个数多于Partition的个数，那么会有部分Consumer无法消费该Topic的任何数据，也即当Consumer个数超过Partition后，增加Consumer并不能增加并行度。  
   
 简而言之，Partition个数决定了可能的最大并行度。如下图所示，由于Topic 2只包含3个Partition，故group2中的Consumer 3、Consumer 4、Consumer 5 可分别消费1个Partition的数据，而Consumer 6消费不到Topic 2的任何数据。
-![Kafka Consumer](//www.jasongj.com/img/kafka/KafkaColumn6/kafka-consumer.png)
+![Kafka Consumer](http://www.jasongj.com/img/kafka/KafkaColumn6/kafka-consumer.png)
   
 以Spark消费Kafka数据为例，如果所消费的Topic的Partition数为N，则有效的Spark最大并行度也为N。即使将Spark的Executor数设置为N+M，最多也只有N个Executor可同时处理该Topic的数据。
   
@@ -109,7 +109,7 @@ ISR，也即In-sync Replica。每个Partition的Leader都会维护这样一个�
 对于0.8.\*版本的`replica.lag.max.messages`参数，很多读者曾留言提问，既然只有ISR中的所有Replica复制完后的消息才被认为Commit，那为何会出现Follower与Leader差距过大的情况。原因在于，Leader并不需要等到前一条消息被Commit才接收后一条消息。事实上，Leader可以按顺序接收大量消息，最新的一条消息的Offset被记为High Wartermark。而只有被ISR中所有Follower都复制过去的消息才会被Commit，Consumer只能消费被Commit的消息。由于Follower的复制是严格按顺序的，所以被Commit的消息之前的消息肯定也已经被Commit过。换句话说，High Watermark标记的是Leader所保存的最新消息的offset，而Commit Offset标记的是最新的可被消费的（已同步到ISR中的Follower）消息。而Leader对数据的接收与Follower对数据的复制是异步进行的，因此会出现Commit Offset与High Watermark存在一定差距的情况。0.8.\*版本中`replica.lag.max.messages`限定了Leader允许的该差距的最大值。
 
 Kafka基于ISR的数据复制方案原理如下图所示。  
-![Kafka Replication](//www.jasongj.com/img/kafka/KafkaColumn6/kafka-replication.png)
+![Kafka Replication](http://www.jasongj.com/img/kafka/KafkaColumn6/kafka-replication.png)
   
 如上图所示，在第一步中，Leader A总共收到3条消息，故其high watermark为3，但由于ISR中的Follower只同步了第1条消息（m1），故只有m1被Commit，也即只有m1可被Consumer消费。此时Follower B与Leader A的差距是1，而Follower C与Leader A的差距是2，均未超过默认的`replica.lag.max.messages`，故得以保留在ISR中。在第二步中，由于旧的Leader A宕机，新的Leader B在`replica.lag.time.max.ms`时间内未收到来自A的Fetch请求，故将A从ISR中移除，此时ISR={B，C}。同时，由于此时新的Leader B中只有2条消息，并未包含m3（m3从未被任何Leader所Commit），所以m3无法被Consumer消费。第四步中，Follower A恢复正常，它先将宕机前未Commit的所有消息全部删除，然后从最后Commit过的消息的下一条消息开始追赶新的Leader B，直到它“赶上”新的Leader，才被重新加入新的ISR中。
   
@@ -163,7 +163,7 @@ Broker收到数据后，写磁盘时只是将数据写入Page Cache，并不保�
   
 如果数据消费速度与生产速度相当，甚至不需要通过物理磁盘交换数据，而是直接通过Page Cache交换数据。同时，Follower从Leader Fetch数据时，也可通过Page Cache完成。下图为某Partition的Leader节点的网络/磁盘读写信息。
 
-![Kafka I/O page cache](//www.jasongj.com/img/kafka/KafkaColumn6/kafka_IO.png)
+![Kafka I/O page cache](http://www.jasongj.com/img/kafka/KafkaColumn6/kafka_IO.png)
   
 从上图可以看到，该Broker每秒通过网络从Producer接收约35MB数据，虽然有Follower从该Broker Fetch数据，但是该Broker基本无读磁盘。这是因为该Broker直接从Page Cache中将数据取出返回给了Follower。
   
@@ -182,14 +182,14 @@ Socket.send(buffer)
   
 这一过程实际上发生了四次数据拷贝。首先通过系统调用将文件数据读入到内核态Buffer（DMA拷贝），然后应用程序将内存态Buffer数据读入到用户态Buffer（CPU拷贝），接着用户程序通过Socket发送数据时将用户态Buffer数据拷贝到内核态Buffer（CPU拷贝），最后通过DMA拷贝将数据拷贝到NIC Buffer。同时，还伴随着四次上下文切换，如下图所示。  
 
-![BIO 四次拷贝 四次上下文切换](//www.jasongj.com/img/kafka/KafkaColumn6/BIO.png) 
+![BIO 四次拷贝 四次上下文切换](http://www.jasongj.com/img/kafka/KafkaColumn6/BIO.png) 
   
 ### sendfile和transferTo实现零拷贝
 Linux 2.4+内核通过`sendfile`系统调用，提供了零拷贝。数据通过DMA拷贝到内核态Buffer后，直接通过DMA拷贝到NIC Buffer，无需CPU拷贝。这也是零拷贝这一说法的来源。除了减少数据拷贝外，因为整个读文件-网络发送由一个`sendfile`调用完成，整个过程只有两次上下文切换，因此大大提高了性能。零拷贝过程如下图所示。
   
-![BIO 零拷贝 两次上下文切换](//www.jasongj.com/img/kafka/KafkaColumn6/NIO.png) 
+![BIO 零拷贝 两次上下文切换](http://www.jasongj.com/img/kafka/KafkaColumn6/NIO.png) 
   
-从具体实现来看，Kafka的数据传输通过TransportLayer来完成，其子类`PlaintextTransportLayer`通过[Java NIO](//www.jasongj.com/java/nio_reactor/)的FileChannel的`transferTo`和`transferFrom`方法实现零拷贝，如下所示。
+从具体实现来看，Kafka的数据传输通过TransportLayer来完成，其子类`PlaintextTransportLayer`通过[Java NIO](http://www.jasongj.com/java/nio_reactor/)的FileChannel的`transferTo`和`transferFrom`方法实现零拷贝，如下所示。
   
 ```java
     @Override
@@ -212,7 +212,7 @@ Kafka 0.8.2开始支持新的Producer API，将同步Producer和异步Producer�
 
 由于每次网络传输，除了传输消息本身以外，还要传输非常多的网络协议本身的一些内容（称为Overhead），所以将多条消息合并到一起传输，可有效减少网络传输的Overhead，进而提高了传输效率。  
 
-从[零拷贝章节的图](//www.jasongj.com/img/kafka/KafkaColumn6/kafka_IO.png)中可以看到，虽然Broker持续从网络接收数据，但是写磁盘并非每秒都在发生，而是间隔一段时间写一次磁盘，并且每次写磁盘的数据量都非常大（最高达到718MB/S）。
+从[零拷贝章节的图](http://www.jasongj.com/img/kafka/KafkaColumn6/kafka_IO.png)中可以看到，虽然Broker持续从网络接收数据，但是写磁盘并非每秒都在发生，而是间隔一段时间写一次磁盘，并且每次写磁盘的数据量都非常大（最高达到718MB/S）。
 
 
 ### 数据压缩降低网络负载
@@ -228,10 +228,10 @@ Kafka消息的Key和Payload（或者说Value）的类型可自定义，只需同
 
 
 # Kafka系列文章
-- [Kafka设计解析（一）- Kafka背景及架构介绍](//www.jasongj.com/2015/03/10/KafkaColumn1/)
-- [Kafka设计解析（二）- Kafka High Availability （上）](//www.jasongj.com/2015/04/24/KafkaColumn2/)
-- [Kafka设计解析（三）- Kafka High Availability （下）](//www.jasongj.com/2015/06/08/KafkaColumn3/)
-- [Kafka设计解析（四）- Kafka Consumer设计解析](//www.jasongj.com/2015/08/09/KafkaColumn4/)
-- [Kafka设计解析（五）- Kafka性能测试方法及Benchmark报告](//www.jasongj.com/2015/12/31/KafkaColumn5_kafka_benchmark/)
-- [Kafka设计解析（六）- Kafka高性能架构之道](//www.jasongj.com/kafka/high_throughput/)
+- [Kafka设计解析（一）- Kafka背景及架构介绍](http://www.jasongj.com/2015/03/10/KafkaColumn1/)
+- [Kafka设计解析（二）- Kafka High Availability （上）](http://www.jasongj.com/2015/04/24/KafkaColumn2/)
+- [Kafka设计解析（三）- Kafka High Availability （下）](http://www.jasongj.com/2015/06/08/KafkaColumn3/)
+- [Kafka设计解析（四）- Kafka Consumer设计解析](http://www.jasongj.com/2015/08/09/KafkaColumn4/)
+- [Kafka设计解析（五）- Kafka性能测试方法及Benchmark报告](http://www.jasongj.com/2015/12/31/KafkaColumn5_kafka_benchmark/)
+- [Kafka设计解析（六）- Kafka高性能架构之道](http://www.jasongj.com/kafka/high_throughput/)
 

@@ -36,7 +36,7 @@ description: 当一种事物可在多种维度变化（如两个维度，每个�
 汽车可按品牌分（本例中只考虑BMT，BenZ，Land Rover），也可按手动档、自动档、手自一体来分。如果对于每一种车都实现一个具体类，则一共要实现3*3=9个类。
 
 使用继承方式的类图如下
-![Bridge pattern inherit class diagram](//www.jasongj.com/img/designpattern/bridge/BridgeInherit.png)
+![Bridge pattern inherit class diagram](http://www.jasongj.com/img/designpattern/bridge/BridgeInherit.png)
 
 从上图可以看到，对于每种组合都需要创建一个具体类，如果有N个维度，每个维度有M种变化，则需要$M^N$个具体类，类非常多，并且非常多的重复功能。
 
@@ -44,7 +44,7 @@ description: 当一种事物可在多种维度变化（如两个维度，每个�
 
 ## 桥接模式类图
 桥接模式类图如下
-![Bridge pattern class diagram](//www.jasongj.com/img/designpattern/bridge/Bridge.png)
+![Bridge pattern class diagram](http://www.jasongj.com/img/designpattern/bridge/Bridge.png)
 
 从上图可知，当把每个维度拆分开来，只需要M*N个类，并且由于每个维度独立变化，基本不会出现重复代码。
 
@@ -226,15 +226,15 @@ public class BridgeClient {
 
 
 # Java设计模式系列
-- [Java设计模式（一） 简单工厂模式不简单](//www.jasongj.com/design_pattern/simple_factory/)
-- [Java设计模式（二） 工厂方法模式](//www.jasongj.com/design_pattern/factory_method/)
-- [Java设计模式（三） 抽象工厂模式](//www.jasongj.com/design_pattern/abstract_factory/)
-- [Java设计模式（四） 观察者模式 ](//www.jasongj.com/design_pattern/observer/)
-- [Java设计模式（五） 组合模式](//www.jasongj.com/design_pattern/composite/)
-- [Java设计模式（六） 代理模式 VS. 装饰模式](//www.jasongj.com/design_pattern/proxy_decorator/)
-- [Java设计模式（七） Spring AOP JDK动态代理 vs. cglib](//www.jasongj.com/design_pattern/dynamic_proxy_cglib/)
-- [Java设计模式（八） 适配器模式](//www.jasongj.com/design_pattern/adapter/)
-- [Java设计模式（九） 桥接模式](//www.jasongj.com/design_pattern/bridge/)
-- [Java设计模式（十） 你真的用对单例模式了吗？](//www.jasongj.com/design_pattern/singleton/)
-- [Java设计模式（十一） 享元模式](//www.jasongj.com/design_pattern/flyweight/)
-- [Java设计模式（十二） 策略模式](//www.jasongj.com/design_pattern/strategy/)
+- [Java设计模式（一） 简单工厂模式不简单](http://www.jasongj.com/design_pattern/simple_factory/)
+- [Java设计模式（二） 工厂方法模式](http://www.jasongj.com/design_pattern/factory_method/)
+- [Java设计模式（三） 抽象工厂模式](http://www.jasongj.com/design_pattern/abstract_factory/)
+- [Java设计模式（四） 观察者模式 ](http://www.jasongj.com/design_pattern/observer/)
+- [Java设计模式（五） 组合模式](http://www.jasongj.com/design_pattern/composite/)
+- [Java设计模式（六） 代理模式 VS. 装饰模式](http://www.jasongj.com/design_pattern/proxy_decorator/)
+- [Java设计模式（七） Spring AOP JDK动态代理 vs. cglib](http://www.jasongj.com/design_pattern/dynamic_proxy_cglib/)
+- [Java设计模式（八） 适配器模式](http://www.jasongj.com/design_pattern/adapter/)
+- [Java设计模式（九） 桥接模式](http://www.jasongj.com/design_pattern/bridge/)
+- [Java设计模式（十） 你真的用对单例模式了吗？](http://www.jasongj.com/design_pattern/singleton/)
+- [Java设计模式（十一） 享元模式](http://www.jasongj.com/design_pattern/flyweight/)
+- [Java设计模式（十二） 策略模式](http://www.jasongj.com/design_pattern/strategy/)

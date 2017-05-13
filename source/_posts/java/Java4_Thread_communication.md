@@ -84,7 +84,7 @@ CountDownLatch工作原理相对简单，可以简单看成一个倒计数器，
 
 # CyclicBarrier
 ## CyclicBarrier适用场景
-在《[当我们说线程安全时，到底在说什么](//www.jasongj.com/java/thread_safe)》一文中讲过内存屏障，它能保证屏障之前的代码一定在屏障之后的代码之前被执行。CyclicBarrier可以译为循环屏障，也有类似的功能。CyclicBarrier可以在构造时指定需要在屏障前执行await的个数，所有对await的调用都会等待，直到调用await的次数达到预定指，所有等待都会立即被唤醒。
+在《[当我们说线程安全时，到底在说什么](http://www.jasongj.com/java/thread_safe)》一文中讲过内存屏障，它能保证屏障之前的代码一定在屏障之后的代码之前被执行。CyclicBarrier可以译为循环屏障，也有类似的功能。CyclicBarrier可以在构造时指定需要在屏障前执行await的个数，所有对await的调用都会等待，直到调用await的次数达到预定指，所有等待都会立即被唤醒。
 
 从使用场景上来说，CyclicBarrier是让多个线程互相等待某一事件的发生，然后同时被唤醒。而上文讲的CountDownLatch是让某一线程等待多个线程的状态，然后该线程被唤醒。
 
@@ -212,9 +212,9 @@ Phaser主要接口如下
 
 
 # Java进阶系列
- - [Java进阶（一）Annotation（注解）](//www.jasongj.com/2016/01/17/Java1_注解Annotation/)
- - [Java进阶（二）当我们说线程安全时，到底在说什么](//www.jasongj.com/java/thread_safe)
- - [Java进阶（三）多线程开发关键技术](//www.jasongj.com/java/multi_thread)
- - [Java进阶（四）线程间通信方式对比](//www.jasongj.com/java/thread_communication)
- - [Java进阶（五）NIO和Reactor模式进阶](//www.jasongj.com/java/nio_reactor/)
+ - [Java进阶（一）Annotation（注解）](http://www.jasongj.com/2016/01/17/Java1_注解Annotation/)
+ - [Java进阶（二）当我们说线程安全时，到底在说什么](http://www.jasongj.com/java/thread_safe)
+ - [Java进阶（三）多线程开发关键技术](http://www.jasongj.com/java/multi_thread)
+ - [Java进阶（四）线程间通信方式对比](http://www.jasongj.com/java/thread_communication)
+ - [Java进阶（五）NIO和Reactor模式进阶](http://www.jasongj.com/java/nio_reactor/)
  - [Java进阶（六）从ConcurrentHashMap的演进看Java多线程核心技术](http://www.jasongj.com/java/concurrenthashmap/)

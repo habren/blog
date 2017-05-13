@@ -43,7 +43,7 @@ description: 本文讲解了设计模式与OOP的三大特性及OOP七项原则�
 面向对象设计（OOD）有***七***大原则（是的，你没看错，是七大原则，不是六大原则），它们互相补充。
 
 ## 开-闭原则
-Open-Close Principle（OCP），即开-闭原则。开，指的是对扩展开放，即要支持方便地扩展；闭，指的是对修改关闭，即要严格限制对已有内容的修改。开-闭原则是最抽象也是最重要的OOD原则。[简单工厂模式](//www.jasongj.com/design_pattern/simple_factory/)、[工厂方法模式](//www.jasongj.com/design_pattern/factory_method/)、[抽象工厂模式](//www.jasongj.com/design_pattern/abstract_factory/)中都提到了如何通过良好的设计遵循开-闭原则。
+Open-Close Principle（OCP），即开-闭原则。开，指的是对扩展开放，即要支持方便地扩展；闭，指的是对修改关闭，即要严格限制对已有内容的修改。开-闭原则是最抽象也是最重要的OOD原则。[简单工厂模式](http://www.jasongj.com/design_pattern/simple_factory/)、[工厂方法模式](http://www.jasongj.com/design_pattern/factory_method/)、[抽象工厂模式](http://www.jasongj.com/design_pattern/abstract_factory/)中都提到了如何通过良好的设计遵循开-闭原则。
 
 ## 里氏替换原则
 Liskov Substitution Principle（LSP），即里氏替换原则。该原则规定“子类必须能够替换其父类，否则不应当设计为其子类”。换句话说，父类出现的地方，都应该能由其子类代替。所以，子类只能去扩展基类，而不是隐藏或者覆盖基类。
@@ -61,7 +61,7 @@ Single Responsibility Principle（SRP），单一职责原则。它讲的是，�
 Law of Demeter or Least Knowledge Principle（LoD or LKP），迪米特法则或最少知道原则。它讲的是“一个对象就尽可能少的去了解其它对象”，从而实现松耦合。如果一个类的职责过多，由于多个职责耦合在了一起，任何一个职责的变更都可能引起其它职责的问题，严重影响了代码的可维护性和可重用性。
 
 ## 合成/聚合复用原则
-Composite/Aggregate Reuse Principle（CARP / CRP），合成/聚合复用原则。如果新对象的某些功能在别的已经创建好的对象里面已经实现，那么应当尽量使用别的对象提供的功能，使之成为新对象的一部分，而不要再重新创建。新对象可通过向这些对象的委派达到复用已有功能的效果。简而言之，要尽量使用合成/聚合，而非使用继承。《[Java设计模式（九） 桥接模式](//www.jasongj.com/design_pattern/bridge/)》中介绍的桥接模式即是对这一原则的典型应用。
+Composite/Aggregate Reuse Principle（CARP / CRP），合成/聚合复用原则。如果新对象的某些功能在别的已经创建好的对象里面已经实现，那么应当尽量使用别的对象提供的功能，使之成为新对象的一部分，而不要再重新创建。新对象可通过向这些对象的委派达到复用已有功能的效果。简而言之，要尽量使用合成/聚合，而非使用继承。《[Java设计模式（九） 桥接模式](http://www.jasongj.com/design_pattern/bridge/)》中介绍的桥接模式即是对这一原则的典型应用。
 
 # 设计模式
 ## 什么是设计模式
@@ -91,16 +91,16 @@ Composite/Aggregate Reuse Principle（CARP / CRP），合成/聚合复用原则�
 
 
 # Java设计模式系列
-- [Java设计模式（一） 简单工厂模式不简单](//www.jasongj.com/design_pattern/simple_factory/)
-- [Java设计模式（二） 工厂方法模式](//www.jasongj.com/design_pattern/factory_method/)
-- [Java设计模式（三） 抽象工厂模式](//www.jasongj.com/design_pattern/abstract_factory/)
-- [Java设计模式（四） 观察者模式](//www.jasongj.com/design_pattern/observer/)
-- [Java设计模式（五） 组合模式](//www.jasongj.com/design_pattern/composite/)
-- [Java设计模式（六） 代理模式 VS. 装饰模式](//www.jasongj.com/design_pattern/proxy_decorator/)
-- [Java设计模式（七） Spring AOP JDK动态代理 vs. cglib](//www.jasongj.com/design_pattern/dynamic_proxy_cglib/)
-- [Java设计模式（八） 适配器模式](//www.jasongj.com/design_pattern/adapter/)
-- [Java设计模式（九） 桥接模式](//www.jasongj.com/design_pattern/bridge/)
-- [Java设计模式（十） 你真的用对单例模式了吗？](//www.jasongj.com/design_pattern/singleton/)
-- [Java设计模式（十一） 享元模式](//www.jasongj.com/design_pattern/flyweight/)
-- [Java设计模式（十二） 策略模式](//www.jasongj.com/design_pattern/strategy/)
-- [Java设计模式（十三） 别人再问你设计模式，叫他看这篇文章](//www.jasongj.com/design_pattern/summary/)
+- [Java设计模式（一） 简单工厂模式不简单](http://www.jasongj.com/design_pattern/simple_factory/)
+- [Java设计模式（二） 工厂方法模式](http://www.jasongj.com/design_pattern/factory_method/)
+- [Java设计模式（三） 抽象工厂模式](http://www.jasongj.com/design_pattern/abstract_factory/)
+- [Java设计模式（四） 观察者模式](http://www.jasongj.com/design_pattern/observer/)
+- [Java设计模式（五） 组合模式](http://www.jasongj.com/design_pattern/composite/)
+- [Java设计模式（六） 代理模式 VS. 装饰模式](http://www.jasongj.com/design_pattern/proxy_decorator/)
+- [Java设计模式（七） Spring AOP JDK动态代理 vs. cglib](http://www.jasongj.com/design_pattern/dynamic_proxy_cglib/)
+- [Java设计模式（八） 适配器模式](http://www.jasongj.com/design_pattern/adapter/)
+- [Java设计模式（九） 桥接模式](http://www.jasongj.com/design_pattern/bridge/)
+- [Java设计模式（十） 你真的用对单例模式了吗？](http://www.jasongj.com/design_pattern/singleton/)
+- [Java设计模式（十一） 享元模式](http://www.jasongj.com/design_pattern/flyweight/)
+- [Java设计模式（十二） 策略模式](http://www.jasongj.com/design_pattern/strategy/)
+- [Java设计模式（十三） 别人再问你设计模式，叫他看这篇文章](http://www.jasongj.com/design_pattern/summary/)

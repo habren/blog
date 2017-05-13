@@ -259,7 +259,7 @@ try{
 ```
   
 ## 读写锁
-如上文《[Java进阶（二）当我们说线程安全时，到底在说什么](//www.jasongj.com/java/thread_safe)》所述，锁可以保证原子性和可见性。而原子性更多是针对写操作而言。对于读多写少的场景，一个读操作无须阻塞其它读操作，只需要保证读和写或者写与写不同时发生即可。此时，如果使用重入锁（即排它锁），对性能影响较大。Java中的读写锁（ReadWriteLock）就是为这种读多写少的场景而创造的。
+如上文《[Java进阶（二）当我们说线程安全时，到底在说什么](http://www.jasongj.com/java/thread_safe)》所述，锁可以保证原子性和可见性。而原子性更多是针对写操作而言。对于读多写少的场景，一个读操作无须阻塞其它读操作，只需要保证读和写或者写与写不同时发生即可。此时，如果使用重入锁（即排它锁），对性能影响较大。Java中的读写锁（ReadWriteLock）就是为这种读多写少的场景而创造的。
 
 实际上，ReadWriteLock接口并非继承自Lock接口，ReentrantReadWriteLock也只实现了ReadWriteLock接口而未实现Lock接口。ReadLock和WriteLock，是ReentrantReadWriteLock类的静态内部类，它们实现了Lock接口。
 
@@ -449,9 +449,9 @@ Sun Jun 19 15:59:13 CST 2016  Thread 1 is waken up
 
 
 # Java进阶系列
- - [Java进阶（一）Annotation（注解）](//www.jasongj.com/2016/01/17/Java1_注解Annotation/)
- - [Java进阶（二）当我们说线程安全时，到底在说什么](//www.jasongj.com/java/thread_safe)
- - [Java进阶（三）多线程开发关键技术](//www.jasongj.com/java/multi_thread)
- - [Java进阶（四）线程间通信方式对比](//www.jasongj.com/java/thread_communication)
- - [Java进阶（五）NIO和Reactor模式进阶](//www.jasongj.com/java/nio_reactor/)
+ - [Java进阶（一）Annotation（注解）](http://www.jasongj.com/2016/01/17/Java1_注解Annotation/)
+ - [Java进阶（二）当我们说线程安全时，到底在说什么](http://www.jasongj.com/java/thread_safe)
+ - [Java进阶（三）多线程开发关键技术](http://www.jasongj.com/java/multi_thread)
+ - [Java进阶（四）线程间通信方式对比](http://www.jasongj.com/java/thread_communication)
+ - [Java进阶（五）NIO和Reactor模式进阶](http://www.jasongj.com/java/nio_reactor/)
  - [Java进阶（六）从ConcurrentHashMap的演进看Java多线程核心技术](http://www.jasongj.com/java/concurrenthashmap/)
