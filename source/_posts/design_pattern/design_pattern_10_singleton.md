@@ -119,7 +119,7 @@ package com.jasongj.singleton4;
 
 public class Singleton {
 
-  private static Singleton INSTANCE;
+  private static volatile Singleton INSTANCE;
 
   private Singleton() {};
 
@@ -137,9 +137,12 @@ public class Singleton {
 }
 ```
 
- - 优点：使用了双重检查，很大程度上避免了线程不安全，同时也避免了不必要的锁开销。这里要注意，虽然未使用`volatile`关键字，但是这里的`synchronized`已经保证了`INSTANCE`写操作对其它线程读操作的可见性。具体原理请参考《[Java进阶（二）当我们说线程安全时，到底在说什么](http://www.jasongj.com/java/thread_safe/#synchronized_visibility)》
+ - 优点：使用了双重检查，避免了线程不安全，同时也避免了不必要的锁开销。
  - 缺点：NA
 
+注：
+ - 但是这里的`synchronized`已经保证了`INSTANCE`写操作对其它线程读操作的可见性。具体原理请参考《[Java进阶（二）当我们说线程安全时，到底在说什么](http://www.jasongj.com/java/thread_safe/#synchronized_visibility)》
+ - 使用`volatile`关键字的目的不是保证可见性（`synchronized`已经保证了可见性），而是为了保证顺序性。具体来说，`INSTANCE = new Singleton()`不是原子操作，实际上被拆分为了三步：1) 分配内存；2) 初始化对象；3) 将INSTANCE指向分配的对象内存地址。 如果没有`volatile`，可能会发生指令重排，使得INSTANCE先指向内存地址，而对象尚未初始化，其它线程直接使用INSTANCE引用进行对象操作时出错。详细原理可参见《<a href="http://www.infoq.com/cn/articles/double-checked-locking-with-delay-initialization" target="_blank" title="双重检查锁定与延迟初始化" rel="external nofollow">双重检查锁定与延迟初始化</a>》
 
 ## 静态常量 饿汉 - 推荐
 ```java
@@ -206,10 +209,10 @@ public class Singleton {
 }
 ```
 
- - 优点：无线程同步问题，实现了懒加载（Lazy Loading）。因为只有调用`getInstance`时才会装载内部类，才会创建实例
+ - 优点：无线程同步问题，实现了懒加载（Lazy Loading）。因为只有调用`getInstance`时才会装载内部类，才会创建实例。同时因为使用内部类时，先调用内部类的线程会获得类初始化锁，从而保证内部类的初始化（包括实例化它所引用的外部类对象）线程安全。即使内部类创建外部类的实例`Singleton INSTANCE = new Singleton()`发生指令重排也不会引起[双重检查（Double-Check）下的懒汉](#双重检查（Double-Check）下的懒汉-推荐)模式中提到的问题，因此无须使用`volatile`关键字。
  - 缺点：NA
 
-## 枚举 不推荐
+## 枚举 强烈推荐
 ```java
 package com.jasongj.singleton9;
 
@@ -219,12 +222,17 @@ public enum Singleton {
   
   public void whatSoEverMethod() { }
 
+  // 该方法非必须，只是为了保证与其它方案一样使用静态方法得到实例
+  public static Singleton getInstance() {
+    return INSTANCE;
+  }
+
 }
 ```
 
- - 优点：无线程同步问题，且能防止通过反射创建新的对象
- - 缺点：使用的是枚举，而非类。同时单一实例的访问点也不是一般单例模式的静态方法
-
+ - 优点：枚举本身是线程安全的，且能防止通过反射和反序列化创建多实例。
+ - 缺点：使用的是枚举，而非类。
+　　
 
 
 
