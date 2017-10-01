@@ -16,10 +16,12 @@ keywords:
   - kafka benchmark
 tags:
   - Kafka
+  - big data
   - 大数据
   - 分布式
 categories:
   - Kafka
+  - big data
   - 大数据
   - 分布式
 description: 本文详细阐述了Kafka的性能测试方法，并全面展示了Kafka各组件的性能测试报告。

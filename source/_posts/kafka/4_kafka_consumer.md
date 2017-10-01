@@ -19,10 +19,12 @@ keywords:
   - kafka split brain
 tags:
   - Kafka
+  - big data
   - 大数据
   - 分布式
 categories:
   - Kafka
+  - big data
   - 大数据
   - 分布式
 description: 本文主要介绍了Kafka High Level Consumer，Consumer Group，Consumer Rebalance，Low Level Consumer实现的语义，以及适用场景。以及未来版本中对High Level Consumer的重新设计--使用Consumer Coordinator解决Split Brain和Herd等问题。

@@ -17,10 +17,12 @@ keywords:
   - kafka 介绍
 tags:
   - Kafka
+  - big data
   - 大数据
   - 分布式
 categories:
   - Kafka
+  - big data
   - 大数据
   - 分布式
 description: 本文介绍了Kafka的创建背景，设计目标，使用消息系统的优势以及目前流行的消息系统对比。并介绍了Kafka的架构，Producer消息路由，Consumer Group以及由其实现的不同消息分发方式，Topic & Partition，最后介绍了Kafka Consumer为何使用pull模式以及Kafka提供的三种delivery guarantee。

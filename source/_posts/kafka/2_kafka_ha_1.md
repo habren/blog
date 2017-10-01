@@ -17,10 +17,12 @@ keywords:
   - kafka leader election
 tags:
   - Kafka
+  - big data
   - 大数据
   - 分布式
 categories:
   - Kafka
+  - big data
   - 大数据
   - 分布式
 description: Kafka从0.8版本开始提供High Availability机制，从而提高了系统可用性及数据持久性。本文从Data Replication和Leader Election两方面介绍了Kafka的HA机制。
@@ -45,7 +47,7 @@ description: Kafka从0.8版本开始提供High Availability机制，从而提高
 　　
 ## 为何需要Leader Election
 　　（本文所述Leader Election主要指Replica之间的Leader Election）
-　　引入Replication之后，同一个Partition可能会有多个Replica，而这时需要在这些Replication之间选出一个Leader，Producer和Consumer只与这个Leader交互，其它Replica作为Follower从Leader中复制数据。
+　　引入Replication之后，同一个Partition可能会有多个Replica，而这时需要在这些Replica中选出一个Leader，Producer和Consumer只与这个Leader交互，其它Replica作为Follower从Leader中复制数据。
 　　因为需要保证同一个Partition的多个Replica之间的数据一致性（其中一个宕机后其它Replica必须要能继续服务并且即不能造成数据重复也不能造成数据丢失）。如果没有一个Leader，所有Replica都可同时读/写数据，那就需要保证多个Replica之间互相（N×N条通路）同步数据，数据的一致性和有序性非常难保证，大大增加了Replication实现的复杂性，同时也增加了出现异常的几率。而引入Leader后，只有Leader负责数据读写，Follower只向Leader顺序Fetch数据（N条通路），系统更加简单且高效。
 　　
 　　

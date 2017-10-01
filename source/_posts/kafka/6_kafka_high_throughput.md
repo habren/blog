@@ -17,10 +17,12 @@ keywords:
   - 零拷贝
 tags:
   - Kafka
+  - big data
   - 大数据
   - 分布式
 categories:
   - Kafka
+  - big data
   - 大数据
   - 分布式
 description: 本文从宏观架构层面和微观实现层面分析了Kafka如何实现高性能。包含Kafka如何利用Partition实现并行处理和提供水平扩展能力，如何通过ISR实现可用性和数据一致性的动态平衡，如何使用NIO和Linux的sendfile实现零拷贝以及如何通过顺序读写和数据压缩实现磁盘的高效利用。
