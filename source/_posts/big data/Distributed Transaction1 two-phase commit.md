@@ -15,8 +15,10 @@ tags:
   - big data
   - 分布式事务
   - 分布式
+  - 大数据
 categories:
   - big data
+  - 大数据
   - 分布式
 description: 分布式事务与本地事务一样，包含原子性（Atomicity）、一致性（Consistency）、隔离性（Isolation）和持久性（Durability）。两阶段提交是保证分布式事务中原子性的重要方法。本文重点介绍了两阶段提交的原理，PostgreSQL中两阶段提交接口，以及Java中两阶段提交接口规范JTA的使用方式。
 ---
