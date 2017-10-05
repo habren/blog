@@ -1,7 +1,7 @@
 ---
 title: Java设计模式（十） 你真的用对单例模式了吗？
 date: 2016-05-16 07:34:46
-updated: 2017-02-17 20:31:23
+updated: 2017-11-12 15:31:23
 permalink: design_pattern/singleton
 keywords:
   - java 单例模式
