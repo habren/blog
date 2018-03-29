@@ -3,12 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "hexo": {
-    "version": "3.2.0"
+    "version": "3.2.2"
   },
   "dependencies": {
     "hexo": "^3.2.0",
     "hexo-cli": "^1.0.2",
     "hexo-deployer-git": "0.0.4",
+    "hexo-disqus-proxy": "^1.2.2",
     "hexo-generator-archive": "^0.1.2",
     "hexo-generator-baidu-sitemap": "^0.1.2",
     "hexo-generator-category": "^0.1.2",
