@@ -148,13 +148,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.UndeclaredThrowableException;
 
-public final class $Proxy17 extends Proxy implements ISubject {
+public final class $Proxy18 extends Proxy implements ISubject {
   private static Method m1;
   private static Method m2;
   private static Method m0;
   private static Method m3;
 
-  public $Proxy17(InvocationHandler paramInvocationHandler) {
+  public $Proxy18(InvocationHandler paramInvocationHandler) {
     super(paramInvocationHandler);
   }
 
