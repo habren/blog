@@ -168,3 +168,9 @@ $$Temp \sim MEI + CO_2 + N_2O + CFC.11 + CFC.12 + TSI + Aerosols$$
 　　利用以上公式可直接算出$θ$
 　　
 　　看到这里，读者可能注意到了，正规方程法，不需要像梯度下降那样迭代多次，更关键的是从编程的角度更直接，那为什么不直接用正规，还要保留梯度下降呢？想必学过线性代数的朋友一眼能看出来，正规方程需要求$(X^TX)$的逆，这就要求$(X^TX)$是可逆的。同时，如果Feature数比较多，比如共有100个Feature，那么$(X^TX)$的维度会非常高，求其逆会非常耗时。
+
+
+# 《机器学习》系列文章
+- [机器学习（一） 从一个R语言案例学线性回归](http://www.jasongj.com/2015/03/27/ml1_linear_regression/)
+- [机器学习（二） 如何做到Kaggle排名前2%](http://www.jasongj.com/ml/classification/)
+- [机器学习（三） 关联规则R语言实战Apriori](http://www.jasongj.com/ml/associationrules/)
