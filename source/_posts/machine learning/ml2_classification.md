@@ -2,6 +2,7 @@
 title: "机器学习（二） 如何做到Kaggle排名前2%"
 page_title: 如何做到机器学习竞赛Kaggle排名前2%  Titanic 80% 随机森林 决策树
 date: 2017-04-12 07:02:13
+updated: 2017-11-12 08:01:01
 permalink: ml/classification
 keywords:
   - 机器学习
@@ -739,6 +740,7 @@ write.csv(submit, file = "cit5.csv", row.names = FALSE)
 # 总结
 本文详述了如何通过数据预览，探索式数据分析，缺失数据填补，删除关联特征以及派生新特征等方法，在Kaggle的Titanic幸存预测这一分类问题竞赛中获得前2%排名的具体方法。  
   
-# 下篇预告
-下一篇文章将侧重讲解使用机器学习解决工程问题的一般思路和方法。
-
+# 《机器学习》系列文章
+- [机器学习（一） 从一个R语言案例学线性回归](http://www.jasongj.com/2015/03/27/ml1_linear_regression/)
+- [机器学习（二） 如何做到Kaggle排名前2%](http://www.jasongj.com/ml/classification/)
+- [机器学习（三） 关联规则R语言实战Apriori](http://www.jasongj.com/ml/associationrules/)
