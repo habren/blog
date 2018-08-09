@@ -108,7 +108,7 @@ ISR，也即In-sync Replica。每个Partition的Leader都会维护这样一个�
  - 从0.9.0.0版本开始，`replica.lag.max.messages`被移除，故Leader不再考虑Follower落后的消息条数。另外，Leader不仅会判断Follower是否在`replica.lag.time.max.ms`时间内向其发送Fetch请求，同时还会考虑Follower是否在该时间内与之保持同步。
  - 0.10.\* 版本的策略与0.9.\*版一致
   
-对于0.8.\*版本的`replica.lag.max.messages`参数，很多读者曾留言提问，既然只有ISR中的所有Replica复制完后的消息才被认为Commit，那为何会出现Follower与Leader差距过大的情况。原因在于，Leader并不需要等到前一条消息被Commit才接收后一条消息。事实上，Leader可以按顺序接收大量消息，最新的一条消息的Offset被记为High Wartermark。而只有被ISR中所有Follower都复制过去的消息才会被Commit，Consumer只能消费被Commit的消息。由于Follower的复制是严格按顺序的，所以被Commit的消息之前的消息肯定也已经被Commit过。换句话说，High Watermark标记的是Leader所保存的最新消息的offset，而Commit Offset标记的是最新的可被消费的（已同步到ISR中的Follower）消息。而Leader对数据的接收与Follower对数据的复制是异步进行的，因此会出现Commit Offset与High Watermark存在一定差距的情况。0.8.\*版本中`replica.lag.max.messages`限定了Leader允许的该差距的最大值。
+对于0.8.\*版本的`replica.lag.max.messages`参数，很多读者曾留言提问，既然只有ISR中的所有Replica复制完后的消息才被认为Commit，那为何会出现Follower与Leader差距过大的情况。原因在于，Leader并不需要等到前一条消息被Commit才接收后一条消息。事实上，Leader可以按顺序接收大量消息，最新的一条消息的Offset被记为LEO（Log end offset）。而只有被ISR中所有Follower都复制过去的消息才会被Commit，Consumer只能消费被Commit的消息，最新被Commit的Offset被记为High watermark。换句话说，LEO 标记的是Leader所保存的最新消息的offset，而High watermark标记的是最新的可被消费的（已同步到ISR中的Follower）消息。而Leader对数据的接收与Follower对数据的复制是异步进行的，因此会出现Hight watermark与LEO存在一定差距的情况。0.8.\*版本中`replica.lag.max.messages`限定了Leader允许的该差距的最大值。
 
 Kafka基于ISR的数据复制方案原理如下图所示。  
 ![Kafka Replication](http://www.jasongj.com/img/kafka/KafkaColumn6/kafka-replication.png)
