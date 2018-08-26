@@ -188,7 +188,7 @@ Annotation的语法比较简单，除了@符号的使用外，他基本与Java�
 
 - Annotation类型使用关键字`@interface`而非`interface`。注意开头的`@`符号
 - Annotataion的方法定义是受限制的。其方法必须声明为无参数、无异常抛出的。这些方法同时也定义了Annotation的成员——方法名即为成员名，而方法返回类型即为成员类型。方法返回类型必须为Java基础类型、Class类型、枚举类型、Annotation类型或者相应的一维数组。方法后面可以使用default关键字和一个默认数值来声明成员的默认值，null不能作为成员默认值。成员一般不能是泛型，只有当其类型是Class时可以使用泛型，因为此方法能够用类型转换将各种类型转换为Class
-- Annotation和interface都可以定义常量、静态成员类型，也都可以被实现或者继承
+- Annotation和interface都可以定义常量、静态成员类型。interface可以被实现或者继承，Annotation不可以
 
 
 # Java进阶系列
